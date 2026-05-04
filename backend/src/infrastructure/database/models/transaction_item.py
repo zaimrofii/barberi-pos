@@ -21,7 +21,7 @@ class TransactionItem(models.Model):
         db_table = 'transaction_items'
         app_label = 'infrastructure'
         indexes = [
-            models.Index(fields=['barber', 'created_at'], name='tx_items_barber_created_idx '),
+            models.Index(fields=['barber', 'created_at'], name='tx_items_barber_created_idx'),
         ]
         constraints = [
             models.CheckConstraint(check=models.Q(quantity__gt=0), name='tx_items_quantity_gt_0'),
