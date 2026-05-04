@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='transactionitem',
-            index=models.Index(fields=['barber', 'created_at'], name='tx_items_barber_created_idx '),
+            index=models.Index(fields=['barber', 'created_at'], name='tx_items_barber_created_idx'),
         ),
         migrations.AddConstraint(
             model_name='transactionitem',
