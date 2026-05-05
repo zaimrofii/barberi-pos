@@ -28,7 +28,7 @@ class AbstractTransactionRepository(ABC):
         pass
 
     @abstractmethod
-    def save_items(self, transaction_items: list) -> None:
+    def save_items(self, transaction_id: UUID, items: list) -> None:
         """
         Bulk insert transaction_items (immutable snapshot rows).
         Use bulk_create for performance.
