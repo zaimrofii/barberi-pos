@@ -28,10 +28,3 @@ class AbstractItemRepository(ABC):
         Persist changes to an item (e.g. after stock deduction).
         """
         pass
-
-    @abstractmethod
-    def bulk_save(self, items: List) -> None:
-        """
-        Persist multiple items at once (used after stock deduction in checkout).
-        """
-        pass
