@@ -297,4 +297,36 @@ All endpoints are prefixed with `/api/v1`.
 
 ---
 
+## 7. Exception Handling Convention
+
+### 7.1 Domain‑Owned Exceptions
+
+Each domain module owns its own exceptions, defined in `src/modules/<domain>/exceptions.py`.  
+All domain exceptions inherit from `src.shared.base_exception.DomainException`.
+
+| Module       | File                          | Exceptions                                                                 |
+|--------------|-------------------------------|----------------------------------------------------------------------------|
+| catalog      | `src/modules/catalog/exceptions.py` | `ItemNotFoundError`, `OutOfStockError`                                     |
+| inventory    | `src/modules/inventory/exceptions.py` | `StockNotFoundError`, `InsufficientStockError`                             |
+| sales        | `src/modules/sales/exceptions.py` | `TransactionNotFoundError`, `CannotVoidTransactionError`, `DuplicateLocalIdError` |
+| staff        | `src/modules/staff/exceptions.py` | `BarberNotFoundError`                                                      |
+
+### 7.2 Naming Convention
+
+All exception classes **must** end with the suffix `Error` (e.g., `BarberNotFoundError`, not `BarberNotFound`).  
+This ensures consistency across the codebase and makes it easy to distinguish exceptions from other classes.
+
+### 7.3 Base Exception
+
+The single base class `DomainException` lives in `src/shared/base_exception.py`.  
+It is re‑exported from `src/shared/exceptions.py` for backward compatibility, but new code should import directly from `src/shared.base_exception`.
+
+### 7.4 No Exception Duplication
+
+- Exceptions are **never** defined in `repositories/exceptions.py` anymore.
+- The old `repositories/exceptions.py` files have been deleted.
+- All imports must reference the domain‑level `exceptions.py` files listed above.
+
+---
+
 *This document is the authoritative source for every architectural decision during development. All code changes must align with the schema, folder structure, and service logic described here.*

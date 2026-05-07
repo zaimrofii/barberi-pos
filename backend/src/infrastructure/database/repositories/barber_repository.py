@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 
 from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
-from src.modules.staff.repositories.exceptions import BarberNotFound
+from src.modules.staff.exceptions import BarberNotFoundError
 from src.infrastructure.database.models import Barber
 
 

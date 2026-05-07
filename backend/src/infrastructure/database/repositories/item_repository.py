@@ -3,7 +3,7 @@ from uuid import UUID
 from django.core.exceptions import ObjectDoesNotExist
 
 from src.modules.catalog.repositories.item_repository import AbstractItemRepository
-from src.modules.catalog.repositories.exceptions import ItemNotFound
+from src.modules.catalog.exceptions import ItemNotFoundError
 from src.infrastructure.database.models import Item
 
 

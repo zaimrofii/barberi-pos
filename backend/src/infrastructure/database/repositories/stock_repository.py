@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 
 from src.modules.inventory.repositories.stock_repository import AbstractStockRepository
-from src.modules.inventory.repositories.exceptions import InsufficientStockError, StockNotFound
+from src.modules.inventory.exceptions import InsufficientStockError, StockNotFoundError
 from src.infrastructure.database.models import Item
 
 

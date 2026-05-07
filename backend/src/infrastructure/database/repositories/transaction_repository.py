@@ -2,7 +2,7 @@ from uuid import UUID
 from typing import Optional
 
 from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
-from src.modules.sales.repositories.exceptions import TransactionNotFound, CannotVoidTransaction
+from src.modules.sales.exceptions import TransactionNotFoundError, CannotVoidTransactionError
 from src.infrastructure.database.models import Transaction, TransactionItem
 
 

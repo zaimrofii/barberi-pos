@@ -7,12 +7,15 @@ from src.modules.inventory.repositories.stock_repository import AbstractStockRep
 from src.modules.catalog.repositories.item_repository import AbstractItemRepository
 from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
 from src.shared.utils.pricing import calculate_total
-from src.shared.exceptions import (
+from src.shared.base_exception import DomainException
+from src.modules.catalog.exceptions import ItemNotFoundError, OutOfStockError
+from src.modules.staff.exceptions import BarberNotFoundError
+from src.modules.sales.exceptions import (
+    TransactionNotFoundError,
+    CannotVoidTransactionError,
     DuplicateLocalIdError,
-    OutOfStockError,
-    ItemNotFoundError,
-    BarberNotFoundError,
 )
+from src.modules.inventory.exceptions import StockNotFoundError, InsufficientStockError
 
 
 class CheckoutUseCase:

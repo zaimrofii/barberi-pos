@@ -1,21 +1,3 @@
-class DomainException(Exception):
-    """Base class for all domain exceptions."""
-    pass
+from .base_exception import DomainException
 
-class OutOfStockError(DomainException):
-    pass
-
-class DuplicateLocalIdError(DomainException):
-    pass
-
-class CannotVoidError(DomainException):
-    pass
-
-class ItemNotFoundError(DomainException):
-    pass
-
-class BarberNotFoundError(DomainException):
-    pass
-
-class TransactionNotFoundError(DomainException):
-    pass
+__all__ = ['DomainException']

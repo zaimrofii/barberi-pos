@@ -19,14 +19,15 @@ from src.infrastructure.database.repositories import (
     DjangoBarberRepository,
 )
 from src.infrastructure.database.models import TransactionItem
-from src.shared.exceptions import (
-    DuplicateLocalIdError,
-    OutOfStockError,
-    ItemNotFoundError,
-    BarberNotFoundError,
+from src.modules.catalog.exceptions import ItemNotFoundError, OutOfStockError
+from src.modules.staff.exceptions import BarberNotFoundError
+from src.modules.sales.exceptions import (
     TransactionNotFoundError,
-    CannotVoidError,
+    CannotVoidTransactionError,
+    DuplicateLocalIdError,
 )
+from src.modules.inventory.exceptions import StockNotFoundError, InsufficientStockError
+from src.shared.base_exception import DomainException
 
 
 class CheckoutView(APIView):
@@ -140,7 +141,7 @@ class VoidTransactionView(APIView):
                 {"error": "TRANSACTION_NOT_FOUND", "detail": str(e)},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        except CannotVoidError as e:
+        except CannotVoidTransactionError as e:
             return Response(
                 {"error": "CANNOT_VOID", "detail": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
