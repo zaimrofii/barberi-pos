@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from src.infrastructure.database.models import Barber, Item
 
 
 class CheckoutItemSerializer(serializers.Serializer):
@@ -62,3 +63,17 @@ class CommissionResponseSerializer(serializers.Serializer):
     page = serializers.IntegerField()
     per_page = serializers.IntegerField()
     items = CommissionItemSerializer(many=True)
+
+
+class BarberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Barber
+        fields = ['id', 'name', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['id', 'type', 'name', 'price', 'stock', 'commission_rate', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']

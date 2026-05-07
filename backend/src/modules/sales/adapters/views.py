@@ -2,6 +2,7 @@ from uuid import UUID
 from decimal import Decimal
 from django.db import transaction as db_transaction
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -15,6 +16,8 @@ from src.modules.sales.adapters.serializers import (
     ErrorResponseSerializer,
     CommissionQuerySerializer,
     CommissionResponseSerializer,
+    BarberSerializer,
+    ItemSerializer,
 )
 from src.infrastructure.database.repositories import (
     DjangoTransactionRepository,
@@ -22,6 +25,7 @@ from src.infrastructure.database.repositories import (
     DjangoItemRepository,
     DjangoBarberRepository,
 )
+from src.infrastructure.database.models import Barber, Item
 from src.shared.base_exception import DomainException
 
 
@@ -205,3 +209,22 @@ class CommissionReportView(APIView):
         response_serializer = ErrorResponseSerializer(data=data)
         response_serializer.is_valid(raise_exception=True)
         return Response(response_serializer.data, status=status_code)
+
+
+class BarberViewSet(ModelViewSet):
+    queryset = Barber.objects.all().order_by('name')
+    serializer_class = BarberSerializer
+    lookup_field = 'pk'
+
+
+class ItemViewSet(ModelViewSet):
+    queryset = Item.objects.all().order_by('name')
+    serializer_class = ItemSerializer
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        item_type = self.request.query_params.get('type', None)
+        if item_type in ('SERVICE', 'PRODUCT'):
+            qs = qs.filter(type=item_type)
+        return qs
