@@ -1,16 +1,20 @@
 from uuid import UUID
 from decimal import Decimal
 from django.db import transaction as db_transaction
-from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from src.modules.sales.use_cases.checkout import CheckoutUseCase
+from src.modules.sales.use_cases.commission_report import CommissionReportUseCase
 from src.modules.sales.adapters.serializers import (
     CheckoutRequestSerializer,
+    CheckoutResponseSerializer,
     VoidRequestSerializer,
+    VoidResponseSerializer,
+    ErrorResponseSerializer,
     CommissionQuerySerializer,
+    CommissionResponseSerializer,
 )
 from src.infrastructure.database.repositories import (
     DjangoTransactionRepository,
@@ -18,15 +22,6 @@ from src.infrastructure.database.repositories import (
     DjangoItemRepository,
     DjangoBarberRepository,
 )
-from src.infrastructure.database.models import TransactionItem
-from src.modules.catalog.exceptions import ItemNotFoundError, OutOfStockError
-from src.modules.staff.exceptions import BarberNotFoundError
-from src.modules.sales.exceptions import (
-    TransactionNotFoundError,
-    CannotVoidTransactionError,
-    DuplicateLocalIdError,
-)
-from src.modules.inventory.exceptions import StockNotFoundError, InsufficientStockError
 from src.shared.base_exception import DomainException
 
 
@@ -51,41 +46,34 @@ class CheckoutView(APIView):
                 discount=data["discount"],
                 items=data["items"],
             )
-        except DuplicateLocalIdError as e:
-            # e.args[0] contains the existing transaction id
-            existing_id = str(e.args[0]) if e.args else ""
-            return Response(
-                {
-                    "error": "DUPLICATE_LOCAL_ID",
-                    "transaction_id": existing_id,
-                    "detail": str(e),
-                },
-                status=status.HTTP_409_CONFLICT,
-            )
-        except OutOfStockError as e:
-            return Response(
-                {"error": "OUT_OF_STOCK", "detail": str(e)},
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            )
-        except ItemNotFoundError as e:
-            return Response(
-                {"error": "ITEM_NOT_FOUND", "detail": str(e)},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        except BarberNotFoundError as e:
-            return Response(
-                {"error": "BARBER_NOT_FOUND", "detail": str(e)},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        except DomainException as e:
+            return self._handle_domain_exception(e)
 
-        return Response(
-            {
-                "transaction_id": str(result["transaction_id"]),
-                "status": result["status"],
-                "total": float(result["total"]),
-            },
-            status=status.HTTP_200_OK,
+        response_serializer = CheckoutResponseSerializer(data=result)
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+    def _handle_domain_exception(self, e: DomainException) -> Response:
+        error_mapping = {
+            "DuplicateLocalIdError": (status.HTTP_409_CONFLICT, "DUPLICATE_LOCAL_ID"),
+            "OutOfStockError": (status.HTTP_422_UNPROCESSABLE_ENTITY, "OUT_OF_STOCK"),
+            "ItemNotFoundError": (status.HTTP_404_NOT_FOUND, "ITEM_NOT_FOUND"),
+            "BarberNotFoundError": (status.HTTP_404_NOT_FOUND, "BARBER_NOT_FOUND"),
+            "TransactionNotFoundError": (status.HTTP_404_NOT_FOUND, "TRANSACTION_NOT_FOUND"),
+            "CannotVoidTransactionError": (status.HTTP_400_BAD_REQUEST, "CANNOT_VOID"),
+        }
+        error_code = e.__class__.__name__
+        status_code, api_error = error_mapping.get(
+            error_code, (status.HTTP_400_BAD_REQUEST, "DOMAIN_ERROR")
         )
+
+        data = {"error": api_error, "detail": str(e)}
+        if error_code == "DuplicateLocalIdError":
+            data["transaction_id"] = str(e.args[0]) if e.args else ""
+
+        response_serializer = ErrorResponseSerializer(data=data)
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status_code)
 
 
 class VoidTransactionView(APIView):
@@ -115,6 +103,8 @@ class VoidTransactionView(APIView):
                     )
 
                 # 3. Fetch transaction_items
+                from src.infrastructure.database.models import TransactionItem
+
                 transaction_items = TransactionItem.objects.filter(
                     transaction_id=transaction_id
                 ).select_related("item")
@@ -136,24 +126,36 @@ class VoidTransactionView(APIView):
                     transaction_id, "VOIDED", void_reason
                 )
 
-        except TransactionNotFoundError as e:
-            return Response(
-                {"error": "TRANSACTION_NOT_FOUND", "detail": str(e)},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        except CannotVoidTransactionError as e:
-            return Response(
-                {"error": "CANNOT_VOID", "detail": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        except DomainException as e:
+            return self._handle_domain_exception(e)
 
-        return Response(
-            {
-                "transaction_id": str(transaction_id),
-                "status": "VOIDED",
-            },
-            status=status.HTTP_200_OK,
+        response_serializer = VoidResponseSerializer(
+            data={"transaction_id": transaction_id, "status": "VOIDED"}
         )
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+    def _handle_domain_exception(self, e: DomainException) -> Response:
+        error_mapping = {
+            "DuplicateLocalIdError": (status.HTTP_409_CONFLICT, "DUPLICATE_LOCAL_ID"),
+            "OutOfStockError": (status.HTTP_422_UNPROCESSABLE_ENTITY, "OUT_OF_STOCK"),
+            "ItemNotFoundError": (status.HTTP_404_NOT_FOUND, "ITEM_NOT_FOUND"),
+            "BarberNotFoundError": (status.HTTP_404_NOT_FOUND, "BARBER_NOT_FOUND"),
+            "TransactionNotFoundError": (status.HTTP_404_NOT_FOUND, "TRANSACTION_NOT_FOUND"),
+            "CannotVoidTransactionError": (status.HTTP_400_BAD_REQUEST, "CANNOT_VOID"),
+        }
+        error_code = e.__class__.__name__
+        status_code, api_error = error_mapping.get(
+            error_code, (status.HTTP_400_BAD_REQUEST, "DOMAIN_ERROR")
+        )
+
+        data = {"error": api_error, "detail": str(e)}
+        if error_code == "DuplicateLocalIdError":
+            data["transaction_id"] = str(e.args[0]) if e.args else ""
+
+        response_serializer = ErrorResponseSerializer(data=data)
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status_code)
 
 
 class CommissionReportView(APIView):
@@ -163,57 +165,43 @@ class CommissionReportView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         data = serializer.validated_data
-        barber_id = data["barber_id"]
-        start_date = data["start_date"]
-        end_date = data["end_date"]
-        page = data["page"]
-        per_page = data["per_page"]
 
-        # Build base queryset
-        qs = TransactionItem.objects.filter(
-            barber_id=barber_id,
-            created_at__date__gte=start_date,
-            created_at__date__lte=end_date,
-            transaction__status="COMPLETED",
-        ).select_related("transaction").annotate(
-            commission_amount=ExpressionWrapper(
-                F("price_at_sale") * F("quantity") * F("commission_rate"),
-                output_field=DecimalField(max_digits=10, decimal_places=2),
+        barber_repo = DjangoBarberRepository()
+        use_case = CommissionReportUseCase(barber_repo)
+
+        try:
+            result = use_case.execute(
+                barber_id=data["barber_id"],
+                start_date=data["start_date"],
+                end_date=data["end_date"],
+                page=data["page"],
+                per_page=data["per_page"],
             )
-        ).order_by("created_at")
+        except DomainException as e:
+            return self._handle_domain_exception(e)
 
-        # Total commission (before pagination)
-        total_commission = qs.aggregate(
-            total=Sum("commission_amount")
-        )["total"] or Decimal("0.00")
+        response_serializer = CommissionResponseSerializer(data=result)
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
 
-        # Paginate
-        offset = (page - 1) * per_page
-        page_qs = qs[offset : offset + per_page]
-
-        items = []
-        for ti in page_qs:
-            items.append(
-                {
-                    "transaction_id": str(ti.transaction_id),
-                    "item_id": str(ti.item_id),
-                    "quantity": ti.quantity,
-                    "price_at_sale": float(ti.price_at_sale),
-                    "commission_rate": float(ti.commission_rate),
-                    "commission_amount": float(ti.commission_amount),
-                    "created_at": ti.created_at.isoformat(),
-                }
-            )
-
-        return Response(
-            {
-                "barber_id": str(barber_id),
-                "start_date": start_date.isoformat(),
-                "end_date": end_date.isoformat(),
-                "total_commission": float(total_commission),
-                "page": page,
-                "per_page": per_page,
-                "items": items,
-            },
-            status=status.HTTP_200_OK,
+    def _handle_domain_exception(self, e: DomainException) -> Response:
+        error_mapping = {
+            "DuplicateLocalIdError": (status.HTTP_409_CONFLICT, "DUPLICATE_LOCAL_ID"),
+            "OutOfStockError": (status.HTTP_422_UNPROCESSABLE_ENTITY, "OUT_OF_STOCK"),
+            "ItemNotFoundError": (status.HTTP_404_NOT_FOUND, "ITEM_NOT_FOUND"),
+            "BarberNotFoundError": (status.HTTP_404_NOT_FOUND, "BARBER_NOT_FOUND"),
+            "TransactionNotFoundError": (status.HTTP_404_NOT_FOUND, "TRANSACTION_NOT_FOUND"),
+            "CannotVoidTransactionError": (status.HTTP_400_BAD_REQUEST, "CANNOT_VOID"),
+        }
+        error_code = e.__class__.__name__
+        status_code, api_error = error_mapping.get(
+            error_code, (status.HTTP_400_BAD_REQUEST, "DOMAIN_ERROR")
         )
+
+        data = {"error": api_error, "detail": str(e)}
+        if error_code == "DuplicateLocalIdError":
+            data["transaction_id"] = str(e.args[0]) if e.args else ""
+
+        response_serializer = ErrorResponseSerializer(data=data)
+        response_serializer.is_valid(raise_exception=True)
+        return Response(response_serializer.data, status=status_code)
