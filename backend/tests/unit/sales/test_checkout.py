@@ -13,7 +13,7 @@ from src.modules.catalog.exceptions import ItemNotFoundError, OutOfStockError
 class TestCheckoutUseCase:
     # FUNGSI TEST: Memastikan proses checkout berhasil dengan campuran item (jasa dan produk)
     def test_successful_checkout_mixed_items(
-        self, checkout_use_case, mock_repositories, sample_barber, sample_service, sample_product
+        self, db, checkout_use_case, mock_repositories, sample_barber, sample_service, sample_product
     ):
         """Test untuk checkout sukses dengan kombinasi item jasa dan produk"""
         local_id = "tx-001"
@@ -107,7 +107,7 @@ class TestCheckoutUseCase:
             )
 
     # FUNGSI TEST: Memastikan error muncul jika item tidak ditemukan
-    def test_item_not_found_raises_error(self, checkout_use_case, mock_repositories, sample_barber):
+    def test_item_not_found_raises_error(self, db, checkout_use_case, mock_repositories, sample_barber):
         """Test untuk kasus item (jasa/produk) tidak ditemukan - seharusnya raise error"""
         mock_repositories["transaction_repo"].get_by_local_id.return_value = None
         mock_repositories["barber_repo"].get_by_id.return_value = sample_barber
@@ -125,7 +125,7 @@ class TestCheckoutUseCase:
 
     # FUNGSI TEST: Memastikan error muncul jika stok produk tidak mencukupi
     def test_insufficient_stock_raises_error(
-        self, checkout_use_case, mock_repositories, sample_barber, sample_product
+        self, db, checkout_use_case, mock_repositories, sample_barber, sample_product
     ):
         """Test untuk kasus stok produk kurang dari yang diminta - seharusnya raise error"""
         mock_repositories["transaction_repo"].get_by_local_id.return_value = None
@@ -145,7 +145,7 @@ class TestCheckoutUseCase:
 
     # FUNGSI TEST: Memastikan pengurangan stok HANYA untuk produk (bukan jasa)
     def test_stock_deduction_only_for_product(
-        self, checkout_use_case, mock_repositories, sample_barber, sample_service, sample_product
+        self, db, checkout_use_case, mock_repositories, sample_barber, sample_service, sample_product
     ):
         """Test untuk memastikan bahwa hanya produk yang stoknya dikurangi, jasa tidak"""
         mock_repositories["transaction_repo"].get_by_local_id.return_value = None
@@ -175,7 +175,7 @@ class TestCheckoutUseCase:
 
     # FUNGSI TEST: Memastikan transaksi tersimpan dengan status COMPLETED
     def test_transaction_saved_with_completed_status(
-        self, checkout_use_case, mock_repositories, sample_barber, sample_service
+        self, db, checkout_use_case, mock_repositories, sample_barber, sample_service
     ):
         """Test untuk memastikan status transaksi yang sukses adalah COMPLETED"""
         mock_repositories["transaction_repo"].get_by_local_id.return_value = None
@@ -199,7 +199,7 @@ class TestCheckoutUseCase:
 
     # FUNGSI TEST: Memastikan diskon dihitung dengan benar
     def test_discount_applied_correctly(
-        self, checkout_use_case, mock_repositories, sample_barber, sample_service
+        self, db, checkout_use_case, mock_repositories, sample_barber, sample_service
     ):
         """Test untuk memastikan perhitungan diskon mengurangi total dengan benar"""
         mock_repositories["transaction_repo"].get_by_local_id.return_value = None

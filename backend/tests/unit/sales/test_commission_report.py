@@ -8,6 +8,7 @@ from src.modules.staff.exceptions import BarberNotFoundError
 
 
 @pytest.mark.unit
+@pytest.mark.django_db
 class TestCommissionReportUseCase:
     def test_single_item_commission(self, commission_use_case, mock_repositories, sample_barber):
         barber_id = sample_barber.id
