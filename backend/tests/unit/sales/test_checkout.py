@@ -9,7 +9,6 @@ from src.modules.staff.exceptions import BarberNotFoundError
 from src.modules.catalog.exceptions import ItemNotFoundError, OutOfStockError
 
 
-@pytest.mark.unit
 class TestCheckoutUseCase:
     # FUNGSI TEST: Memastikan proses checkout berhasil dengan campuran item (jasa dan produk)
     def test_successful_checkout_mixed_items(
