@@ -21,7 +21,7 @@ class DjangoStockRepository(AbstractStockRepository):
         found_ids = {item.id for item in items}
         missing = set(item_ids) - found_ids
         if missing:
-            raise StockNotFound(f"Products not found: {missing}")
+            raise StockNotFoundError(f"Products not found: {missing}")
         return items
 
     def bulk_deduct(self, deductions: List[dict]) -> None:
@@ -35,7 +35,7 @@ class DjangoStockRepository(AbstractStockRepository):
         for deduction in deductions:
             item = items.get(deduction["item_id"])
             if item is None:
-                raise StockNotFound(f"Item {deduction['item_id']} not found")
+                raise StockNotFoundError(f"Item {deduction['item_id']} not found")
             if item.stock < deduction["quantity"]:
                 raise InsufficientStockError(
                     f"Insufficient stock for {item.id}: "
@@ -56,7 +56,7 @@ class DjangoStockRepository(AbstractStockRepository):
         for restoration in restorations:
             item = items.get(restoration["item_id"])
             if item is None:
-                raise StockNotFound(f"Item {restoration['item_id']} not found")
+                raise StockNotFoundError(f"Item {restoration['item_id']} not found")
             item.stock += restoration["quantity"]
         
         Item.objects.bulk_update(list(items.values()), fields=['stock'])
