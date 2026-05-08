@@ -8,6 +8,7 @@ from src.modules.catalog.repositories.item_repository import AbstractItemReposit
 from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
 from src.shared.utils.pricing import calculate_total
 from src.shared.base_exception import DomainException
+from src.shared.constants import ItemType
 from src.modules.catalog.exceptions import ItemNotFoundError, OutOfStockError
 from src.modules.staff.exceptions import BarberNotFoundError
 from src.modules.sales.exceptions import (
@@ -67,7 +68,7 @@ class CheckoutUseCase:
 
             # STEP 4 — STOCK VERIFICATION (PRODUCT type only)
             for item in locked_items:
-                if item.type == "PRODUCT":
+                if item.type == ItemType.PRODUCT:
                     qty = quantity_map[item.id]
                     if item.stock < qty:
                         raise OutOfStockError(
@@ -96,7 +97,7 @@ class CheckoutUseCase:
             deductions = [
                 {"item_id": s["item_id"], "quantity": s["quantity"]}
                 for s in snapshot_items
-                if any(item.id == s["item_id"] and item.type == "PRODUCT" for item in locked_items)
+                if any(item.id == s["item_id"] and item.type == ItemType.PRODUCT for item in locked_items)
             ]
             if deductions:
                 self.stock_repo.bulk_deduct(deductions)

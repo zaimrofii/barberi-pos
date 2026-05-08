@@ -3,6 +3,7 @@ from uuid import UUID
 
 from src.modules.inventory.repositories.stock_repository import AbstractStockRepository
 from src.modules.inventory.exceptions import InsufficientStockError, StockNotFoundError
+from src.shared.constants import ItemType
 from src.infrastructure.database.models import Item
 
 
@@ -15,7 +16,7 @@ class DjangoStockRepository(AbstractStockRepository):
         """
         items = list(
             Item.objects.select_for_update()
-            .filter(id__in=item_ids, type='PRODUCT')
+            .filter(id__in=item_ids, type=ItemType.PRODUCT)
         )
         found_ids = {item.id for item in items}
         missing = set(item_ids) - found_ids

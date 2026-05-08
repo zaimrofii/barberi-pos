@@ -27,6 +27,7 @@ from src.infrastructure.database.repositories import (
 )
 from src.infrastructure.database.models import Barber, Item
 from src.shared.base_exception import DomainException
+from src.shared.constants import ItemType
 
 
 class CheckoutView(APIView):
@@ -116,7 +117,7 @@ class VoidTransactionView(APIView):
                 # 4. Build restorations for PRODUCT items only
                 restorations = []
                 for ti in transaction_items:
-                    if ti.item.type == "PRODUCT":
+                    if ti.item.type == ItemType.PRODUCT:
                         restorations.append(
                             {"item_id": ti.item_id, "quantity": ti.quantity}
                         )
@@ -225,6 +226,6 @@ class ItemViewSet(ModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         item_type = self.request.query_params.get('type', None)
-        if item_type in ('SERVICE', 'PRODUCT'):
+        if item_type in (ItemType.SERVICE, ItemType.PRODUCT):
             qs = qs.filter(type=item_type)
         return qs
