@@ -1,7 +1,14 @@
+import os
+import django
 import pytest
 from decimal import Decimal
 from uuid import uuid4
 from unittest.mock import Mock, MagicMock
+
+
+# Setup Django BEFORE importing any Django models
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
 
 from src.modules.sales.use_cases.checkout import CheckoutUseCase
 from src.modules.sales.use_cases.commission_report import CommissionReportUseCase
