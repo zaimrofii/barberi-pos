@@ -78,7 +78,7 @@ class DjangoTransactionRepository(AbstractTransactionRepository):
         try:
             transaction = Transaction.objects.get(id=transaction_id)
         except Transaction.DoesNotExist:
-            raise TransactionNotFound(f"Transaction {transaction_id} not found")
+            raise TransactionNotFoundError(f"Transaction {transaction_id} not found")
         
         if transaction.status == 'VOIDED':
             raise CannotVoidTransactionError(
