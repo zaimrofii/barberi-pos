@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils import timezone
 
 from .barber import Barber
 from .item import Item
@@ -15,7 +16,7 @@ class TransactionItem(models.Model):
     quantity = models.IntegerField()
     price_at_sale = models.DecimalField(max_digits=10, decimal_places=2)
     commission_rate = models.DecimalField(max_digits=5, decimal_places=4)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         db_table = 'transaction_items'

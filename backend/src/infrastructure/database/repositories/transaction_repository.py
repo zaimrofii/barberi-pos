@@ -1,6 +1,8 @@
 from uuid import UUID
 from typing import Optional
 
+from django.utils import timezone
+
 from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
 from src.modules.sales.exceptions import TransactionNotFoundError, CannotVoidTransactionError
 from src.infrastructure.database.models import Transaction, TransactionItem
@@ -62,6 +64,7 @@ class DjangoTransactionRepository(AbstractTransactionRepository):
                 quantity=item["quantity"],
                 price_at_sale=item["price_at_sale"],
                 commission_rate=item["commission_rate"],
+                created_at=timezone.now(),
             )
             for item in items
         ]
