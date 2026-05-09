@@ -18,7 +18,7 @@ class DjangoTransactionRepository(AbstractTransactionRepository):
         try:
             return Transaction.objects.get(id=transaction_id)
         except Transaction.DoesNotExist:
-            raise TransactionNotFound(f"Transaction {transaction_id} not found")
+            raise TransactionNotFoundError(f"Transaction {transaction_id} not found")
 
     def save(self, data: dict) -> Transaction:
         """
@@ -78,11 +78,11 @@ class DjangoTransactionRepository(AbstractTransactionRepository):
             raise TransactionNotFound(f"Transaction {transaction_id} not found")
         
         if transaction.status == 'VOIDED':
-            raise CannotVoidTransaction(
+            raise CannotVoidTransactionError(
                 f"Transaction {transaction_id} is already VOIDED"
             )
         if transaction.status != 'COMPLETED':
-            raise CannotVoidTransaction(
+            raise CannotVoidTransactionError(
                 f"Only COMPLETED transactions can be voided, got: {transaction.status}"
             )
         

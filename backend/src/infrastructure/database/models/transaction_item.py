@@ -15,7 +15,7 @@ class TransactionItem(models.Model):
     quantity = models.IntegerField()
     price_at_sale = models.DecimalField(max_digits=10, decimal_places=2)
     commission_rate = models.DecimalField(max_digits=5, decimal_places=4)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
 
     class Meta:
         db_table = 'transaction_items'
