@@ -1,0 +1,45 @@
+# docker-compose.yml (di root project, bukan di backend/)
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=barberi_pos
+      - DB_USER=zaimrofii
+      - DB_PASSWORD=561561
+      - DB_HOST=pg-barberi  # Nama service database
+      - DB_PORT=5432
+      - DEBUG=1
+    depends_on:
+      - db
+    networks:
+      - barberi_network
+
+  db:
+    image: postgres:16
+    container_name: pg-barberi
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=barberi_pos
+      - POSTGRES_USER=zaimrofii
+      - POSTGRES_PASSWORD=561561
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - barberi_network
+
+volumes:
+  postgres_data:
+    external: true  # Gunakan volume yang sudah ada dari container lamamu
+
+networks:
+  barberi_network:
+    driver: bridge

@@ -87,7 +87,7 @@ class BarbershopUser(HttpUser):
         }
 
         with self.client.post(
-            "/api/v1/checkout/",
+            "/api/v1/checkout",
             json=payload,
             catch_response=True,
             name="checkout_mixed_items",
@@ -119,7 +119,7 @@ class BarbershopUser(HttpUser):
         }
 
         with self.client.post(
-            "/api/v1/checkout/",
+            "/api/v1/checkout",
             json=payload,
             catch_response=True,
             name="checkout_only_product",
@@ -178,7 +178,7 @@ class BarbershopUser(HttpUser):
             "per_page": 10,
         }
         with self.client.get(
-            "/api/v1/commission-report/",
+            "/api/v1/reports/commissions",
             params=params,
             catch_response=True,
             name="get_commission_report",

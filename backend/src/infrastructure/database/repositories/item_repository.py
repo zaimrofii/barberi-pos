@@ -23,7 +23,7 @@ class DjangoItemRepository(AbstractItemRepository):
         try:
             return Item.objects.get(id=item_id)
         except Item.DoesNotExist:
-            raise ItemNotFound(f"Item {item_id} not found")
+            raise ItemNotFoundError(f"Item {item_id} not found")
 
     def save(self, item: Item) -> None:
         item.save()

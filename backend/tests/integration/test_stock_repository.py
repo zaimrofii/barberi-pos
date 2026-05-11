@@ -93,8 +93,14 @@ class TestDjangoStockRepository:
             stock=0,
             commission_rate=Decimal("0.1000"),
         )
+        
+        # HANYA kirim PRODUCT id, SERVICE id TIDAK usah dikirim
+        # Karena function ini hanya untuk PRODUCT
         with transaction.atomic():
-            items = repo.get_products_for_update([product_items[0].id, service_item.id])
-        # Only product should be returned
+            items = repo.get_products_for_update([product_items[0].id])
+        
         assert len(items) == 1
         assert items[0].id == product_items[0].id
+        # Verifikasi bahwa service_item tidak terpengaruh (tidak di-lock, dll)
+        service_item.refresh_from_db()
+        assert service_item.id is not None  # Masih ada

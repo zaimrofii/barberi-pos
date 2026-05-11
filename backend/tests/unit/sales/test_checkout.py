@@ -20,7 +20,7 @@ class TestCheckoutUseCase:
         discount = Decimal("5000.00")
         items = [
             {"item_id": sample_service.id, "quantity": 1},
-            {"item_id": sample_product.id, "quantity": 2},
+        {"item_id": sample_product.id, "quantity": 2},
         ]
 
         # Mock pengecekan idempotency (memastikan tidak ada transaksi duplikat)

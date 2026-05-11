@@ -1,0 +1,3554 @@
+
+# 2026-05-04 11:27:11.691200
++y
+
+# 2026-05-04 11:31:25.548153
++Act as a Senior Backend Architect. I am building a Point of Sale (POS) system for a Barbershop with a high-scalability vision (future-ready for Agentic AI and Manufacturing digitalization). 
++
++
++
++I need you to synthesize the provided business logic and architectural requirements into a formal Technical Specification.
++
++
++
++### 1. CORE MISSION
++
++Create a file named `DOCS/ARCHITECTURE_SPEC.md`. This file will serve as the "Single Source of Truth" for the development phase. Do NOT write the implementation code yet. Focus on the architecture and schema design.
++
++
++
++### 2. ARCHITECTURAL PILLARS TO IMPLEMENT:
++
++- Domain-Driven Design (DDD): Modular Monolith structure (Sales, Inventory, Staff, Catalog).
++
++- Immutable Snapshot Pattern: Every transaction must record the 'price_at_sale' and 'commission_rate' to ensure historical data integrity.
++
++- Offline-First Integrity: Use UUIDs for all primary keys to prevent collisions during offline-to-online sync.
++
++- Idempotency: Use 'local_id' from the client to prevent duplicate transactions.
++
++- Concurrency Safety: Implement Pessimistic Locking logic for stock deductions.
++
++- Status-Based Invalidation: Use 'VOIDED' status instead of hard deletes, with automatic inventory reversion logic.
++
++
++
++### 3. SPECIFIC DELIVERABLES IN `DOCS/ARCHITECTURE_SPEC.md`:
++
++
++
++A. Database Schema (PostgreSQL):
++
++- Define tables: 'barbers', 'items' (Service/Product), 'transactions', and 'transaction_items'.
++
++- Explicitly define data types (UUID, Decimal, Enum, Timestamp).
++
++- CRITICAL: Define Composite Indexes, specifically for (barber_id, created_at) on 'transaction_items' for high-performance reporting.
++
++
++
++B. Folder Structure (Django/Python):
++
++- Propose a DDD-compliant folder structure: `src/modules/`, `src/shared/`, `src/infrastructure/`.
++
++- Define where Domain Services, Use Cases, and Repositories should reside.
++
++
++
++C. API Definition:
++
++- Define REST endpoints for: POST /checkout, PATCH /void, GET /reports/commissions.
++
++- Specify Request/Response DTOs in JSON format.
++
++
++
++D. Service Logic & Sequence:
++
++- Describe the step-by-step logic for the 'CheckoutUseCase' (Transaction wrapping, stock check, snapshotting, and event emission).
++
++
++
++### 4. CRITICAL ANALYSIS (DEVIL'S ADVOCATE MODE):
++
++Before finalizing the document, add a section titled "Architectural Risks & Mitigations" where you analyze potential bottlenecks in this blueprint (e.g., table growth, indexing overhead, or sync conflicts) and provide your expert solutions.
++
++
++
++### 5. INPUT DATA:
++
++Below is the raw blueprint and logic business provided for your reference:
++
++
++
++--- START OF BLUEPRINT ---
++
++[This is a consolidated, high-level blueprint for your POS system, integrated into a robust Clean Architecture and Domain-Driven Design (DDD) framework. It ensures data integrity, offline resilience, and future scalability.
++
++1. Domain-Driven Service Architecture
++
++Organizing the backend into modules ensures that adding AI features later won't break your POS logic.
++
++Sales Module: Manages the Checkout and Void use cases.
++
++Inventory Module: Handles stock deductions and restorations.
++
++Staff Module: Manages barbers and their commission calculations.
++
++Shared Kernel: Centralized math logic (Tax/Discount) and Event Bus.
++
++2. Relational Schema & Data Integrity
++
++To prevent data "leakage" and ensure financial honesty, the schema uses Snapshots and UUIDs.
++
++A. Core Tables
++
++transactions (Header): Uses id (UUID) for global uniqueness and local_id (String) to prevent duplicate syncs from offline devices. Stores status (COMPLETED, VOIDED).
++
++items (Master): Single table for services and products, distinguished by a type column.
++
++transaction_items (Immutable Snapshots):
++
++Crucial: Stores price_at_sale and commission_rate.
++
++Logic: Even if prices change in the items table tomorrow, historical reports remains accurate.
++
++B. The "Single Source of Truth" Rules
++
++Never DELETE: Use VOIDED status with a void_reason for audit trails.
++
++Atomic Formula: $Total = \sum(Price \times Qty) - Discount$. This logic must reside in a single Shared Utility to ensure Frontend and Backend consistency.
++
++3. Execution Logic & Edge Cases
++
++Handling the "messy" reality of retail (dead batteries, spotty internet, and simultaneous sales).
++
++A. The Atomic Checkout Flow (Sequence)
++
++Idempotency Check: The Service checks the local_id. If it exists, it returns the existing record instead of creating a duplicate.
++
++Concurrency Control: To prevent selling the same item twice (Race Condition), use an Atomic Update or Pessimistic Locking: SELECT stock FROM items WHERE id = ... FOR UPDATE.
++
++Inventory Reversion: If a transaction is VOIDED, a trigger must restore the stock count.
++
++B. Offline Persistence Strategy
++
++Client-side: Use IndexedDB (Browser) or SQLite (Mobile) with a schema identical to the server.
++
++Sync Logic: Save locally first $\rightarrow$ check connection $\rightarrow$ if Online, push to Server $\rightarrow$ if Offline, mark synced: false and queue for FIFO (First-In-First-Out) upload once signal returns.
++
++4. Performance & Scalability
++
++UUIDs: Mandatory for multi-device sync to avoid ID collisions.
++
++Strategic Indexing: As transaction_items grows rapidly due to snapshotting, you must implement a Composite Index on (barber_id, created_at). This ensures commission reports stay fast even after 100k+ rows.
++
++Summary of the "Laba AI" Strategy
++
++FeatureBasic ApproachYour Advanced ApproachIdentificationInteger (1, 2, 3)UUID (Global Sync ready)PricingDynamic LinkImmutable Snapshot (Audit-proof)StockSimple subtractionAtomic/Locked Update (Race-condition safe)ConnectivityError if offlineOffline-First via IndexedDB
++
++Critical Architect Note:
++
++By moving the logic from "Simple Calculator" to "Immutable Event-Driven System," you aren't just building a POS for a barbershop—you are building the data foundation for Agentic AI Manufacturing.]
++
++--- END OF BLUEPRINT ---
++
++
++
++Review the input, refine the logic, and write the `DOCS/ARCHITECTURE_SPEC.md` file now.
+
+# 2026-05-04 11:32:32.815323
++Y
+
+# 2026-05-04 11:37:39.848509
++/maps
+
+# 2026-05-04 11:37:42.976032
++/map
+
+# 2026-05-04 11:37:58.624196
++/pwd
+
+# 2026-05-04 11:38:02.736070
++\pwd
+
+# 2026-05-04 11:42:13.733769
++/pwd
+
+# 2026-05-04 13:39:28.426747
++!pwd
+
+# 2026-05-04 13:41:27.856372
++n
+
+# 2026-05-04 13:41:40.895367
++/map
+
+# 2026-05-04 13:41:44.891894
++!pwd
+
+# 2026-05-04 13:41:47.419974
++y
+
+# 2026-05-04 13:41:51.828319
++/map
+
+# 2026-05-04 13:46:44.721473
++/add App/css
+
+# 2026-05-04 13:46:48.209031
++n
+
+# 2026-05-04 13:46:54.417626
++/add App.css
+
+# 2026-05-04 13:46:58.947517
++n
+
+# 2026-05-04 14:14:52.248576
++/add App.jsx
+
+# 2026-05-04 14:14:54.293940
++n
+
+# 2026-05-04 14:30:47.259639
++/add app.jsx
+
+# 2026-05-04 14:30:49.757379
++n
+
+# 2026-05-04 14:34:06.052363
++/add /App.jsx
+
+# 2026-05-04 14:34:08.854075
++n
+
+# 2026-05-04 14:35:08.603288
++/add **/App.jsx
+
+# 2026-05-04 14:38:02.959392
++/add 
++/home/zaimrofii/projects/barberi-pos/App.jsx
++/home/zaimrofii/projects/barberi-pos/App.css
+
+# 2026-05-04 14:38:32.867485
++n
+
+# 2026-05-04 14:52:46.188183
++/add /home/zaimrofii/projects/barberi-pos/models.py
+
+# 2026-05-04 14:52:54.481818
++n
+
+# 2026-05-04 15:01:02.017360
++/add home\zaimrofii\projects\barberi-pos\frontend\src\App.jsx
+
+# 2026-05-04 15:01:04.249107
++n
+
+# 2026-05-04 15:01:20.776366
++/add frontend\src\App.jsx
+
+# 2026-05-04 15:01:32.114050
++n
+
+# 2026-05-04 15:02:25.235641
++/add frontend/src/App.jsx
+
+# 2026-05-04 15:02:33.077707
++/map
+
+# 2026-05-04 15:03:19.842643
++/map-refresh
+
+# 2026-05-04 15:03:23.582600
++/map
+
+# 2026-05-04 15:04:03.554105
++/add frontend/src/App.jsx
+
+# 2026-05-04 15:04:12.307936
++/add frontend/src/App.css
+
+# 2026-05-04 15:04:15.964401
++/map
+
+# 2026-05-04 15:04:23.198705
++/map-refresh
+
+# 2026-05-04 15:04:46.025073
++/drop frontend/src/App.css frontend/src/App.jsx
+
+# 2026-05-04 15:04:53.535678
++/map-refresh
+
+# 2026-05-04 18:06:37.633836
++Read the architecture spec carefully, especially Section 2 (Database Schema) and Section 3 (Folder Structure).
++
++Your task: implement ONLY the Django ORM models and migrations. Nothing else.
++
++---
++
++FOLDER STRUCTURE (strictly follow this):
++
++src/
++
++└─ infrastructure/
++
++   └─ database/
++
++      ├─ models/
++
++      │  ├─ __init__.py
++
++      │  ├─ barber.py
++
++      │  ├─ item.py
++
++      │  ├─ transaction.py
++
++      │  └─ transaction_item.py
++
++      └─ migrations/
++
++---
++
++REQUIREMENTS PER MODEL:
++
++1. barber.py → Table `barbers`
++
++   - id: UUIDField, primary_key=True, default=uuid.uuid4
++
++   - name: CharField(255), not null
++
++   - created_at, updated_at: auto timestamps
++
++2. item.py → Table `items`
++
++   - id: UUIDField, primary_key=True
++
++   - type: CharField(20), choices=['SERVICE','PRODUCT'], not null
++
++   - name: CharField(255), not null
++
++   - price: DecimalField(max_digits=10, decimal_places=2), >= 0
++
++   - stock: IntegerField, default=0, >= 0 (only meaningful for PRODUCT)
++
++   - commission_rate: DecimalField(max_digits=5, decimal_places=4), default=0.0000
++
++   - created_at, updated_at: auto timestamps
++
++3. transaction.py → Table `transactions`
++
++   - id: UUIDField, primary_key=True
++
++   - local_id: CharField(36), UNIQUE, not null  ← idempotency key
++
++   - barber_id: ForeignKey → Barber, not null
++
++   - status: CharField(20), choices=['COMPLETED','VOIDED'], not null
++
++   - discount: DecimalField(max_digits=10, decimal_places=2), default=0.00, >= 0
++
++   - void_reason: TextField, nullable
++
++   - created_at, updated_at: auto timestamps
++
++4. transaction_item.py → Table `transaction_items`
++
++   - id: UUIDField, primary_key=True
++
++   - transaction_id: ForeignKey → Transaction, not null
++
++   - item_id: ForeignKey → Item, not null
++
++   - barber_id: ForeignKey → Barber, not null
++
++   - quantity: IntegerField, not null, > 0
++
++   - price_at_sale: DecimalField(max_digits=10, decimal_places=2), not null, >= 0  ← immutable snapshot
++
++   - commission_rate: DecimalField(max_digits=5, decimal_places=4), not null  ← immutable snapshot
++
++   - created_at: auto timestamp (no updated_at, this table is append-only)
++
++---
++
++INDEXES (add via Meta class):
++
++- transaction_items: composite index on (barber_id, created_at)
++
++- transactions: index on (status)
++
++---
++
++CONSTRAINTS (use CheckConstraint in Meta):
++
++- items.price >= 0
++
++- items.stock >= 0
++
++- items.commission_rate >= 0
++
++- transactions.discount >= 0
++
++- transaction_items.quantity > 0
++
++- transaction_items.price_at_sale >= 0
++
++---
++
++Meta class for all models:
++
++- db_table must match exact table names: 'barbers', 'items', 'transactions', 'transaction_items'
++
++- Use app_label = 'infrastructure' or configure accordingly
++
++---
++
++After creating models:
++
++1. Run `python manage.py makemigrations`
++
++2. Run `python manage.py migrate`
++
++3. Run this verification query via Django shell:
++
++
++
++Output must show ✓ EXISTS for all 4 tables. Do not proceed until verification passes.
++
++---
++
++DO NOT implement:
++
++- Views, URLs, serializers
++
++- Use cases or repositories
++
++- Any business logic
++
++- Admin registration (optional, skip for now)
++
++ONLY models + migrations + verification.
+
+# 2026-05-04 18:07:24.480995
++y
+
+# 2026-05-04 18:07:43.390369
++/run python manage.py makemigrations infrastructure
+
+# 2026-05-04 18:07:43.390694
++/run python manage.py makemigrations infrastructure
+
+# 2026-05-04 18:07:44.717425
++/run python manage.py migrate
+
+# 2026-05-04 18:07:44.717891
++/run python manage.py migrate
+
+# 2026-05-04 18:07:57.505454
++y
+
+# 2026-05-04 18:08:02.757927
++/run python manage.py shell -c "
+
+# 2026-05-04 18:08:02.758306
++/run python manage.py shell -c "
+
+# 2026-05-04 18:08:03.875067
++/run from django.db import connection
+
+# 2026-05-04 18:08:03.875534
++/run from django.db import connection
+
+# 2026-05-04 18:08:04.963311
++/run tables = connection.introspection.table_names()
+
+# 2026-05-04 18:08:04.964048
++/run tables = connection.introspection.table_names()
+
+# 2026-05-04 18:08:06.186816
++/run expected = ['barbers','items','transactions','transaction_items']
+
+# 2026-05-04 18:08:06.186984
++/run expected = ['barbers','items','transactions','transaction_items']
+
+# 2026-05-04 18:08:07.476848
++/run for t in expected:
+
+# 2026-05-04 18:08:07.477234
++/run for t in expected:
+
+# 2026-05-04 18:08:08.751250
++/run print(f'{\"✓\" if t in tables else \"✗\"} EXISTS {t}')
+
+# 2026-05-04 18:08:08.751760
++/run print(f'{\"✓\" if t in tables else \"✗\"} EXISTS {t}')
+
+# 2026-05-04 18:08:09.827649
++/run "
+
+# 2026-05-04 18:08:09.828082
++/run "
+
+# 2026-05-04 18:08:17.004833
++y
+
+# 2026-05-04 18:09:48.137979
++!pwd
+
+# 2026-05-04 18:09:53.842016
++y
+
+# 2026-05-04 18:49:00.145627
++/add backend/src/infrastructure/database/models/item.py backend/src/infrastructure/database/models/barber.py backend/src/infrastructure/database/models/transaction.py
+
+# 2026-05-04 18:49:23.681491
++/map-refresh
+
+# 2026-05-04 18:50:16.806179
++/add backend/src/infrastructure/database/models/item.py backend/src/infrastructure/database/models/barber.py backend/src/infrastructure/database/models/transaction.py
+
+# 2026-05-04 18:50:24.054037
++/map-refresh
+
+# 2026-05-04 18:54:38.623715
++/map
+
+# 2026-05-04 18:54:41.413755
++/map-refresh
+
+# 2026-05-04 18:55:22.793691
++/maps-refresh
+
+# 2026-05-04 18:55:29.128685
++/map-refresh
+
+# 2026-05-04 18:55:59.362827
++/map
+
+# 2026-05-04 18:58:13.341323
++/map-refresh
+
+# 2026-05-04 18:58:18.630966
++/map
+
+# 2026-05-04 18:59:51.770969
++/map-refresh
+
+# 2026-05-04 18:59:56.872743
++/map
+
+# 2026-05-04 19:01:29.065996
++/add backend/src/infrastructure/database/models/item.py backend/src/infrastructure/database/models/barber.py backend/src/infrastructure/database/models/transaction.py
+
+# 2026-05-04 19:01:35.882268
++/map
+
+# 2026-05-04 19:04:44.344208
++/ls
+
+# 2026-05-04 19:05:14.998220
++/chat-mode architect
+
+# 2026-05-04 19:08:32.845593
++You are implementing Repository Interfaces for a Django DDD modular monolith barbershop POS system.
++
++This is STEP 3: Repository Interfaces only. No implementations, no use cases, no views.
++
++---
++
++CONTEXT:
++- Architecture: Domain-Driven Design modular monolith
++- These are ABSTRACT INTERFACES (contracts) that live in the domain layer
++- Concrete implementations come later in infrastructure/database/repositories/
++- Use cases will depend ONLY on these interfaces, never on Django ORM directly
++
++---
++
++FILES TO CREATE:
++
++1. src/modules/catalog/repositories/item_repository.py
++2. src/modules/sales/repositories/transaction_repository.py
++3. src/modules/staff/repositories/barber_repository.py
++4. src/modules/sales/repositories/__init__.py
++5. src/modules/catalog/repositories/__init__.py
++6. src/modules/staff/repositories/__init__.py
++
++---
++
++REQUIREMENTS:
++
++### 1. src/modules/catalog/repositories/item_repository.py
++
++```python
++from abc import ABC, abstractmethod
++from typing import List
++from uuid import UUID
++
++class AbstractItemRepository(ABC):
++
++    @abstractmethod
++    def get_by_ids_for_update(self, item_ids: List[UUID]) -> List:
++        """
++        Fetch items WHERE id IN (item_ids) WITH pessimistic lock (SELECT FOR UPDATE).
++        Must be called inside an active DB transaction.
++        Returns list of item domain objects (or ORM models).
++        """
++        pass
++
++    @abstractmethod
++    def get_by_id(self, item_id: UUID):
++        """
++        Fetch single item by id. No lock.
++        Raises ItemNotFound if not exists.
++        """
++        pass
++
++    @abstractmethod
++    def save(self, item) -> None:
++        """
++        Persist changes to an item (e.g. after stock deduction).
++        """
++        pass
++
++    @abstractmethod
++    def bulk_save(self, items: List) -> None:
++        """
++        Persist multiple items at once (used after stock deduction in checkout).
++        """
++        pass
++```
++
++### 2. src/modules/sales/repositories/transaction_repository.py
++
++```python
++from abc import ABC, abstractmethod
++from uuid import UUID
++
++class AbstractTransactionRepository(ABC):
++
++    @abstractmethod
++    def get_by_local_id(self, local_id: str):
++        """
++        Idempotency check: find existing transaction by local_id.
++        Returns transaction or None if not found.
++        """
++        pass
++
++    @abstractmethod
++    def get_by_id(self, transaction_id: UUID):
++        """
++        Fetch transaction by server-side UUID.
++        Raises TransactionNotFound if not exists.
++        """
++        pass
++
++    @abstractmethod
++    def save(self, transaction) -> None:
++        """
++        Persist a new transaction (INSERT).
++        """
++        pass
++
++    @abstractmethod
++    def save_items(self, transaction_items: list) -> None:
++        """
++        Bulk insert transaction_items (immutable snapshot rows).
++        Use bulk_create for performance.
++        """
++        pass
++
++    @abstractmethod
++    def update_status(self, transaction_id: UUID, status: str, void_reason: str = None) -> None:
++        """
++        Update transaction status to VOIDED.
++        Only valid transition: COMPLETED → VOIDED.
++        """
++        pass
++```
++
++### 3. src/modules/staff/repositories/barber_repository.py
++
++```python
++from abc import ABC, abstractmethod
++from uuid import UUID
++from typing import List
++
++class AbstractBarberRepository(ABC):
++
++    @abstractmethod
++    def get_by_id(self, barber_id: UUID):
++        """
++        Fetch barber by id.
++        Raises BarberNotFound if not exists.
++        """
++        pass
++
++    @abstractmethod
++    def get_all(self) -> List:
++        """
++        Return all active barbers.
++        """
++        pass
++```
++
++---
++
++CUSTOM EXCEPTIONS TO CREATE:
++
++Create src/modules/sales/repositories/exceptions.py:
++- TransactionNotFound(Exception)
++- CannotVoidTransaction(Exception)  ← raised when trying to void a non-COMPLETED transaction
++
++Create src/modules/catalog/repositories/exceptions.py:
++- ItemNotFound(Exception)
++- OutOfStockError(Exception)  ← raised when stock < requested quantity
++
++Create src/modules/staff/repositories/exceptions.py:
++- BarberNotFound(Exception)
++
++---
++
++VERIFICATION:
++After creating all files, run:
++
++```python
++python manage.py shell -c "
++from modules.catalog.repositories.item_repository import AbstractItemRepository
++from modules.sales.repositories.transaction_repository import AbstractTransactionRepository
++from modules.staff.repositories.barber_repository import AbstractBarberRepository
++from modules.sales.repositories.exceptions import TransactionNotFound, CannotVoidTransaction
++from modules.catalog.repositories.exceptions import ItemNotFound, OutOfStockError
++from modules.staff.repositories.exceptions import BarberNotFound
++import inspect
++
++repos = [AbstractItemRepository, AbstractTransactionRepository, AbstractBarberRepository]
++for r in repos:
++    methods = [m for m in dir(r) if not m.startswith('_')]
++    print(f'✓ {r.__name__}: {methods}')
++
++print('✓ All exceptions importable')
++"
++```
++
++All classes must import without error.
++
++---
++
++DO NOT implement:
++- Any Django ORM queries
++- Any business logic
++- Views, URLs, serializers
++- Concrete repository classes (those go in infrastructure/database/repositories/)
++
++ONLY abstract interfaces + custom exceptions.
+
+# 2026-05-04 19:08:38.237900
++y
+
+# 2026-05-04 19:13:15.759533
++n
+
+# 2026-05-04 19:14:42.161176
++ls
+
+# 2026-05-04 19:14:53.012627
++/map
+
+# 2026-05-04 19:15:39.114469
++/add src/infrastructure/database/models/item.py src/infrastructure/database/models/barber.py src/infrastructure/database/models/transaction.py
+
+# 2026-05-04 19:15:49.239050
++n
+
+# 2026-05-04 19:15:55.084924
++!pwd
+
+# 2026-05-04 19:16:04.874986
++n
+
+# 2026-05-04 19:18:03.005154
++!pwd
+
+# 2026-05-04 19:18:09.594792
++y
+
+# 2026-05-04 19:18:14.263519
++!cd backend
+
+# 2026-05-04 19:18:17.466181
++y
+
+# 2026-05-04 19:18:21.423612
++!pwd
+
+# 2026-05-04 19:29:26.076185
++n
+
+# 2026-05-04 19:29:28.280824
++/map
+
+# 2026-05-04 19:29:30.780442
++ls
+
+# 2026-05-04 19:29:42.740722
++n
+
+# 2026-05-04 19:29:56.288710
++!ls
+
+# 2026-05-04 19:30:40.887653
++n
+
+# 2026-05-04 19:30:44.005247
++/ls
+
+# 2026-05-04 19:30:53.630061
++/add src/infrastructure/database/models/item.py src/infrastructure/database/models/barber.py src/infrastructure/database/models/transaction.py
+
+# 2026-05-04 19:30:56.372972
++n
+
+# 2026-05-04 19:31:39.235159
++/add backend/src/infrastructure/database/models/item.py backend/src/infrastructure/database/models/barber.py backend/src/infrastructure/database/models/transaction.py
+
+# 2026-05-04 19:31:42.420829
++/ls
+
+# 2026-05-04 19:32:05.946830
++You are implementing Repository Interfaces for a Django DDD modular monolith barbershop POS system.
++
++This is STEP 3: Repository Interfaces only. No implementations, no use cases, no views.
++
++CONTEXT:
++
++Architecture: Domain-Driven Design modular monolith
++
++These are ABSTRACT INTERFACES (contracts) that live in the domain layer
++
++Concrete implementations come later in backend/src/infrastructure/database/repositories/
++
++Use cases will depend ONLY on these interfaces, never on Django ORM directly
++
++FILES TO CREATE:
++
++backend/src/modules/catalog/repositories/item_repository.py
++
++backend/src/modules/sales/repositories/transaction_repository.py
++
++backend/src/modules/staff/repositories/barber_repository.py
++
++backend/src/modules/sales/repositories/__init__.py
++
++backend/src/modules/catalog/repositories/__init__.py
++
++backend/src/modules/staff/repositories/__init__.py
++
++REQUIREMENTS:
++
++1. backend/src/modules/catalog/repositories/item_repository.py
++Python
++from abc import ABC, abstractmethod
++from typing import List
++from uuid import UUID
++
++class AbstractItemRepository(ABC):
++
++    @abstractmethod
++    def get_by_ids_for_update(self, item_ids: List[UUID]) -> List:
++        """
++        Fetch items WHERE id IN (item_ids) WITH pessimistic lock (SELECT FOR UPDATE).
++        Must be called inside an active DB transaction.
++        Returns list of item domain objects (or ORM models).
++        """
++        pass
++
++    @abstractmethod
++    def get_by_id(self, item_id: UUID):
++        """
++        Fetch single item by id. No lock.
++        Raises ItemNotFound if not exists.
++        """
++        pass
++
++    @abstractmethod
++    def save(self, item) -> None:
++        """
++        Persist changes to an item (e.g. after stock deduction).
++        """
++        pass
++
++    @abstractmethod
++    def bulk_save(self, items: List) -> None:
++        """
++        Persist multiple items at once (used after stock deduction in checkout).
++        """
++        pass
++2. backend/src/modules/sales/repositories/transaction_repository.py
++Python
++from abc import ABC, abstractmethod
++from uuid import UUID
++
++class AbstractTransactionRepository(ABC):
++
++    @abstractmethod
++    def get_by_local_id(self, local_id: str):
++        """
++        Idempotency check: find existing transaction by local_id.
++        Returns transaction or None if not found.
++        """
++        pass
++
++    @abstractmethod
++    def get_by_id(self, transaction_id: UUID):
++        """
++        Fetch transaction by server-side UUID.
++        Raises TransactionNotFound if not exists.
++        """
++        pass
++
++    @abstractmethod
++    def save(self, transaction) -> None:
++        """
++        Persist a new transaction (INSERT).
++        """
++        pass
++
++    @abstractmethod
++    def save_items(self, transaction_items: list) -> None:
++        """
++        Bulk insert transaction_items (immutable snapshot rows).
++        Use bulk_create for performance.
++        """
++        pass
++
++    @abstractmethod
++    def update_status(self, transaction_id: UUID, status: str, void_reason: str = None) -> None:
++        """
++        Update transaction status to VOIDED.
++        Only valid transition: COMPLETED → VOIDED.
++        """
++        pass
++3. backend/src/modules/staff/repositories/barber_repository.py
++Python
++from abc import ABC, abstractmethod
++from uuid import UUID
++from typing import List
++
++class AbstractBarberRepository(ABC):
++
++    @abstractmethod
++    def get_by_id(self, barber_id: UUID):
++        """
++        Fetch barber by id.
++        Raises BarberNotFound if not exists.
++        """
++        pass
++
++    @abstractmethod
++    def get_all(self) -> List:
++        """
++        Return all active barbers.
++        """
++        pass
++CUSTOM EXCEPTIONS TO CREATE:
++
++Create backend/src/modules/sales/repositories/exceptions.py:
++
++TransactionNotFound(Exception)
++
++CannotVoidTransaction(Exception) (raised when trying to void a non-COMPLETED transaction)
++
++Create backend/src/modules/catalog/repositories/exceptions.py:
++
++ItemNotFound(Exception)
++
++OutOfStockError(Exception) (raised when stock < requested quantity)
++
++Create backend/src/modules/staff/repositories/exceptions.py:
++
++BarberNotFound(Exception)
++
++VERIFICATION:
++After creating all files, run this command from the root project (where backend/manage.py is accessible):
++
++Bash
++python backend/manage.py shell -c "
++from src.modules.catalog.repositories.item_repository import AbstractItemRepository
++from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
++from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
++from src.modules.sales.repositories.exceptions import TransactionNotFound, CannotVoidTransaction
++from src.modules.catalog.repositories.exceptions import ItemNotFound, OutOfStockError
++from src.modules.staff.repositories.exceptions import BarberNotFound
++import inspect
++
++repos = [AbstractItemRepository, AbstractTransactionRepository, AbstractBarberRepository]
++for r in repos:
++    methods = [m for m in dir(r) if not m.startswith('_')]
++    print(f'✓ {r.__name__}: {methods}')
++
++print('✓ All exceptions importable')
++"
++DO NOT implement:
++
++Any Django ORM queries
++
++Any business logic
++
++Views, URLs, serializers
++
++Concrete repository classes
++
++ONLY abstract interfaces + custom exceptions.
+
+# 2026-05-04 19:33:09.558401
++y
+
+# 2026-05-04 19:36:27.559386
++/run python backend/manage.py shell -c "
+
+# 2026-05-04 19:36:27.560414
++/run python backend/manage.py shell -c "
+
+# 2026-05-04 19:36:28.644060
++/run from src.modules.catalog.repositories.item_repository import AbstractItemRepository
+
+# 2026-05-04 19:36:28.644547
++/run from src.modules.catalog.repositories.item_repository import AbstractItemRepository
+
+# 2026-05-04 19:36:29.703535
++/run from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
+
+# 2026-05-04 19:36:29.704090
++/run from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
+
+# 2026-05-04 19:36:30.941459
++/run from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
+
+# 2026-05-04 19:36:30.941978
++/run from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
+
+# 2026-05-04 19:36:32.021767
++/run from src.modules.sales.repositories.exceptions import TransactionNotFound, CannotVoidTransaction
+
+# 2026-05-04 19:36:32.022056
++/run from src.modules.sales.repositories.exceptions import TransactionNotFound, CannotVoidTransaction
+
+# 2026-05-04 19:36:33.195980
++/run from src.modules.catalog.repositories.exceptions import ItemNotFound, OutOfStockError
+
+# 2026-05-04 19:36:33.196717
++/run from src.modules.catalog.repositories.exceptions import ItemNotFound, OutOfStockError
+
+# 2026-05-04 19:36:34.354411
++/run from src.modules.staff.repositories.exceptions import BarberNotFound
+
+# 2026-05-04 19:36:34.354987
++/run from src.modules.staff.repositories.exceptions import BarberNotFound
+
+# 2026-05-04 19:36:35.563819
++/run import inspect
+
+# 2026-05-04 19:36:35.564004
++/run import inspect
+
+# 2026-05-04 19:36:36.774987
++/run repos = [AbstractItemRepository, AbstractTransactionRepository, AbstractBarberRepository]
+
+# 2026-05-04 19:36:36.775482
++/run repos = [AbstractItemRepository, AbstractTransactionRepository, AbstractBarberRepository]
+
+# 2026-05-04 19:36:38.003925
++/run for r in repos:
+
+# 2026-05-04 19:36:38.005934
++/run for r in repos:
+
+# 2026-05-04 19:36:39.377800
++/run methods = [m for m in dir(r) if not m.startswith('_')]
+
+# 2026-05-04 19:36:39.378207
++/run methods = [m for m in dir(r) if not m.startswith('_')]
+
+# 2026-05-04 19:36:40.664818
++/run print(f'✓ {r.__name__}: {methods}')
+
+# 2026-05-04 19:36:40.665187
++/run print(f'✓ {r.__name__}: {methods}')
+
+# 2026-05-04 19:36:41.899371
++/run print('✓ All exceptions importable')
+
+# 2026-05-04 19:36:41.899939
++/run print('✓ All exceptions importable')
+
+# 2026-05-04 19:36:43.190818
++/run "
+
+# 2026-05-04 19:36:43.191154
++/run "
+
+# 2026-05-04 19:36:55.917828
++y
+
+# 2026-05-04 19:37:11.326660
++apakah ada error ?
+
+# 2026-05-04 19:37:40.880593
++n
+
+# 2026-05-04 19:57:16.811649
++/add backend/config/settings.py
++/add backend/src/infrastructure/database/models/transaction_item.py
++/add backend/src/infrastructure/database/migrations/0001_initial.py
+
+# 2026-05-04 19:57:20.280275
++n
+
+# 2026-05-04 19:57:49.282276
++/add  backend/config/settings.py
+
+# 2026-05-04 19:58:06.942912
++!clear
+
+# 2026-05-04 19:58:14.684747
++y
+
+# 2026-05-04 19:58:29.793525
++/add backend/config/settings.py
+
+# 2026-05-04 19:58:39.639611
++/ls
+
+# 2026-05-04 19:59:00.390898
++/drop  backend/config/settings.py
++  backend/src/infrastructure/database/migrations/0001_initial.py
++  backend/src/infrastructure/database/models/barber.py
++  backend/src/infrastructure/database/models/item.py
++  backend/src/infrastructure/database/models/transaction.py
++  backend/src/infrastructure/database/models/transaction_item.py
++  backend/src/modules/catalog/repositories/__init__.py
++  backend/src/modules/catalog/repositories/exceptions.py
++  backend/src/modules/catalog/repositories/item_repository.py
++  backend/src/modules/sales/repositories/__init__.py
++  backend/src/modules/sales/repositories/exceptions.py
++  backend/src/modules/sales/repositories/transaction_repository.py
++  backend/src/modules/staff/repositories/__init__.py
++  backend/src/modules/staff/repositories/barber_repository.py
++  backend/src/modules/staff/repositories/exceptions.py
+
+# 2026-05-04 19:59:03.445219
++/ls
+
+# 2026-05-04 19:59:14.001230
++/add backend/config/settings.py
++/add backend/src/infrastructure/database/models/transaction_item.py
++/add backend/src/infrastructure/database/migrations/0001_initial.py
+
+# 2026-05-04 19:59:19.069586
++n
+
+# 2026-05-04 19:59:33.426849
++/ls
+
+# 2026-05-04 20:00:45.279825
++/add backend/config/settings.py
++/add backend/src/infrastructure/database/models/transaction_item.py
++/add backend/src/infrastructure/database/migrations/0001_initial.py
+
+# 2026-05-04 20:00:47.275207
++n
+
+# 2026-05-04 20:00:51.953483
++/ls
+
+# 2026-05-04 20:30:17.607929
++You have two tasks. Execute them in order.
++
++---
++
++TASK 1: Migrate from SQLite to PostgreSQL + fix settings
++
++1. Update backend/config/settings.py:
++
++   - Replace the SQLite DATABASES config with PostgreSQL config that reads from environment variables using python-dotenv
++
++   - Add this at the top of settings.py (after Path import):
++
++from dotenv import load_dotenv
++
++ import os
++
++ load_dotenv(BASE_DIR / '.env')
++
++- Replace DATABASES with:
++```python
++
++     DATABASES = {
++
++         'default': {
++
++             'ENGINE': 'django.db.backends.postgresql',
++
++             'NAME': os.getenv('DB_NAME', 'barberi_pos'),
++
++             'USER': os.getenv('DB_USER', 'zaimrofii'),
++
++             'PASSWORD': os.getenv('DB_PASSWORD', ''),
++
++             'HOST': os.getenv('DB_HOST', 'localhost'),
++
++             'PORT': os.getenv('DB_PORT', '5432'),
++
++         }
++
++     }
++
++```
++
++---
++
++TASK 2: Fix trailing space in index name
++
++In these two files, fix the index name that has a trailing space:
++
++File: backend/src/infrastructure/database/models/transaction_item.py
++
++Change:
++
++  name='tx_items_barber_created_idx '
++
++To:
++
++  name='tx_items_barber_created_idx'
++
++File: backend/src/infrastructure/database/migrations/0001_initial.py
++
++Change:
++
++  name='tx_items_barber_created_idx '
++
++To:
++
++  name='tx_items_barber_created_idx'
++
++---
++
++After both tasks are done, do NOT run any commands. Just confirm which files were modified.
+
+# 2026-05-05 12:00:27.160827
++/map
+
+# 2026-05-05 12:00:33.876522
++/ls
+
+# 2026-05-05 12:01:04.197025
++Create the following files exactly as specified. Do not modify any existing files.
++
++---
++
++FILE: backend/src/modules/inventory/repositories/__init__.py
++(empty file)
++
++---
++
++FILE: backend/src/modules/inventory/repositories/exceptions.py
++class StockNotFound(Exception):
++    pass
++
++class InsufficientStockError(Exception):
++    pass
++
++---
++
++FILE: backend/src/modules/inventory/repositories/stock_repository.py
++from abc import ABC, abstractmethod
++from typing import List
++from uuid import UUID
++
++
++class AbstractStockRepository(ABC):
++
++    @abstractmethod
++    def get_products_for_update(self, item_ids: List[UUID]) -> List:
++        """
++        Fetch PRODUCT-type items only WHERE id IN (item_ids)
++        WITH pessimistic lock (SELECT FOR UPDATE).
++        Must be called inside an active DB transaction.
++        Raises StockNotFound if any item_id does not exist.
++        """
++        pass
++
++    @abstractmethod
++    def bulk_deduct(self, deductions: List[dict]) -> None:
++        """
++        Deduct stock for multiple items atomically.
++        deductions: [{"item_id": UUID, "quantity": int}, ...]
++        Must be called inside an active DB transaction (already locked).
++        """
++        pass
++
++    @abstractmethod
++    def bulk_restore(self, restorations: List[dict]) -> None:
++        """
++        Restore stock for multiple items (used on void).
++        restorations: [{"item_id": UUID, "quantity": int}, ...]
++        Must be called inside an active DB transaction WITH pessimistic lock.
++        """
++        pass
++
++---
++
++FILE: backend/src/shared/exceptions.py
++class DomainException(Exception):
++    """Base class for all domain exceptions."""
++    pass
++
++class OutOfStockError(DomainException):
++    pass
++
++class DuplicateLocalIdError(DomainException):
++    pass
++
++class CannotVoidError(DomainException):
++    pass
++
++class ItemNotFoundError(DomainException):
++    pass
++
++class BarberNotFoundError(DomainException):
++    pass
++
++class TransactionNotFoundError(DomainException):
++    pass
++
++---
++
++FILE: backend/src/shared/utils/__init__.py
++(empty file)
++
++---
++
++FILE: backend/src/shared/utils/pricing.py
++from decimal import Decimal, ROUND_HALF_UP
++from typing import List
++
++
++def calculate_total(items: List[dict], discount: Decimal) -> Decimal:
++    """
++    Single authoritative pricing formula.
++
++    items: [{"price_at_sale": Decimal, "quantity": int}, ...]
++    discount: Decimal
++
++    Returns total rounded to 2 decimal places.
++    Never use float — always Decimal.
++    """
++    subtotal = sum(
++        Decimal(str(item["price_at_sale"])) * item["quantity"]
++        for item in items
++    )
++    total = subtotal - Decimal(str(discount))
++    return total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+# 2026-05-05 12:11:59.721899
++y
+
+# 2026-05-05 12:12:40.916903
++/run ls -la backend/src/modules/inventory/repositories/ backend/src/shared/ backend/src/shared/utils/
+
+# 2026-05-05 12:12:40.917009
++/run ls -la backend/src/modules/inventory/repositories/ backend/src/shared/ backend/src/shared/utils/
+
+# 2026-05-05 12:12:52.738078
++y
+
+# 2026-05-05 13:15:15.414257
++/ls
+
+# 2026-05-05 13:15:30.557309
++/drop backend/src/modules/inventory/repositories/__init__.py         backend/src/modules/inventory/repositories/exceptions.py
++backend/src/modules/inventory/repositories/stock_repository.py backend/src/shared/exceptions.py
++backend/src/shared/utils/__init__.py                           backend/src/shared/utils/pricing.py
+
+# 2026-05-05 13:15:33.543075
++/ls
+
+# 2026-05-05 13:16:22.069565
++/add backend\src\modules\catalog\repositories\item_repository.py
+
+# 2026-05-05 13:16:29.385755
++n
+
+# 2026-05-05 13:16:51.745459
++/add backend/src/modules/catalog/repositories/item_repository.py
+
+# 2026-05-05 13:17:02.375320
++/ls
+
+# 2026-05-05 13:17:15.910407
++hapus fungsi ini : 
+
+# 2026-05-05 13:17:38.975681
++/undo
+
+# 2026-05-05 13:19:03.803823
++hapus interface ini dari item_repository :  @abstractmethod
++    def bulk_save(self, items: List) -> None:
++        """
++        Persist multiple items at once (used after stock deduction in checkout).
++        """
++        pass
+
+# 2026-05-05 13:23:26.012769
++/drop backend/src/modules/catalog/repositories/item_repository.py
+
+# 2026-05-05 13:23:36.827375
++Create the following new file exactly as specified. Do not modify any existing files.
++
++FILE: backend/src/modules/sales/use_cases/checkout.py
++
++from decimal import Decimal
++from uuid import UUID
++from django.db import transaction as db_transaction
++
++from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
++from src.modules.inventory.repositories.stock_repository import AbstractStockRepository
++from src.modules.catalog.repositories.item_repository import AbstractItemRepository
++from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
++from src.shared.utils.pricing import calculate_total
++from src.shared.exceptions import (
++    DuplicateLocalIdError,
++    OutOfStockError,
++    ItemNotFoundError,
++    BarberNotFoundError,
++)
++
++
++class CheckoutUseCase:
++    def __init__(
++        self,
++        transaction_repo: AbstractTransactionRepository,
++        stock_repo: AbstractStockRepository,
++        item_repo: AbstractItemRepository,
++        barber_repo: AbstractBarberRepository,
++    ):
++        self.transaction_repo = transaction_repo
++        self.stock_repo = stock_repo
++        self.item_repo = item_repo
++        self.barber_repo = barber_repo
++
++    def execute(self, local_id: str, barber_id: UUID, discount: Decimal, items: list) -> dict:
++        """
++        Execute checkout flow. Returns {"transaction_id": UUID, "status": str, "total": Decimal}.
++
++        items: [{"item_id": UUID, "quantity": int}, ...]
++
++        Raises:
++            DuplicateLocalIdError  — if local_id already exists (idempotency)
++            BarberNotFoundError    — if barber_id does not exist
++            ItemNotFoundError      — if any item_id does not exist
++            OutOfStockError        — if any PRODUCT item has insufficient stock
++        """
++
++        # STEP 1 — IDEMPOTENCY CHECK (outside DB transaction, fast path)
++        existing = self.transaction_repo.get_by_local_id(local_id)
++        if existing is not None:
++            raise DuplicateLocalIdError(existing.id)
++
++        # STEP 2 — VALIDATE BARBER EXISTS
++        barber = self.barber_repo.get_by_id(barber_id)
++        if barber is None:
++            raise BarberNotFoundError(f"Barber {barber_id} not found")
++
++        item_ids = [UUID(str(i["item_id"])) for i in items]
++        quantity_map = {UUID(str(i["item_id"])): i["quantity"] for i in items}
++
++        with db_transaction.atomic():
++
++            # STEP 3 — PESSIMISTIC LOCK: fetch all items with SELECT FOR UPDATE
++            locked_items = self.item_repo.get_by_ids_for_update(item_ids)
++
++            if len(locked_items) != len(item_ids):
++                raise ItemNotFoundError("One or more items not found")
++
++            # STEP 4 — STOCK VERIFICATION (PRODUCT type only)
++            for item in locked_items:
++                if item.type == "PRODUCT":
++                    qty = quantity_map[item.id]
++                    if item.stock < qty:
++                        raise OutOfStockError(
++                            f"Insufficient stock for item {item.id}: "
++                            f"requested {qty}, available {item.stock}"
++                        )
++
++            # STEP 5 — BUILD IMMUTABLE SNAPSHOT + CALCULATE TOTAL
++            snapshot_items = []
++            for item in locked_items:
++                qty = quantity_map[item.id]
++                snapshot_items.append({
++                    "item_id": item.id,
++                    "barber_id": barber_id,
++                    "quantity": qty,
++                    "price_at_sale": item.price,       # snapshot harga saat ini
++                    "commission_rate": item.commission_rate,  # snapshot komisi saat ini
++                })
++
++            total = calculate_total(
++                [{"price_at_sale": s["price_at_sale"], "quantity": s["quantity"]} for s in snapshot_items],
++                discount,
++            )
++
++            # STEP 6 — STOCK DEDUCTION (only PRODUCT items)
++            deductions = [
++                {"item_id": s["item_id"], "quantity": s["quantity"]}
++                for s in snapshot_items
++                if any(item.id == s["item_id"] and item.type == "PRODUCT" for item in locked_items)
++            ]
++            if deductions:
++                self.stock_repo.bulk_deduct(deductions)
++
++            # STEP 7 — PERSIST TRANSACTION + TRANSACTION ITEMS
++            transaction = self.transaction_repo.save({
++                "local_id": local_id,
++                "barber_id": barber_id,
++                "status": "COMPLETED",
++                "discount": discount,
++                "void_reason": None,
++            })
++
++            self.transaction_repo.save_items(
++                transaction_id=transaction.id,
++                items=snapshot_items,
++            )
++
++            # STEP 8 — COMMIT happens automatically at end of atomic() block
++
++        # STEP 9 — DOMAIN EVENT (placeholder, to be implemented later)
++        # event_bus.emit(TransactionCompletedEvent(transaction.id, total, barber_id, snapshot_items))
++
++        # STEP 10 — RETURN
++        return {
++            "transaction_id": transaction.id,
++            "status": "COMPLETED",
++            "total": total,
++        }
+
+# 2026-05-05 13:27:29.890261
++y
+
+# 2026-05-05 16:16:32.146114
++/ls
+
+# 2026-05-05 16:16:34.756581
++/add backend/src/infrastructure/database/repositories/__init__.py
++/add backend/src/modules/catalog/repositories/item_repository.py
++/add backend/src/modules/inventory/repositories/stock_repository.py
++/add backend/src/modules/sales/repositories/transaction_repository.py
++/add backend/src/modules/staff/repositories/barber_repository.py
++/add backend/src/infrastructure/database/models/__init__.py
++/add backend/src/modules/sales/use_cases/checkout.py
+
+# 2026-05-05 16:16:39.535349
++n
+
+# 2026-05-05 16:17:03.915559
++/ls
+
+# 2026-05-05 16:17:45.842577
++/add backend/src/infrastructure/database/models/__init__.py
+
+# 2026-05-05 16:18:18.407622
++You are implementing Concrete Repository classes for a Django DDD barbershop POS.
++
++CURRENT STATE:
++- Abstract interfaces exist in src/modules/*/repositories/
++- Django ORM models exist in src/infrastructure/database/models/
++- CheckoutUseCase exists but has a bug in save_items() call signature (fix this too)
++
++---
++
++FILES TO CREATE:
++1. src/infrastructure/database/repositories/__init__.py
++2. src/infrastructure/database/repositories/item_repository.py
++3. src/infrastructure/database/repositories/transaction_repository.py
++4. src/infrastructure/database/repositories/barber_repository.py
++5. src/infrastructure/database/repositories/stock_repository.py
++
++FILE TO FIX:
++6. src/modules/sales/use_cases/checkout.py  ← fix save_items() call
++
++---
++
++IMPLEMENTATION REQUIREMENTS:
++
++### 1. src/infrastructure/database/repositories/item_repository.py
++
++```python
++from typing import List
++from uuid import UUID
++from django.core.exceptions import ObjectDoesNotExist
++
++from src.modules.catalog.repositories.item_repository import AbstractItemRepository
++from src.modules.catalog.repositories.exceptions import ItemNotFound
++from src.infrastructure.database.models import Item
++
++
++class DjangoItemRepository(AbstractItemRepository):
++
++    def get_by_ids_for_update(self, item_ids: List[UUID]) -> List[Item]:
++        """
++        SELECT * FROM items WHERE id IN (...) FOR UPDATE
++        Must be called inside atomic() block.
++        """
++        items = list(
++            Item.objects.select_for_update().filter(id__in=item_ids)
++        )
++        return items
++
++    def get_by_id(self, item_id: UUID) -> Item:
++        try:
++            return Item.objects.get(id=item_id)
++        except Item.DoesNotExist:
++            raise ItemNotFound(f"Item {item_id} not found")
++
++    def save(self, item: Item) -> None:
++        item.save()
++
++    def bulk_save(self, items: List[Item]) -> None:
++        Item.objects.bulk_update(items, fields=['stock', 'updated_at'])
++```
++
++### 2. src/infrastructure/database/repositories/stock_repository.py
++
++```python
++from typing import List
++from uuid import UUID
++
++from src.modules.inventory.repositories.stock_repository import AbstractStockRepository
++from src.modules.inventory.repositories.exceptions import InsufficientStockError, StockNotFound
++from src.infrastructure.database.models import Item
++
++
++class DjangoStockRepository(AbstractStockRepository):
++
++    def get_products_for_update(self, item_ids: List[UUID]) -> List[Item]:
++        """
++        Fetch PRODUCT-type items only WITH SELECT FOR UPDATE.
++        Must be inside atomic() block.
++        """
++        items = list(
++            Item.objects.select_for_update()
++            .filter(id__in=item_ids, type='PRODUCT')
++        )
++        found_ids = {item.id for item in items}
++        missing = set(item_ids) - found_ids
++        if missing:
++            raise StockNotFound(f"Products not found: {missing}")
++        return items
++
++    def bulk_deduct(self, deductions: List[dict]) -> None:
++        """
++        deductions: [{"item_id": UUID, "quantity": int}, ...]
++        Items must already be locked via get_products_for_update or get_by_ids_for_update.
++        """
++        item_ids = [d["item_id"] for d in deductions]
++        items = {item.id: item for item in Item.objects.filter(id__in=item_ids)}
++        
++        for deduction in deductions:
++            item = items.get(deduction["item_id"])
++            if item is None:
++                raise StockNotFound(f"Item {deduction['item_id']} not found")
++            if item.stock < deduction["quantity"]:
++                raise InsufficientStockError(
++                    f"Insufficient stock for {item.id}: "
++                    f"have {item.stock}, need {deduction['quantity']}"
++                )
++            item.stock -= deduction["quantity"]
++        
++        Item.objects.bulk_update(list(items.values()), fields=['stock'])
++
++    def bulk_restore(self, restorations: List[dict]) -> None:
++        """
++        restorations: [{"item_id": UUID, "quantity": int}, ...]
++        Must be called inside atomic() with SELECT FOR UPDATE already acquired.
++        """
++        item_ids = [r["item_id"] for r in restorations]
++        items = {item.id: item for item in Item.objects.select_for_update().filter(id__in=item_ids)}
++        
++        for restoration in restorations:
++            item = items.get(restoration["item_id"])
++            if item is None:
++                raise StockNotFound(f"Item {restoration['item_id']} not found")
++            item.stock += restoration["quantity"]
++        
++        Item.objects.bulk_update(list(items.values()), fields=['stock'])
++```
++
++### 3. src/infrastructure/database/repositories/transaction_repository.py
++
++```python
++from uuid import UUID
++from typing import Optional
++
++from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
++from src.modules.sales.repositories.exceptions import TransactionNotFound, CannotVoidTransaction
++from src.infrastructure.database.models import Transaction, TransactionItem
++
++
++class DjangoTransactionRepository(AbstractTransactionRepository):
++
++    def get_by_local_id(self, local_id: str) -> Optional[Transaction]:
++        try:
++            return Transaction.objects.get(local_id=local_id)
++        except Transaction.DoesNotExist:
++            return None
++
++    def get_by_id(self, transaction_id: UUID) -> Transaction:
++        try:
++            return Transaction.objects.get(id=transaction_id)
++        except Transaction.DoesNotExist:
++            raise TransactionNotFound(f"Transaction {transaction_id} not found")
++
++    def save(self, data: dict) -> Transaction:
++        """
++        data: {
++            "local_id": str,
++            "barber_id": UUID,
++            "status": str,
++            "discount": Decimal,
++            "void_reason": None
++        }
++        Returns the created Transaction ORM object.
++        """
++        transaction = Transaction.objects.create(
++            local_id=data["local_id"],
++            barber_id=data["barber_id"],
++            status=data["status"],
++            discount=data["discount"],
++            void_reason=data.get("void_reason"),
++        )
++        return transaction
++
++    def save_items(self, transaction_id: UUID, items: list) -> None:
++        """
++        Bulk insert transaction_items (immutable snapshot).
++        items: [
++            {
++                "item_id": UUID,
++                "barber_id": UUID,
++                "quantity": int,
++                "price_at_sale": Decimal,
++                "commission_rate": Decimal,
++            },
++            ...
++        ]
++        """
++        transaction_items = [
++            TransactionItem(
++                transaction_id=transaction_id,
++                item_id=item["item_id"],
++                barber_id=item["barber_id"],
++                quantity=item["quantity"],
++                price_at_sale=item["price_at_sale"],
++                commission_rate=item["commission_rate"],
++            )
++            for item in items
++        ]
++        TransactionItem.objects.bulk_create(transaction_items)
++
++    def update_status(self, transaction_id: UUID, status: str, void_reason: str = None) -> None:
++        """
++        Only valid transition: COMPLETED → VOIDED.
++        Raises CannotVoidTransaction if already VOIDED.
++        """
++        try:
++            transaction = Transaction.objects.get(id=transaction_id)
++        except Transaction.DoesNotExist:
++            raise TransactionNotFound(f"Transaction {transaction_id} not found")
++        
++        if transaction.status == 'VOIDED':
++            raise CannotVoidTransaction(
++                f"Transaction {transaction_id} is already VOIDED"
++            )
++        if transaction.status != 'COMPLETED':
++            raise CannotVoidTransaction(
++                f"Only COMPLETED transactions can be voided, got: {transaction.status}"
++            )
++        
++        transaction.status = status
++        transaction.void_reason = void_reason
++        transaction.save(update_fields=['status', 'void_reason', 'updated_at'])
++```
++
++### 4. src/infrastructure/database/repositories/barber_repository.py
++
++```python
++from typing import List
++from uuid import UUID
++
++from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
++from src.modules.staff.repositories.exceptions import BarberNotFound
++from src.infrastructure.database.models import Barber
++
++
++class DjangoBarberRepository(AbstractBarberRepository):
++
++    def get_by_id(self, barber_id: UUID) -> Barber:
++        try:
++            return Barber.objects.get(id=barber_id)
++        except Barber.DoesNotExist:
++            raise BarberNotFound(f"Barber {barber_id} not found")
++
++    def get_all(self) -> List[Barber]:
++        return list(Barber.objects.all().order_by('name'))
++```
++
++### 5. src/infrastructure/database/repositories/__init__.py
++
++```python
++from .item_repository import DjangoItemRepository
++from .stock_repository import DjangoStockRepository
++from .transaction_repository import DjangoTransactionRepository
++from .barber_repository import DjangoBarberRepository
++
++__all__ = [
++    'DjangoItemRepository',
++    'DjangoStockRepository',
++    'DjangoTransactionRepository',
++    'DjangoBarberRepository',
++]
++```
++
++---
++
++BUG TO FIX in src/modules/sales/use_cases/checkout.py:
++
++Current buggy call:
++```python
++self.transaction_repo.save_items(
++    transaction_id=transaction.id,
++    items=snapshot_items,
++)
++```
++
++Fix to match the concrete implementation signature:
++```python
++self.transaction_repo.save_items(
++    transaction_id=transaction.id,
++    items=snapshot_items,
++)
++```
++
++Wait — the interface currently has `save_items(self, transaction_items: list)`.
++Update the interface in src/modules/sales/repositories/transaction_repository.py to:
++```python
++@abstractmethod
++def save_items(self, transaction_id: UUID, items: list) -> None:
++    pass
++```
++Add `from uuid import UUID` import if not present.
++
++---
++
++DO NOT implement:
++- Views, URLs, serializers
++- Any new use cases
++- Admin registration
++- Tests (yet)
++
++ONLY the 4 concrete repository files + __init__.py + fix the interface signature mismatch.
++
++---
++
++VERIFICATION after completion:
++Run:
++```python
++python manage.py shell -c "
++from src.infrastructure.database.repositories import (
++    DjangoItemRepository,
++    DjangoStockRepository,
++    DjangoTransactionRepository,
++    DjangoBarberRepository,
++)
++print('✓ DjangoItemRepository importable')
++print('✓ DjangoStockRepository importable')
++print('✓ DjangoTransactionRepository importable')
++print('✓ DjangoBarberRepository importable')
++
++# Verify they implement their abstract interfaces
++from src.modules.catalog.repositories.item_repository import AbstractItemRepository
++from src.modules.inventory.repositories.stock_repository import AbstractStockRepository
++from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
++from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
++
++assert issubclass(DjangoItemRepository, AbstractItemRepository)
++assert issubclass(DjangoStockRepository, AbstractStockRepository)
++assert issubclass(DjangoTransactionRepository, AbstractTransactionRepository)
++assert issubclass(DjangoBarberRepository, AbstractBarberRepository)
++print('✓ All concrete repos implement correct abstract interfaces')
++"
++```
++
++All assertions must pass without error.
+
+# 2026-05-05 16:18:30.405240
++y
+
+# 2026-05-05 16:33:40.206676
++/run python manage.py shell -c "
+
+# 2026-05-05 16:33:40.206777
++/run python manage.py shell -c "
+
+# 2026-05-05 16:33:41.236769
++/run from src.infrastructure.database.repositories import (
+
+# 2026-05-05 16:33:41.237207
++/run from src.infrastructure.database.repositories import (
+
+# 2026-05-05 16:33:42.370032
++/run DjangoItemRepository,
+
+# 2026-05-05 16:33:42.370342
++/run DjangoItemRepository,
+
+# 2026-05-05 16:33:43.609280
++/run DjangoStockRepository,
+
+# 2026-05-05 16:33:43.609607
++/run DjangoStockRepository,
+
+# 2026-05-05 16:33:44.827696
++/run DjangoTransactionRepository,
+
+# 2026-05-05 16:33:44.828000
++/run DjangoTransactionRepository,
+
+# 2026-05-05 16:33:46.072963
++/run DjangoBarberRepository,
+
+# 2026-05-05 16:33:46.073490
++/run DjangoBarberRepository,
+
+# 2026-05-05 16:33:47.430270
++/run )
+
+# 2026-05-05 16:33:47.430848
++/run )
+
+# 2026-05-05 16:33:48.610292
++/run print('✓ DjangoItemRepository importable')
+
+# 2026-05-05 16:33:48.611047
++/run print('✓ DjangoItemRepository importable')
+
+# 2026-05-05 16:33:49.795259
++/run print('✓ DjangoStockRepository importable')
+
+# 2026-05-05 16:33:49.796189
++/run print('✓ DjangoStockRepository importable')
+
+# 2026-05-05 16:33:50.864453
++/run print('✓ DjangoTransactionRepository importable')
+
+# 2026-05-05 16:33:50.865112
++/run print('✓ DjangoTransactionRepository importable')
+
+# 2026-05-05 16:33:51.898775
++/run print('✓ DjangoBarberRepository importable')
+
+# 2026-05-05 16:33:51.899270
++/run print('✓ DjangoBarberRepository importable')
+
+# 2026-05-05 16:33:52.958856
++/run from src.modules.catalog.repositories.item_repository import AbstractItemRepository
+
+# 2026-05-05 16:33:52.959458
++/run from src.modules.catalog.repositories.item_repository import AbstractItemRepository
+
+# 2026-05-05 16:33:54.206985
++/run from src.modules.inventory.repositories.stock_repository import AbstractStockRepository
+
+# 2026-05-05 16:33:54.207670
++/run from src.modules.inventory.repositories.stock_repository import AbstractStockRepository
+
+# 2026-05-05 16:33:55.224860
++/run from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
+
+# 2026-05-05 16:33:55.225234
++/run from src.modules.sales.repositories.transaction_repository import AbstractTransactionRepository
+
+# 2026-05-05 16:33:56.456848
++/run from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
+
+# 2026-05-05 16:33:56.457278
++/run from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
+
+# 2026-05-05 16:33:57.689351
++/run assert issubclass(DjangoItemRepository, AbstractItemRepository)
+
+# 2026-05-05 16:33:57.689660
++/run assert issubclass(DjangoItemRepository, AbstractItemRepository)
+
+# 2026-05-05 16:33:58.874044
++/run assert issubclass(DjangoStockRepository, AbstractStockRepository)
+
+# 2026-05-05 16:33:58.874714
++/run assert issubclass(DjangoStockRepository, AbstractStockRepository)
+
+# 2026-05-05 16:34:00.064321
++/run assert issubclass(DjangoTransactionRepository, AbstractTransactionRepository)
+
+# 2026-05-05 16:34:00.064506
++/run assert issubclass(DjangoTransactionRepository, AbstractTransactionRepository)
+
+# 2026-05-05 16:34:01.360430
++/run assert issubclass(DjangoBarberRepository, AbstractBarberRepository)
+
+# 2026-05-05 16:34:01.360970
++/run assert issubclass(DjangoBarberRepository, AbstractBarberRepository)
+
+# 2026-05-05 16:34:02.520710
++/run print('✓ All concrete repos implement correct abstract interfaces')
+
+# 2026-05-05 16:34:02.520908
++/run print('✓ All concrete repos implement correct abstract interfaces')
+
+# 2026-05-05 16:34:03.688173
++/run "
+
+# 2026-05-05 16:34:03.688383
++/run "
+
+# 2026-05-05 16:34:11.630044
++n
+
+# 2026-05-05 17:36:57.726325
++/drop backend/manage.py
++backend/src/infrastructure/database/models/__init__.py
++backend/src/infrastructure/database/repositories/__init__.py
++backend/src/infrastructure/database/repositories/barber_repository.py
++backend/src/infrastructure/database/repositories/item_repository.py
++backend/src/infrastructure/database/repositories/stock_repository.py
++backend/src/infrastructure/database/repositories/transaction_repository.py
++backend/src/modules/catalog/repositories/item_repository.py
++backend/src/modules/inventory/repositories/stock_repository.py
++backend/src/modules/sales/repositories/transaction_repository.py
++backend/src/modules/sales/use_cases/checkout.py
++backend/src/modules/staff/repositories/barber_repository.py
+
+# 2026-05-05 17:37:00.053790
++/ls
+
+# 2026-05-05 17:49:44.001296
++/add /add backend/config/urls.py backend/src/modules/sales/adapters/__init__.py backend/src/shared/exceptions.py backend/src/infrastructure/database/repositories/__init__.py backend/src/infrastructure/database/models/__init__.py backend/src/modules/sales/use_cases/checkout.py
+
+# 2026-05-05 17:49:46.851466
++n
+
+# 2026-05-05 17:50:51.952795
++/add backend/src/modules/sales/adapters/__init__.py
+
+# 2026-05-05 17:50:57.997700
++n
+
+# 2026-05-05 17:51:43.758610
++
++/add backend/src/modules/sales/adapters/__init__.py
+
+# 2026-05-05 17:51:52.535691
++n
+
+# 2026-05-05 17:52:01.441740
++/add backend/src/modules/sales/adapters/__init__.py
+
+# 2026-05-05 17:52:10.536753
++!clear
+
+# 2026-05-05 17:52:15.215217
++n
+
+# 2026-05-05 17:54:41.581807
++You are implementing the REST API layer for a Django DDD barbershop POS.
++
++CURRENT STATE (already exists, do NOT modify):
++- CheckoutUseCase: src/modules/sales/use_cases/checkout.py
++- All concrete repositories: src/infrastructure/database/repositories/
++- All shared exceptions: src/shared/exceptions.py
++- Architecture spec: 3 endpoints defined
++
++---
++
++FILES TO CREATE:
++1. src/modules/sales/adapters/__init__.py
++2. src/modules/sales/adapters/serializers.py
++3. src/modules/sales/adapters/views.py
++4. src/modules/sales/adapters/urls.py
++5. src/modules/staff/use_cases/__init__.py
++6. src/modules/staff/use_cases/commission_report.py
++
++FILE TO MODIFY:
++7. config/urls.py  ← register API routes
++
++---
++
++REQUIREMENT DETAILS:
++
++### 1. src/modules/sales/adapters/serializers.py
++
++```python
++from rest_framework import serializers
++
++class CheckoutItemSerializer(serializers.Serializer):
++    item_id = serializers.UUIDField()
++    quantity = serializers.IntegerField(min_value=1)
++
++class CheckoutRequestSerializer(serializers.Serializer):
++    local_id = serializers.CharField(max_length=36)
++    barber_id = serializers.UUIDField()
++    discount = serializers.DecimalField(
++        max_digits=10, decimal_places=2, min_value=0, default=0
++    )
++    items = CheckoutItemSerializer(many=True, min_length=1)
++
++class VoidRequestSerializer(serializers.Serializer):
++    void_reason = serializers.CharField(required=False, allow_blank=True, default="")
++
++class CommissionQuerySerializer(serializers.Serializer):
++    barber_id = serializers.UUIDField()
++    start_date = serializers.DateField()
++    end_date = serializers.DateField()
++    page = serializers.IntegerField(min_value=1, default=1)
++    per_page = serializers.IntegerField(min_value=1, max_value=100, default=50)
++```
++
++### 2. src/modules/sales/adapters/views.py
++
++Implement 3 views as DRF APIView classes:
++
++#### CheckoutView (POST /checkout)
++- Validate request with CheckoutRequestSerializer
++- Instantiate dependencies:
++```python
++  transaction_repo = DjangoTransactionRepository()
++  stock_repo = DjangoStockRepository()
++  item_repo = DjangoItemRepository()
++  barber_repo = DjangoBarberRepository()
++  use_case = CheckoutUseCase(transaction_repo, stock_repo, item_repo, barber_repo)
++```
++- Call use_case.execute(...)
++- On success → return 200:
++```json
++  {"transaction_id": "uuid", "status": "COMPLETED", "total": 150000.00}
++```
++- On DuplicateLocalIdError → return 409:
++```json
++  {"error": "DUPLICATE_LOCAL_ID", "transaction_id": "existing-uuid", "detail": "..."}
++```
++- On OutOfStockError → return 422:
++```json
++  {"error": "OUT_OF_STOCK", "detail": "..."}
++```
++- On ItemNotFoundError → return 404:
++```json
++  {"error": "ITEM_NOT_FOUND", "detail": "..."}
++```
++- On BarberNotFoundError → return 404:
++```json
++  {"error": "BARBER_NOT_FOUND", "detail": "..."}
++```
++
++#### VoidTransactionView (PATCH /transactions/<uuid:transaction_id>/void)
++- Validate request with VoidRequestSerializer
++- Instantiate DjangoTransactionRepository and DjangoStockRepository
++- Steps inside atomic():
++  1. Fetch transaction by id → 404 if not found
++  2. If status != COMPLETED → return 400:
++```json
++     {"error": "CANNOT_VOID", "detail": "Only COMPLETED transactions can be voided"}
++```
++  3. Fetch transaction_items for this transaction
++  4. Build restorations list for PRODUCT items only
++  5. If restorations exist → call stock_repo.bulk_restore(restorations)
++  6. Call transaction_repo.update_status(transaction_id, 'VOIDED', void_reason)
++- Return 200:
++```json
++  {"transaction_id": "uuid", "status": "VOIDED"}
++```
++
++#### CommissionReportView (GET /reports/commissions)
++- Validate query params with CommissionQuerySerializer
++- Query transaction_items directly:
++```python
++  from src.infrastructure.database.models import TransactionItem
++  from django.db.models import Sum, F, ExpressionWrapper, DecimalField
++
++  qs = TransactionItem.objects.filter(
++      barber_id=barber_id,
++      created_at__date__gte=start_date,
++      created_at__date__lte=end_date,
++      transaction__status='COMPLETED',
++  ).select_related('transaction').annotate(
++      commission_amount=ExpressionWrapper(
++          F('price_at_sale') * F('quantity') * F('commission_rate'),
++          output_field=DecimalField(max_digits=10, decimal_places=2)
++      )
++  ).order_by('created_at')
++```
++- Paginate manually with page/per_page
++- Calculate total_commission = sum of all commission_amount in full queryset (before pagination)
++- Return 200 matching spec Section 4.3 exactly
++
++### 3. src/modules/sales/adapters/urls.py
++
++```python
++from django.urls import path
++from .views import CheckoutView, VoidTransactionView, CommissionReportView
++
++urlpatterns = [
++    path('checkout', CheckoutView.as_view(), name='checkout'),
++    path('transactions/<uuid:transaction_id>/void', VoidTransactionView.as_view(), name='void-transaction'),
++    path('reports/commissions', CommissionReportView.as_view(), name='commission-report'),
++]
++```
++
++### 4. config/urls.py
++
++Add API routes:
++```python
++from django.urls import path, include
++
++urlpatterns = [
++    path('admin/', admin.site.urls),
++    path('api/v1/', include('src.modules.sales.adapters.urls')),
++]
++```
++
++### 5. src/modules/staff/use_cases/commission_report.py
++
++Simple use case for future use (not called by view directly yet):
++```python
++class CommissionReportUseCase:
++    """Placeholder — commission logic is currently handled directly in the view."""
++    pass
++```
++
++---
++
++IMPORTANT RULES:
++- Import all exceptions from src.shared.exceptions (NOT from module-level exceptions)
++- Import all concrete repos from src.infrastructure.database.repositories
++- Use str(exception) for error detail messages
++- All monetary values returned as float in JSON response (use float() conversion)
++- Do NOT modify any existing files except config/urls.py
++
++---
++
++VERIFICATION after completion:
++```bash
++python manage.py check
++```
++Must return: "System check identified no issues (0 silenced)."
++
++Then test endpoints exist:
++```bash
++python manage.py shell -c "
++from django.urls import reverse
++print('✓ checkout:', reverse('checkout'))
++print('✓ commission report:', reverse('commission-report'))
++"
++```
+
+# 2026-05-05 17:54:48.564466
++y
+
+# 2026-05-05 17:59:25.381290
++n
+
+# 2026-05-07 10:17:09.839782
++/add backend/src/**/*.py
+
+# 2026-05-07 10:17:17.725338
++/add backend/DOCS/ARCHITECTURE_SPEC.md
+
+# 2026-05-07 10:17:20.341809
++n
+
+# 2026-05-07 10:17:40.934629
++/add DOCS/ARCHITECTURE_SPEC.md
+
+# 2026-05-07 10:18:19.839681
++/add backend/src/**/*.py
+
+# 2026-05-07 10:18:22.233079
++/add DOCS/ARCHITECTURE_SPEC.md
+
+# 2026-05-07 10:19:20.664895
++aider --message "
++I need to refactor the exception handling in my Django project to follow per-domain pattern. The project structure is at backend/src/
++
++Current problems:
++1. Exceptions are scattered inconsistently:
++   - Some in modules/*/repositories/exceptions.py
++   - Some in shared/exceptions.py
++   - Duplicate exceptions: BarberNotFound vs BarberNotFoundError, ItemNotFound vs ItemNotFoundError
++
++2. Violates Domain-Driven Design principles where each domain should own its exceptions
++
++Required changes:
++
++1. CREATE a base exception in shared/base_exception.py:
++   \`\`\`python
++   class DomainException(Exception):
++       \"\"\"Base class for all domain exceptions.\"\"\"
++       pass
++   \`\`\`
++
++2. REFACTOR each domain module to have its own exceptions.py at module root (not inside repositories/):
++   - backend/src/modules/catalog/exceptions.py
++   - backend/src/modules/inventory/exceptions.py  
++   - backend/src/modules/sales/exceptions.py
++   - backend/src/modules/staff/exceptions.py
++
++3. MOVE exceptions from repositories/exceptions.py to the new domain exceptions.py files:
++   - ItemNotFound, OutOfStockError → catalog/exceptions.py
++   - StockNotFound, InsufficientStockError → inventory/exceptions.py
++   - TransactionNotFound, CannotVoidTransaction → sales/exceptions.py
++   - BarberNotFound → staff/exceptions.py
++
++4. DELETE the old repository/exceptions.py files
++
++5. UPDATE shared/exceptions.py to ONLY contain DomainException (remove all business exceptions)
++
++6. UPDATE all imports across the codebase:
++   - Change 'from src.modules.catalog.repositories.exceptions import ...' 
++     to 'from src.modules.catalog.exceptions import ...'
++   - Change 'from src.shared.exceptions import ...' to use domain-specific imports
++   - Keep DomainException from shared.base_exception
++
++7. ENSURE naming consistency: all exceptions should end with 'Error' suffix
++   - BarberNotFound → BarberNotFoundError
++   - ItemNotFound → ItemNotFoundError
++   - OutOfStockError is already correct
++   - InsufficientStockError is correct
++   - TransactionNotFound → TransactionNotFoundError
++   - CannotVoidTransaction → CannotVoidTransactionError
++
++8. UPDATE all use_cases and views to use the new imports
++
++9. UPDATE ARCHITECTURE_SPEC.md to document the exception handling convention
++
++Files to modify (in priority order):
++- backend/src/shared/exceptions.py (simplify to base only)
++- backend/src/shared/base_exception.py (create new)
++- backend/src/modules/catalog/exceptions.py (create)
++- backend/src/modules/inventory/exceptions.py (create)  
++- backend/src/modules/sales/exceptions.py (create)
++- backend/src/modules/staff/exceptions.py (create)
++- backend/src/modules/catalog/repositories/exceptions.py (delete)
++- backend/src/modules/inventory/repositories/exceptions.py (delete)
++- backend/src/modules/sales/repositories/exceptions.py (delete)
++- backend/src/modules/staff/repositories/exceptions.py (delete)
++- backend/src/modules/sales/use_cases/checkout.py (update imports)
++- backend/src/modules/sales/adapters/views.py (update imports)
++- backend/src/infrastructure/database/repositories/*.py (update imports)
++- backend/DOCS/ARCHITECTURE_SPEC.md (add exception convention section)
++
++Please execute this refactoring and ensure all imports are correctly updated.
++"
+
+# 2026-05-07 10:22:05.712546
++y
+
+# 2026-05-07 10:25:58.597730
++/drop DOCS/ARCHITECTURE_SPEC.md
++backend/src/infrastructure/database/__init__.py
++backend/src/infrastructure/database/apps.py
++backend/src/infrastructure/database/migrations/0001_initial.py
++backend/src/infrastructure/database/migrations/__init__.py
++backend/src/infrastructure/database/models/__init__.py
++backend/src/infrastructure/database/models/barber.py
++backend/src/infrastructure/database/models/item.py
++backend/src/infrastructure/database/models/transaction.py
++backend/src/infrastructure/database/models/transaction_item.py
++backend/src/infrastructure/database/repositories/__init__.py
++backend/src/infrastructure/database/repositories/barber_repository.py
++backend/src/infrastructure/database/repositories/item_repository.py
++backend/src/infrastructure/database/repositories/stock_repository.py
++backend/src/infrastructure/database/repositories/transaction_repository.py
++backend/src/modules/catalog/exceptions.py
++backend/src/modules/catalog/repositories/__init__.py
++backend/src/modules/catalog/repositories/exceptions.py
++backend/src/modules/catalog/repositories/item_repository.py
++backend/src/modules/inventory/exceptions.py
++backend/src/modules/inventory/repositories/__init__.py
++backend/src/modules/inventory/repositories/exceptions.py
++backend/src/modules/inventory/repositories/stock_repository.py
++backend/src/modules/sales/adapters/__init__.py
++backend/src/modules/sales/adapters/serializers.py
++backend/src/modules/sales/adapters/urls.py
+
+# 2026-05-07 10:26:07.655671
++/drop backend/src/modules/sales/adapters/views.py
++backend/src/modules/sales/exceptions.py
++backend/src/modules/sales/repositories/__init__.py
++backend/src/modules/sales/repositories/exceptions.py
++backend/src/modules/sales/repositories/transaction_repository.py
++backend/src/modules/sales/use_cases/checkout.py
++backend/src/modules/staff/exceptions.py
++backend/src/modules/staff/repositories/__init__.py
++backend/src/modules/staff/repositories/barber_repository.py
++backend/src/modules/staff/repositories/exceptions.py
++backend/src/modules/staff/use_cases/__init__.py
++backend/src/modules/staff/use_cases/commission_report.py
++backend/src/shared/base_exception.py
++backend/src/shared/exceptions.py
++backend/src/shared/utils/__init__.py
++backend/src/shared/utils/pricing.py
+
+# 2026-05-07 10:26:34.199867
++/add backend/src/modules/catalog/repositories/exceptions.py backend/src/modules/inventory/repositories/exceptions.py backend/src/modules/sales/repositories/exceptions.py backend/src/modules/staff/repositories/exceptions.py
+
+# 2026-05-07 10:26:41.895325
++aider --message "
++Clean up old exception files that should have been deleted during refactor:
++
++DELETE these files (they are obsolete):
++- backend/src/modules/catalog/repositories/exceptions.py
++- backend/src/modules/inventory/repositories/exceptions.py
++- backend/src/modules/sales/repositories/exceptions.py
++- backend/src/modules/staff/repositories/exceptions.py
++
++Also check and update any __init__.py files that might still import from these deleted files.
++
++All exceptions are now properly located in:
++- backend/src/modules/*/exceptions.py
++- backend/src/shared/base_exception.py
++
++Make sure no imports are broken after deletion.
++"
+
+# 2026-05-07 10:26:46.588109
++y
+
+# 2026-05-07 10:28:00.972086
++n
+
+# 2026-05-07 11:31:23.771607
++/drop backend/src/modules/catalog/repositories/__init__.py   backend/src/modules/catalog/repositories/exceptions.py
++backend/src/modules/inventory/repositories/__init__.py backend/src/modules/inventory/repositories/exceptions.py
++backend/src/modules/sales/repositories/__init__.py     backend/src/modules/sales/repositories/exceptions.py
++backend/src/modules/staff/repositories/__init__.py     backend/src/modules/staff/repositories/exceptions.py
++backend/src/shared/base_exception.py
+
+# 2026-05-07 11:31:44.269047
++/add backend/src/modules/sales/adapters/serializers.py backend/src/modules/sales/adapters/views.py backend/src/modules/sales/adapters/urls.py backend/src/modules/sales/use_cases/commission_report.py backend/config/urls.py 
+
+# 2026-05-07 11:32:10.436225
++y
+
+# 2026-05-07 11:32:54.802938
++I need to refactor and complete the API layer architecture for my Django/DRF project. The current structure needs to follow Clean Architecture principles with clear separation of concerns.
++
++## Current Project Structure:
++backend/src/modules/sales/
++├── adapters/
++│ ├── serializers.py (needs completion)
++│ ├── urls.py (partial)
++│ └── views.py (has logic that should be moved)
++├── use_cases/
++│ └── checkout.py (✅ business logic is correct)
++└── exceptions.py (✅ done)
++
++text
++
++## Tasks to Complete:
++
++### 1. **Create/Update Serializers** (`adapters/serializers.py`)
++
++Current serializers exist but need proper response serializers:
++
++```python
++# Add these missing response serializers:
++class CheckoutResponseSerializer(serializers.Serializer):
++    transaction_id = serializers.UUIDField()
++    status = serializers.CharField()
++    total = serializers.DecimalField(max_digits=10, decimal_places=2)
++
++class VoidResponseSerializer(serializers.Serializer):
++    transaction_id = serializers.UUIDField()
++    status = serializers.CharField()
++
++class ErrorResponseSerializer(serializers.Serializer):
++    error = serializers.CharField()
++    detail = serializers.CharField(required=False)
++    transaction_id = serializers.UUIDField(required=False)
++2. Refactor Views (adapters/views.py)
++Ensure views are THIN - only:
++
++Receive request
++
++Validate input via serializers
++
++Call use case
++
++Catch DomainException and convert to HTTP responses
++
++Return serialized response
++
++NO business logic in views!
++
++Current issues to fix:
++
++Some exception handlers return inconsistent formats
++
++Missing response serialization
++
++CommissionReportView has business logic that should be in a use case
++
++3. Simplify Exception Handling in Views
++Replace repetitive exception handlers with a single DomainException handler:
++
++python
++except DomainException as e:
++    error_mapping = {
++        'DuplicateLocalIdError': (409, 'DUPLICATE_LOCAL_ID'),
++        'OutOfStockError': (422, 'OUT_OF_STOCK'),
++        'ItemNotFoundError': (404, 'ITEM_NOT_FOUND'),
++        'BarberNotFoundError': (404, 'BARBER_NOT_FOUND'),
++        'TransactionNotFoundError': (404, 'TRANSACTION_NOT_FOUND'),
++        'CannotVoidTransactionError': (400, 'CANNOT_VOID'),
++    }
++    error_code = e.__class__.__name__
++    status_code, api_error = error_mapping.get(error_code, (400, 'DOMAIN_ERROR'))
++    return Response(ErrorResponseSerializer({
++        'error': api_error,
++        'detail': str(e)
++    }).data, status=status_code)
++4. Create CommissionReportUseCase
++Move business logic from CommissionReportView to a new use case:
++
++backend/src/modules/sales/use_cases/commission_report.py
++
++Should handle filtering, pagination, and commission calculation
++
++Then update the view to only call the use case.
++
++5. Verify URL Routing (adapters/urls.py)
++Ensure all endpoints are properly namespaced:
++
++/api/v1/checkout → POST
++
++/api/v1/transactions/{transaction_id}/void → PATCH
++
++/api/v1/reports/commissions → GET
++
++6. Update Main URLs (backend/config/urls.py)
++Ensure it includes the sales URLs with proper prefix (already done - verify).
++
++Expected Architecture After Changes:
++text
++Request → urls.py → views.py → serializer.validate() → use_case.execute() 
++         → repository → response ← serializer.serialize() ← views.py ← DomainException handling
++Key Principles to Enforce:
++URLs - ONLY routing, no logic
++
++Serializers - ONLY validation and (de)serialization
++
++Views - ONLY coordination (thin layer)
++
++Use Cases - ALL business logic
++
++Exceptions - DomainException base class for all business errors
++
++Files to Modify:
++backend/src/modules/sales/adapters/serializers.py
++
++backend/src/modules/sales/adapters/views.py
++
++backend/src/modules/sales/adapters/urls.py (verify)
++
++backend/src/modules/sales/use_cases/commission_report.py (create new)
++
++backend/config/urls.py (verify)
++
++Files to Review (no changes likely needed):
++backend/src/modules/sales/use_cases/checkout.py (✅ already correct)
++
++backend/src/modules/sales/exceptions.py (✅ already correct)
++
++backend/src/modules/catalog/exceptions.py (✅ already correct)
++
++backend/src/modules/staff/exceptions.py (✅ already correct)
++
++backend/src/modules/inventory/exceptions.py (✅ already correct)
++
++Please refactor the code following Clean Architecture principles. Ensure all imports are correct and the code remains functional after changes.
+
+# 2026-05-07 11:33:00.798595
++y
+
+# 2026-05-07 11:35:50.177007
++n
+
+# 2026-05-07 14:15:13.297339
++/drop backend/config/urls.py                                   backend/src/modules/catalog/exceptions.py
++backend/src/modules/inventory/exceptions.py              backend/src/modules/sales/adapters/serializers.py
++backend/src/modules/sales/adapters/urls.py               backend/src/modules/sales/adapters/views.py
++backend/src/modules/sales/exceptions.py                  backend/src/modules/sales/use_cases/checkout.py
++backend/src/modules/sales/use_cases/commission_report.py backend/src/modules/staff/exceptions.py
+
+# 2026-05-07 14:15:30.821633
++/add backend/src/infrastructure/database/models/barber.py backend/src/infrastructure/database/models/item.py backend/src/modules/sales/adapters/views.py backend/src/modules/sales/adapters/serializers.py backend/src/modules/sales/adapters/urls.py
+
+# 2026-05-07 14:15:48.546858
++## Task: Implement Master Data CRUD APIs for Barber and Item management
++
++### Context
++This is a Django + DRF backend for a barbershop POS system. Currently, only checkout, void, and commission report endpoints exist. There are NO endpoints to create/update/delete barbers or items.
++
++### Requirements
++
++#### 1. Create CRUD API for Barbers
++- **Location for interfaces**: `backend/src/modules/staff/repositories/barber_repository.py` (add create/update/delete methods to AbstractBarberRepository)
++- **Location for implementations**: `backend/src/infrastructure/database/repositories/barber_repository.py` (implement new methods)
++- **API endpoints** (in `backend/src/modules/staff/adapters/` - create this folder):
++  - `POST /api/v1/barbers` - Create new barber
++  - `GET /api/v1/barbers` - List all barbers (with pagination: page, per_page)
++  - `GET /api/v1/barbers/{id}` - Get single barber by UUID
++  - `PUT /api/v1/barbers/{id}` - Update barber (full update)
++  - `PATCH /api/v1/barbers/{id}` - Partial update
++  - `DELETE /api/v1/barbers/{id}` - Soft delete (or hard delete? follow existing pattern)
++
++#### 2. Create CRUD API for Items (Services & Products)
++- **Location for interfaces**: `backend/src/modules/catalog/repositories/item_repository.py` (add create/update/delete methods to AbstractItemRepository)
++- **Location for implementations**: `backend/src/infrastructure/database/repositories/item_repository.py` (implement new methods)
++- **API endpoints** (in `backend/src/modules/catalog/adapters/` - create this folder):
++  - `POST /api/v1/items` - Create new item (SERVICE or PRODUCT)
++  - `GET /api/v1/items` - List all items (with filters: type=SERVICE|PRODUCT, pagination)
++  - `GET /api/v1/items/{id}` - Get single item by UUID
++  - `PUT /api/v1/items/{id}` - Update item (full update)
++  - `PATCH /api/v1/items/{id}` - Partial update (e.g., update stock only)
++  - `DELETE /api/v1/items/{id}` - Soft delete (or hard delete? consider transaction_items reference)
++
++#### 3. Serializers
++Create DRF serializers in each adapter folder:
++- `BarberSerializer` with fields: id, name, created_at, updated_at
++- `ItemSerializer` with fields: id, type, name, price, stock, commission_rate, created_at, updated_at
++- Request validation: price >= 0, stock >= 0, commission_rate between 0 and 1
++
++#### 4. URL Configuration
++Update `backend/config/urls.py` to include new routes:
++```python
++path('api/v1/', include('src.modules.staff.adapters.urls')),
++path('api/v1/', include('src.modules.catalog.adapters.urls')),
++5. Exceptions
++Add to existing exception files:
++
++DuplicateNameError (when barber/item name already exists)
++
++InvalidItemTypeError (when type is not SERVICE or PRODUCT)
++
++6. Permissions (Optional but recommended)
++Add basic permission classes:
++
++IsAdminUser for write operations (POST, PUT, PATCH, DELETE)
++
++IsAuthenticatedOrReadOnly for read operations (GET)
++
++Existing Files to Reference
++backend/src/infrastructure/database/models/barber.py
++
++backend/src/infrastructure/database/models/item.py
++
++backend/src/modules/sales/adapters/views.py (for pattern reference)
++
++backend/src/modules/sales/adapters/serializers.py (for serializer pattern)
++
++backend/src/modules/sales/adapters/urls.py (for URL pattern)
++
++Implementation Order
++First implement Barbers CRUD (simpler)
++
++Then implement Items CRUD
++
++Ensure all endpoints follow the same pattern as existing checkout endpoint
++
++Use Django's transaction.atomic() for write operations
++
++Return proper HTTP status codes (201 for create, 200 for success, 404 for not found, 400 for validation errors)
++
++Example Request/Response
++POST /api/v1/barbers
++Request:
++
++json
++{
++  "name": "John Wick"
++}
++Response (201):
++
++json
++{
++  "id": "uuid",
++  "name": "John Wick",
++  "created_at": "2026-05-07T10:00:00Z",
++  "updated_at": "2026-05-07T10:00:00Z"
++}
++POST /api/v1/items
++Request:
++
++json
++{
++  "type": "SERVICE",
++  "name": "Haircut Premium",
++  "price": 150000,
++  "stock": 0,
++  "commission_rate": 0.10
++}
++Response (201):
++
++json
++{
++  "id": "uuid",
++  "type": "SERVICE",
++  "name": "Haircut Premium",
++  "price": "150000.00",
++  "stock": 0,
++  "commission_rate": "0.1000",
++  "created_at": "...",
++  "updated_at": "..."
++}
++GET /api/v1/items?type=PRODUCT&page=1&per_page=20
++Response (200):
++
++json
++{
++  "items": [...],
++  "total": 50,
++  "page": 1,
++  "per_page": 20,
++  "total_pages": 3
++}
++Please implement all of the above following the existing DDD patterns in the codebase.
+
+# 2026-05-07 14:15:52.951703
++y
+
+# 2026-05-07 14:24:41.445295
++Add CRUD endpoints for master data using Django REST Framework viewsets:
++
++1. **Barber ViewSet** (`/api/v1/barbers`):
++   - List all barbers (GET)
++   - Create barber (POST)
++   - Get single barber (GET /{id})
++   - Update barber (PUT/PATCH /{id})
++   - Delete barber (DELETE /{id})
++
++2. **Item ViewSet** (`/api/v1/items`):
++   - List all items (GET) with optional filters: type=SERVICE|PRODUCT
++   - Create item (POST)
++   - Get single item (GET /{id})
++   - Update item (PUT/PATCH /{id})
++   - Delete item (DELETE /{id})
++
++Requirements:
++- Use `src/infrastructure/database/models/barber.py` and `item.py`
++- Create serializers in `src/modules/sales/adapters/serializers.py`
++- Add viewsets in `src/modules/sales/adapters/views.py`
++- Register with DefaultRouter in `backend/config/urls.py`
++- Add proper error handling (404, 400)
++- Use UUID for primary keys
++
++Output: Complete code implementation.
+
+# 2026-05-07 14:27:55.115739
++y
+
+# 2026-05-07 14:27:55.133966
++/run cd backend && python -m django check --settings=config.settings 2>&1 | grep -i "import\|exception\|ModuleNotFoundError"
+
+# 2026-05-07 14:27:55.134406
++/run cd backend && python -m django check --settings=config.settings 2>&1 | grep -i "import\|exception\|ModuleNotFoundError"
+
+# 2026-05-08 14:26:51.657662
++/add backend/src/modules/sales/use_cases/checkout.py backend/src/modules/sales/use_cases/commission_report.py backend/src/modules/sales/exceptions.py backend/src/modules/sales/repositories/transaction_repository.py backend/src/modules/catalog/exceptions.py backend/src/modules/catalog/repositories/item_repository.py backend/src/modules/inventory/exceptions.py backend/src/modules/inventory/repositories/stock_repository.py backend/src/modules/staff/exceptions.py backend/src/modules/staff/repositories/barber_repository.py backend/src/shared/utils/pricing.py backend/src/shared/base_exception.py backend/src/infrastructure/database/repositories/stock_repository.py backend/src/infrastructure/database/repositories/transaction_repository.py backend/src/infrastructure/database/repositories/item_repository.py backend/src/infrastructure/database/repositories/barber_repository.py backend/src/infrastructure/database/models/__init__.py backend/src/infrastructure/database/models/barber.py backend/src/infrastructure/database/models/item.py backend/src/infrastructure/database/models/transaction.py backend/src/infrastructure/database/models/transaction_item.py backend/requirements.txt
+
+# 2026-05-08 14:35:19.176025
++You are an expert Python/Django backend developer. Help me write comprehensive unit tests for my Barbershop POS project using pytest and pytest-django.
++
++## Project Context
++
++I have a Django project with:
++- PostgreSQL database
++- DDD architecture (modules: sales, inventory, catalog, staff)
++- Use cases: CheckoutUseCase, CommissionReportUseCase
++- Repositories with Django ORM implementations
++- Shared utilities: pricing.py with calculate_total()
++
++## Testing Requirements
++
++Create pytest unit tests for the following components (in order of priority):
++
++### 1. Shared Utilities (highest priority)
++**File:** `backend/tests/unit/shared/test_pricing.py`
++
++Test `calculate_total()` function from `src.shared.utils.pricing`:
++- Single item calculation with no discount
++- Multiple items subtotal calculation
++- Various discount amounts (full, partial, zero, large)
++- Decimal precision (test with 2 decimal places like 100.50 × 3)
++- Rounding behavior (e.g., 10.005 rounding to 10.01)
++- Edge cases: empty items list (should return 0 or negative?), discount > subtotal
++
++### 2. Checkout UseCase
++**File:** `backend/tests/unit/sales/test_checkout.py`
++
++Test `CheckoutUseCase.execute()` with mocked repositories:
++- ✅ Success: mixed items (SERVICE + PRODUCT), stock sufficient
++- ✅ Duplicate local_id → raises DuplicateLocalIdError
++- ✅ Barber not found → raises BarberNotFoundError
++- ✅ Item not found → raises ItemNotFoundError
++- ✅ Insufficient stock for PRODUCT → raises OutOfStockError
++- ✅ Stock deduction happens only for PRODUCT items (SERVICE stock unchanged)
++- ✅ Transaction saved with status='COMPLETED'
++- ✅ TransactionItems saved with correct snapshots (price_at_sale, commission_rate)
++- ✅ Total calculation uses shared pricing.py
++- ✅ Discount applied correctly
++
++Use `pytest-mock` to mock repositories.
++
++### 3. Commission Report UseCase
++**File:** `backend/tests/unit/sales/test_commission_report.py`
++
++Test `CommissionReportUseCase.execute()`:
++- ✅ Returns correct commission for single item
++- ✅ Returns correct total_commission across multiple items
++- ✅ Pagination (page, per_page)
++- ✅ Date range filtering (start_date, end_date)
++- ✅ Only COMPLETED transactions included (VOIDED excluded)
++- ✅ Barber not found → raises BarberNotFoundError
++- ✅ Empty results (no transactions in date range)
++
++### 4. Pricing Edge Cases
++**File:** `backend/tests/unit/shared/test_pricing_edge_cases.py`
++
++- Large decimal numbers (price up to 9999999.99)
++- High quantities (quantity 9999)
++- Negative discount → should validation catch before reaching pricing?
++- Zero items list edge case
++
++### 5. Repository Tests (Integration with test database)
++**File:** `backend/tests/integration/test_stock_repository.py`
++
++Test `DjangoStockRepository` with real DB (pytest.mark.django_db):
++- bulk_deduct with valid PRODUCT items
++- bulk_deduct insufficient stock → InsufficientStockError
++- bulk_restore restores correct quantity
++- Lock behavior (SELECT FOR UPDATE) - test with concurrent transactions using threading
++
++**File:** `backend/tests/integration/test_transaction_repository.py`
++
++- save() creates transaction with correct fields
++- save_items() bulk creates transaction_items
++- get_by_local_id returns existing or None
++- update_status COMPLETED → VOIDED
++- update_status on already VOIDED → raises CannotVoidTransactionError
++- update_status on non-COMPLETED → raises appropriate error
++
++## Test Configuration
++
++Create `backend/tests/conftest.py` with:
++- `@pytest.fixture` for db access
++- `@pytest.fixture` for sample barber, service, product
++- `@pytest.fixture` for mocked repositories (using mocker)
++- `@pytest.fixture` for CheckoutUseCase with mocked repos
++- `@pytest.fixture` for authenticated API client (if needed)
++
++## Important Notes
++
++1. **Use Decimal for all monetary values** - Never use float in tests
++2. **Isolate unit tests with mocks** - Don't hit real DB for unit tests
++3. **Use `pytest.mark.django_db` only for integration tests**
++4. **Exception imports** must be correct (e.g., `from src.modules.sales.exceptions import DuplicateLocalIdError`)
++5. **Follow existing exception naming**: all domain exceptions end with "Error"
++6. **Path structure**: All imports should use absolute paths from `src.xxx`
++
++## Sample Test Structure
++
++```python
++import pytest
++from decimal import Decimal
++from unittest.mock import Mock
++from uuid import uuid4
++
++from src.modules.sales.use_cases.checkout import CheckoutUseCase
++from src.modules.sales.exceptions import DuplicateLocalIdError
++
++@pytest.mark.unit
++class TestCheckoutUseCase:
++    def test_successful_checkout_with_mixed_items(self, mocker, mock_repositories):
++        # Arrange
++        local_id = "tx-123"
++        barber_id = uuid4()
++        discount = Decimal("5000.00")
++        items = [{"item_id": uuid4(), "quantity": 2}]
++        
++        # Mock repository responses
++        mock_transaction_repo.get_by_local_id.return_value = None
++        mock_barber_repo.get_by_id.return_value = Mock(id=barber_id, name="John")
++        
++        # Act
++        use_case = CheckoutUseCase(...)
++        result = use_case.execute(local_id, barber_id, discount, items)
++        
++        # Assert
++        assert result["status"] == "COMPLETED"
++        assert result["total"] == Decimal("145000.00")
+
+# 2026-05-08 14:39:58.669783
++y
+
+# 2026-05-08 14:40:28.903667
++/run cd backend
+
+# 2026-05-08 14:40:28.904042
++/run cd backend
+
+# 2026-05-08 14:40:30.082850
++/run python -m pytest tests/ -v
+
+# 2026-05-08 14:40:30.083394
++/run python -m pytest tests/ -v
+
+# 2026-05-08 14:40:35.408879
++y
+
+# 2026-05-08 14:40:38.833555
++/run python -m pytest tests/unit/ -v
+
+# 2026-05-08 14:40:38.833807
++/run python -m pytest tests/unit/ -v
+
+# 2026-05-08 14:40:43.256116
++y
+
+# 2026-05-08 14:40:46.270951
++/run python -m pytest tests/integration/ -v
+
+# 2026-05-08 14:40:46.271314
++/run python -m pytest tests/integration/ -v
+
+# 2026-05-08 14:40:54.801608
++y
+
+# 2026-05-08 17:29:13.085167
++/drop backend/requirements.txt
++backend/src/infrastructure/database/models/__init__.py
++backend/src/infrastructure/database/models/barber.py
++backend/src/infrastructure/database/models/item.py
++backend/src/infrastructure/database/models/transaction.py
++backend/src/infrastructure/database/models/transaction_item.py
++backend/src/infrastructure/database/repositories/barber_repository.py
++backend/src/infrastructure/database/repositories/item_repository.py
++backend/src/infrastructure/database/repositories/stock_repository.py
++backend/src/infrastructure/database/repositories/transaction_repository.py
++backend/src/modules/catalog/exceptions.py
++backend/src/modules/catalog/repositories/item_repository.py
++backend/src/modules/inventory/exceptions.py
++backend/src/modules/inventory/repositories/stock_repository.py
++backend/src/modules/sales/exceptions.py
++backend/src/modules/sales/repositories/transaction_repository.py
++backend/src/modules/sales/use_cases/checkout.py
++backend/src/modules/sales/use_cases/commission_report.py
++backend/src/modules/staff/exceptions.py
++backend/src/modules/staff/repositories/barber_repository.py
++backend/src/shared/base_exception.py
++backend/src/shared/utils/pricing.py
++backend/tests/__init__.py
++backend/tests/conftest.py
++backend/tests/integration/__init__.py
++backend/tests/integration/test_stock_repository.py
+
+# 2026-05-08 17:29:23.787528
++/drop backend/tests/integration/test_transaction_repository.py backend/tests/unit/__init__.py
++backend/tests/unit/sales/__init__.py                     backend/tests/unit/sales/test_checkout.py
++backend/tests/unit/sales/test_commission_report.py       backend/tests/unit/shared/__init__.py
++backend/tests/unit/shared/test_pricing.py                backend/tests/unit/shared/test_pricing_edge_cases.py
+
+# 2026-05-08 17:29:54.920146
++/add backend/tests/unit/sales/test_checkout.py backend/tests/unit/sales/test_commission_report.py backend/tests/integration/test_transaction_repository.py backend/tests/integration/test_stock_repository.py backend/tests/conftest.py backend/tests/init.py backend/tests/unit/init.py backend/tests/unit/sales/init.py backend/tests/unit/shared/init.py backend/tests/integration/init.py
+
+# 2026-05-08 17:29:59.605156
++y
+
+# 2026-05-08 17:30:38.202594
++You are an expert in pytest-django. Fix my test files to handle database access properly.
++
++## Problem
++Unit tests in `tests/unit/sales/test_checkout.py` fail with:
++`RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures`
++
++The `CheckoutUseCase.execute()` uses `db_transaction.atomic()` which requires database access.
++
++## Solution Approach
++Convert these from pure unit tests to integration tests by adding database access fixtures.
++
++## Required Changes:
++
++### 1. `tests/unit/sales/test_checkout.py`
++Add `db` parameter to ALL test methods that call `checkout_use_case.execute()`:
++- `test_successful_checkout_mixed_items(self, db, ...)`
++- `test_item_not_found_raises_error(self, db, ...)`
++- `test_insufficient_stock_raises_error(self, db, ...)`
++- `test_stock_deduction_only_for_product(self, db, ...)`
++- `test_transaction_saved_with_completed_status(self, db, ...)`
++- `test_discount_applied_correctly(self, db, ...)`
++
++### 2. `tests/unit/sales/test_commission_report.py`
++Add `@pytest.mark.django_db` decorator to test class or add `db` parameter to methods:
++```python
++@pytest.mark.django_db
++class TestCommissionReportUseCase:
++    # ... existing tests
++3. tests/integration/test_transaction_repository.py
++Already good - verify @pytest.mark.django_db is present.
++
++4. tests/integration/test_stock_repository.py
++Already good - verify @pytest.mark.django_db is present.
++
++5. tests/conftest.py
++Ensure Django is properly configured at the top:
++
++python
++import os
++import django
++
++os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
++django.setup()
++Expected Outcome
++All 8 tests in test_checkout.py should pass after adding the db fixture.
++
++Command to verify after changes:
++bash
++pytest tests/unit/sales/test_checkout.py -v --tb=short
++Make the changes to the files described above.
+
+# 2026-05-08 17:31:19.451192
++y
+
+# 2026-05-08 17:31:19.468772
++/run cd backend
+
+# 2026-05-08 17:31:19.469070
++/run cd backend
+
+# 2026-05-08 17:31:20.708098
++/run python -m pytest tests/unit/sales/test_checkout.py -v --tb=short
+
+# 2026-05-08 17:31:20.708282
++/run python -m pytest tests/unit/sales/test_checkout.py -v --tb=short
+
+# 2026-05-08 17:31:22.050447
++/run python -m pytest tests/unit/sales/test_commission_report.py -v --tb=short
+
+# 2026-05-08 17:31:22.050749
++/run python -m pytest tests/unit/sales/test_commission_report.py -v --tb=short
+
+# 2026-05-08 17:31:27.134026
++y
+
+# 2026-05-08 17:34:37.928709
++/drop backend/tests/conftest.py                                backend/tests/init.py
++backend/tests/integration/init.py                        backend/tests/integration/test_stock_repository.py
++backend/tests/integration/test_transaction_repository.py backend/tests/unit/init.py
++backend/tests/unit/sales/init.py                         backend/tests/unit/sales/test_checkout.py
++backend/tests/unit/sales/test_commission_report.py       backend/tests/unit/shared/init.py
+
+# 2026-05-08 17:34:49.260414
++/add backend/tests/unit/sales/test_checkout.py backend/tests/unit/sales/test_commission_report.py
+
+# 2026-05-08 17:35:36.476624
++I need to fix my pytest configuration. The tests now use database access (`db` fixture) but still have `@pytest.mark.unit` decorators causing warnings.
++
++## Files to fix:
++
++### 1. `tests/unit/sales/test_checkout.py`
++Remove line 8: `@pytest.mark.unit` 
++The class should be just:
++```python
++class TestCheckoutUseCase:
++    # ... rest of tests
++2. tests/unit/sales/test_commission_report.py
++Remove @pytest.mark.unit if present, add @pytest.mark.django_db to class:
++
++python
++@pytest.mark.django_db
++class TestCommissionReportUseCase:
++    # ... tests
++
++Expected outcome:
++No warnings about unknown pytest mark 'unit'
++
++All 8 tests pass in test_checkout.py
++
++No import errors from duplicate init files
++
++Make these changes immediately.
+
+# 2026-05-08 17:38:25.178610
++y
+
+# 2026-05-08 17:38:25.195538
++/run cd backend
+
+# 2026-05-08 17:38:25.195968
++/run cd backend
+
+# 2026-05-08 17:38:26.367013
++/run python -m pytest tests/unit/sales/test_checkout.py -v --tb=short
+
+# 2026-05-08 17:38:26.367341
++/run python -m pytest tests/unit/sales/test_checkout.py -v --tb=short
+
+# 2026-05-08 17:38:27.647641
++/run python -m pytest tests/unit/sales/test_commission_report.py -v --tb=short
+
+# 2026-05-08 17:38:27.648393
++/run python -m pytest tests/unit/sales/test_commission_report.py -v --tb=short
+
+# 2026-05-08 17:38:31.637927
++y
+
+# 2026-05-08 19:50:24.997519
++/drop backend/tests/unit/sales/test_checkout.py backend/tests/unit/sales/test_commission_report.py
++
+
+# 2026-05-08 19:50:34.709988
++/add backend/src/modules/staff/use_cases/commission_report.py backend/src/modules/sales/use_cases/checkout.py backend/src/infrastructure/database/repositories/stock_repository.py backend/src/modules/sales/adapters/views.py backend/src/shared/constants.py
+
+# 2026-05-08 19:50:37.471209
++y
+
+# 2026-05-08 19:51:02.687004
++Please help me fix two issues in my Django project:
++
++## Issue 1: Remove empty/unused use case file
++The file `src/modules/staff/use_cases/commission_report.py` contains only a placeholder class with `pass` and is confusing. Please either:
++- Delete the file entirely (preferred), or
++- Make it re-export the real implementation from `src/modules/sales/use_cases/commission_report.py`
++
++## Issue 2: Replace hardcoded strings with constants
++Currently the codebase has hardcoded strings 'PRODUCT' and 'SERVICE' scattered across multiple files. This is error-prone and hard to refactor.
++
++Please:
++1. Create a new file `src/shared/constants.py` with:
++```python
++class ItemType:
++    SERVICE = 'SERVICE'
++    PRODUCT = 'PRODUCT'
++    
++    CHOICES = [
++        (SERVICE, 'Service'),
++        (PRODUCT, 'Product'),
++    ]
++Replace all hardcoded strings with the constants:
++
++In src/modules/sales/use_cases/checkout.py (lines ~64 and ~86) - change "PRODUCT" to ItemType.PRODUCT
++
++In src/infrastructure/database/repositories/stock_repository.py (line ~23) - change 'PRODUCT' to ItemType.PRODUCT
++
++In src/modules/sales/adapters/views.py (line ~180) - change "PRODUCT" to ItemType.PRODUCT and "SERVICE" to ItemType.SERVICE
++
++Also check src/infrastructure/database/migrations/0001_initial.py - update the model's choices to reference the constant if possible, or keep as is since it's a migration file
++
++Add the import from src.shared.constants import ItemType to each modified file
++
++Please make these changes carefully while maintaining all existing functionality.
+
+# 2026-05-08 19:51:50.018861
++y
+
+# 2026-05-08 19:52:30.528242
++/run cd backend
+
+# 2026-05-08 19:52:30.528432
++/run cd backend
+
+# 2026-05-08 19:52:31.492043
++/run python -m pytest tests/ -v --tb=short 2>&1 | head -50
+
+# 2026-05-08 19:52:31.492510
++/run python -m pytest tests/ -v --tb=short 2>&1 | head -50
+
+# 2026-05-08 19:52:36.146711
++n
+
+# 2026-05-08 19:52:38.767936
++y
+
+# 2026-05-08 19:52:38.782438
++/run cd backend
+
+# 2026-05-08 19:52:38.782589
++/run cd backend
+
+# 2026-05-08 19:52:39.739040
++/run python -m flake8 --select=E9,F821,F823,F831,F406,F407,F701,F702,F704,F706 --show-source --isolated src/infrastructure/database/repositories/stock_repository.py
+
+# 2026-05-08 19:52:39.739668
++/run python -m flake8 --select=E9,F821,F823,F831,F406,F407,F701,F702,F704,F706 --show-source --isolated src/infrastructure/database/repositories/stock_repository.py
+
+# 2026-05-08 19:52:42.907343
++n
+
+# 2026-05-09 14:55:10.589081
++/add backend/src/infrastructure/database/models/transaction_item.py backend/src/infrastructure/database/repositories/transaction_repository.py backend/src/infrastructure/database/migrations/0002_alter_transactionitem_created_at.py
+
+# 2026-05-09 14:55:27.783695
++You are an expert Django developer. Fix the critical bug in my Barbershop POS project.
++
++## Problem
++When creating a checkout transaction, I get this database error:
++null value in column "created_at" of relation "transaction_items" violates not-null constraint
++
++text
++
++## Root Cause
++The `TransactionItem` model has `created_at = models.DateTimeField()` (without default), and the `save_items()` method in `DjangoTransactionRepository` does NOT set `created_at` when bulk creating transaction items.
++
++## Files to Fix
++
++### 1. `src/infrastructure/database/models/transaction_item.py`
++Change the `created_at` field to have a default value using `timezone.now`:
++
++**Current (WRONG):**
++```python
++created_at = models.DateTimeField()
++Should be:
++
++python
++from django.utils import timezone
++created_at = models.DateTimeField(default=timezone.now)
++2. src/infrastructure/database/repositories/transaction_repository.py
++Add created_at=timezone.now() to each TransactionItem when bulk creating:
++
++Current (WRONG):
++
++python
++transaction_items = [
++    TransactionItem(
++        transaction_id=transaction_id,
++        item_id=item["item_id"],
++        barber_id=item["barber_id"],
++        quantity=item["quantity"],
++        price_at_sale=item["price_at_sale"],
++        commission_rate=item["commission_rate"],
++    )
++    for item in items
++]
++Should be:
++
++python
++from django.utils import timezone
++
++transaction_items = [
++    TransactionItem(
++        transaction_id=transaction_id,
++        item_id=item["item_id"],
++        barber_id=item["barber_id"],
++        quantity=item["quantity"],
++        price_at_sale=item["price_at_sale"],
++        commission_rate=item["commission_rate"],
++        created_at=timezone.now(),  # ← ADD THIS
++    )
++    for item in items
++]
++3. Create and apply migration
++After fixing the model, create a new migration:
++
++bash
++python manage.py makemigrations
++python manage.py migrate
++Expected Outcome
++After these changes, the checkout API should work without the created_at null constraint error.
++
++Additional Context
++The test_commission_report.py already sets created_at manually, which is why integration tests passed but real API calls failed.
++
++This is a production-critical bug that prevents any checkout from working.
++
++Make these changes immediately.
+
+# 2026-05-09 14:55:30.239296
++y
+
+# 2026-05-09 14:56:56.972907
++/run cd backend
+
+# 2026-05-09 14:56:56.973153
++/run cd backend
+
+# 2026-05-09 14:56:57.989441
++/run python manage.py makemigrations
+
+# 2026-05-09 14:56:57.990469
++/run python manage.py makemigrations
+
+# 2026-05-09 14:56:59.073204
++/run python manage.py migrate
+
+# 2026-05-09 14:56:59.073845
++/run python manage.py migrate
+
+# 2026-05-09 14:57:02.989663
++y
+
+# 2026-05-09 15:46:25.871957
++/drop backend/manage.py
++backend/src/infrastructure/database/migrations/0002_alter_transactionitem_created_at.py
++backend/src/infrastructure/database/models/transaction_item.py
++backend/src/infrastructure/database/repositories/transaction_repository.py
++> /drop
+
+# 2026-05-09 15:46:50.559780
++/add backend/tests/integration/test_concurrency.py backend/src/modules/sales/use_cases/checkout.py backend/src/infrastructure/database/models/item.py backend/src/infrastructure/database/repositories/item_repository.py backend/tests/conftest.py
+
+# 2026-05-09 15:47:08.861332
++You are an expert Django backend developer. I need to add concurrency/race condition tests to my BarberPOS project to ensure data integrity when multiple users checkout the same product simultaneously.
++
++## Context
++My project already uses `select_for_update()` with `db_transaction.atomic()` in the CheckoutUseCase. I need to PROVE that race conditions are prevented.
++
++## File to Create
++
++**Path:** `backend/tests/integration/test_concurrency.py`
++
++## Test Requirements
++
++Create tests that simulate concurrent checkout requests for the same product with limited stock. Use Django's `threading` module or `concurrent.futures` to run parallel operations.
++
++### Test 1: Same Product - Limited Stock
++- Create a product with stock = 1
++- Launch 2 concurrent checkout threads for that same product (quantity = 1 each)
++- Expected result: Only 1 transaction succeeds, 1 fails with `OutOfStockError`
++- Verify final stock = 0
++- Verify only 1 Transaction record created
++
++### Test 2: Different Products - Should All Succeed
++- Create 2 products, each stock = 5
++- Launch 5 concurrent checkouts for Product A + 5 for Product B
++- Expected result: All 10 succeed
++- Verify final stock = 0 for both products
++
++### Test 3: Partial Stock Availability
++- Create product with stock = 3
++- Launch 5 concurrent checkouts (quantity = 1 each)
++- Expected result: Exactly 3 succeed, 2 fail with `OutOfStockError`
++- Verify final stock = 0
++
++### Test 4: Idempotency with Concurrency
++- Same `local_id` sent in multiple concurrent requests
++- Expected result: Only 1 transaction created, others get DuplicateLocalIdError (409)
++- Verify only 1 transaction in database
++
++## Implementation Notes
++
++1. Use `threading.Thread` to run concurrent operations
++2. Use `threading.Barrier` to ensure threads start at EXACT same time
++3. Use `call_command` or direct UseCase calls (not HTTP) for faster execution
++4. Each thread should have its own database connection to simulate real users
++5. Use `timeout` to prevent hanging tests
++
++## Sample Structure
++
++```python
++import pytest
++import threading
++from decimal import Decimal
++from django.db import connections
++from src.infrastructure.database.models import Barber, Item, Transaction
++from src.modules.sales.use_cases.checkout import CheckoutUseCase
++from src.infrastructure.database.repositories import DjangoTransactionRepository, DjangoStockRepository, DjangoItemRepository, DjangoBarberRepository
++
++@pytest.mark.django_db(transaction=True)
++class TestConcurrency:
++    
++    @pytest.fixture
++    def barber(self):
++        return Barber.objects.create(name="Test Barber")
++    
++    def _run_concurrent_checkouts(self, barber_id, items_list, num_threads, expected_success):
++        """Helper to run concurrent checkouts with barrier sync"""
++        results = []
++        errors = []
++        barrier = threading.Barrier(num_threads)
++        
++        def checkout_thread(local_id, items):
++            # Create separate DB connection for thread
++            from django.db import connection
++            connection.close()
++            
++            try:
++                barrier.wait(timeout=5)
++                # call use case directly
++                result = self._execute_checkout(barber_id, local_id, items)
++                results.append(result)
++            except Exception as e:
++                errors.append(e)
++            finally:
++                connection.close()
++        
++        # ... start threads, join, assert results
++        
++        return results, errors
++Expected Outcome
++All tests should PASS, proving that select_for_update() properly prevents race conditions.
++
++Files needed for reference (already in context):
++src/modules/sales/use_cases/checkout.py
++
++src/infrastructure/database/repositories/item_repository.py (has select_for_update)
++
++tests/unit/sales/test_checkout.py (for fixture patterns)
++
++Create the complete test file with all 4 test cases.
+
+# 2026-05-09 15:49:30.575065
++y
+
+# 2026-05-09 15:49:30.589436
++/run cd backend
+
+# 2026-05-09 15:49:30.589652
++/run cd backend
+
+# 2026-05-09 15:49:31.559495
++/run python -m pytest tests/integration/test_concurrency.py -v --timeout=60
+
+# 2026-05-09 15:49:31.560339
++/run python -m pytest tests/integration/test_concurrency.py -v --timeout=60
+
+# 2026-05-09 15:49:40.260079
++n
+
+# 2026-05-09 15:49:43.416451
++y
+
+# 2026-05-09 15:49:43.431435
++/run pip install pytest-timeout
+
+# 2026-05-09 15:49:43.431722
++/run pip install pytest-timeout
+
+# 2026-05-09 15:49:55.061112
++y
+
+# 2026-05-09 17:15:13.632769
++/drop backend/src/infrastructure/database/models/item.py backend/src/infrastructure/database/repositories/item_repository.py
++backend/src/modules/sales/use_cases/checkout.py    backend/tests/conftest.py
++backend/tests/integration/test_concurrency.py
+
+# 2026-05-09 17:15:29.322770
++/add backend/requirements.txt backend/src/modules/sales/adapters/views.py backend/src/modules/sales/use_cases/checkout.py backend/src/infrastructure/database/models/item.py backend/src/infrastructure/database/models/barber.py
+
+# 2026-05-09 17:16:02.411390
++You are an expert in performance testing. I need to set up load testing for my Django-based Barbershop POS backend using Locust.
++
++## Context
++My project already has:
++- 45+ pytest tests (unit + integration) passing
++- Concurrency tests done with `select_for_update()`
++- Running on Django 5.2 with PostgreSQL
++
++Now I need to test how many concurrent users my API can handle before it breaks.
++
++## Files to Create
++
++### 1. `backend/locustfile.py`
++Create a Locust test file that simulates realistic Barbershop POS user behavior.
++
++**Requirements:**
++- Each user should have a setup phase (`on_start`) that creates or fetches a barber ID, service ID, and product ID
++- Tasks with different weights:
++  - `checkout_mixed_items` (weight 3): Service + product checkout
++  - `checkout_only_product` (weight 2): Product-only checkout
++  - `get_barbers` (weight 1): List barbers
++  - `get_items` (weight 1): List items with type filter
++  - `get_commission_report` (weight 1): Get commission report
++- Use random UUIDs for `local_id` to avoid idempotency conflicts
++- Use `wait_time = between(1, 3)` to simulate human thinking time
++- Include error handling for expected failures (409, 422, 404)
++
++### 2. `backend/scripts/seed_load_test_data.py`
++Create a Django management command to seed test data for load testing.
++
++**Requirements:**
++- Create 1 barber (or reuse existing)
++- Create 1 SERVICE item with high stock (0 stock is fine for services)
++- Create 1 PRODUCT item with LARGE stock (100,000) so it never runs out during load test
++- Print the created IDs for reference
++- Make it idempotent (skip if already exists)
++
++### 3. Update `backend/requirements.txt`
++Add `locust` to the requirements file.
++
++## Expected Commands After Creation:
++
++```bash
++# Seed test data
++python backend/manage.py seed_load_test_data
++
++# Run Locust with Web UI
++cd backend
++locust -f locustfile.py --host=http://localhost:8000
++
++# Run headless stress test
++locust -f locustfile.py --host=http://localhost:8000 \
++  --users=50 --spawn-rate=5 --run-time=2m --headless \
++  --html=reports/load_test_report.html
++
++# Test different loads
++for users in 10 50 100 200 500; do
++  locust -f locustfile.py --host=http://localhost:8000 \
++    --users=$users --spawn-rate=10 --run-time=1m --headless \
++    --html=reports/report_${users}_users.html
++done
++Important Notes:
++The seeding script should be a Django management command, so it can use Django ORM directly
++
++Locust runs OUTSIDE Django, so it makes real HTTP calls
++
++Make sure wait_time is not too low to avoid overwhelming the test server
++
++Include proper exception handling for network errors
++
++The product stock should be large enough to handle all concurrent requests
+
+# 2026-05-09 17:16:05.854816
++y
+
+# 2026-05-09 17:24:05.598631
++/run pip install locust
+
+# 2026-05-09 17:24:05.599071
++/run pip install locust
+
+# 2026-05-09 17:24:18.754819
++/run cd backend
+
+# 2026-05-09 17:24:18.755297
++/run cd backend
+
+# 2026-05-09 17:24:19.902506
++/run python manage.py seed_load_test_data
+
+# 2026-05-09 17:24:19.903123
++/run python manage.py seed_load_test_data
+
+# 2026-05-09 17:24:24.692923
++n

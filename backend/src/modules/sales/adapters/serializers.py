@@ -51,7 +51,7 @@ class CommissionItemSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     price_at_sale = serializers.DecimalField(max_digits=10, decimal_places=2)
     commission_rate = serializers.DecimalField(max_digits=5, decimal_places=4)
-    commission_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    commission_amount = serializers.DecimalField(max_digits=15, decimal_places=6)
     created_at = serializers.DateTimeField()
 
 
@@ -59,7 +59,7 @@ class CommissionResponseSerializer(serializers.Serializer):
     barber_id = serializers.UUIDField()
     start_date = serializers.DateField()
     end_date = serializers.DateField()
-    total_commission = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_commission = serializers.DecimalField(max_digits=15, decimal_places=6)
     page = serializers.IntegerField()
     per_page = serializers.IntegerField()
     items = CommissionItemSerializer(many=True)

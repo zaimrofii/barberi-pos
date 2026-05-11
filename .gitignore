@@ -1,4 +1,29 @@
-.aider*
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.log
+db.sqlite3
+
+# Docker
+*.tar
+*.pid
+
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.locust_cache/
+
+# Hasil build
+staticfiles/
+media/.aider*
 backend/venv/
 node_modules/
 __pycache__/

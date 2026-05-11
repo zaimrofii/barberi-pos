@@ -12,7 +12,7 @@ class DjangoBarberRepository(AbstractBarberRepository):
         try:
             return Barber.objects.get(id=barber_id)
         except Barber.DoesNotExist:
-            raise BarberNotFound(f"Barber {barber_id} not found")
+            raise BarberNotFoundError(f"Barber {barber_id} not found")
 
     def get_all(self) -> List[Barber]:
         return list(Barber.objects.all().order_by('name'))

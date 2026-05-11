@@ -1,0 +1,142 @@
+### ============================================
+### BARBERSHOP POS - MINIMAL SMOKE TEST
+### ============================================
+@baseUrl = http://localhost:8000/api/v1
+
+### ============================================
+### STEP 1: CREATE BARBER
+### RUN INI DULU, COPY ID-NYA
+### ============================================
+POST {{baseUrl}}/barbers/
+Content-Type: application/json
+
+{
+  "name": "Test Barber"
+}
+
+### HASIL: {"id": "xxxx-xxxx-xxxx", "name": "Test Barber"}
+### COPY ID BARBER, PASTE KE BAWAH
+
+### ============================================
+### STEP 1: CREATE BARBER
+### RUN INI DULU, COPY ID-NYA
+### ============================================
+GET  {{baseUrl}}/barbers/
+
+### ============================================
+### STEP 2: CREATE SERVICE
+### RUN INI, COPY ID-NYA
+### ============================================
+POST {{baseUrl}}/items/
+Content-Type: application/json
+
+{
+  "type": "SERVICE",
+  "name": "Haircut",
+  "price": 50000,
+  "stock": 0,
+  "commission_rate": 0.10
+}
+
+### COPY ID SERVICE
+### ============================================
+GET  {{baseUrl}}/items/
+
+### ============================================
+### STEP 3: CREATE PRODUCT
+### RUN INI, COPY ID-NYA
+### ============================================
+POST {{baseUrl}}/items/
+Content-Type: application/json
+
+{
+  "type": "PRODUCT",
+  "name": "Shampoo",
+  "price": 25000,
+  "stock": 10,
+  "commission_rate": 0.05
+}
+
+### COPY ID PRODUCT
+
+
+### ============================================
+### STEP 4: CHECKOUT SUKSES
+### GANTI ID BARBER, SERVICE, PRODUCT MANUAL!
+### ============================================
+POST {{baseUrl}}/checkout
+Content-Type: application/json
+
+{
+  "local_id": "tx-smoke-001",
+  "barber_id": "dcfb06fe-564f-4249-accb-650b5e4f4f34",
+  "discount": 0,
+  "items": [
+    { "item_id": "a54eb8b2-89f8-499d-ab4f-bd4af2655e9c", "quantity": 1 },
+    { "item_id": "0390ad78-df8e-448c-9353-bb69c6574e63", "quantity": 2 }
+  ]
+}
+
+### COPY TRANSACTION_ID DARI RESPONSE
+
+
+### ============================================
+### STEP 5: CHECKOUT DUPLICATE (Harus 409)
+### ============================================
+POST {{baseUrl}}/checkout
+Content-Type: application/json
+
+{
+  "local_id": "tx-smoke-001",
+  "barber_id": "dcfb06fe-564f-4249-accb-650b5e4f4f34",
+  "discount": 0,
+  "items": [
+    { "item_id": "a54eb8b2-89f8-499d-ab4f-bd4af2655e9c", "quantity": 1 }
+  ]
+}
+
+
+### ============================================
+### STEP 6: CHECKOUT INSUFFICIENT STOCK (Harus 422)
+### ============================================
+POST {{baseUrl}}/checkout
+Content-Type: application/json
+
+{
+  "local_id": "tx-smoke-002",
+  "barber_id": "dcfb06fe-564f-4249-accb-650b5e4f4f34",
+  "discount": 0,
+  "items": [
+    { "item_id": "0390ad78-df8e-448c-9353-bb69c6574e63", "quantity": 99 }
+  ]
+}
+
+
+### ============================================
+### STEP 7: VOID TRANSACTION
+### GANTI TX_ID DARI STEP 4!
+### ============================================
+PATCH {{baseUrl}}/transactions/943ba098-3fd4-48ff-bbd4-2dc50ed6fb36/void
+Content-Type: application/json
+
+{
+  "void_reason": "Test void"
+}
+
+
+### ============================================
+### STEP 8: COMMISSION REPORT
+### ============================================
+GET {{baseUrl}}/reports/commissions?barber_id=dcfb06fe-564f-4249-accb-650b5e4f4f34&start_date=2026-01-01&end_date=2026-12-31&page=1&per_page=10
+
+
+### ============================================
+### STEP 9: CEK STOCK (Harus kembali ke 10)
+### ============================================
+GET {{baseUrl}}/items/0390ad78-df8e-448c-9353-bb69c6574e63/
+
+
+### ============================================
+### STEP 10: BARBER NOT FOUND (Harus 404)
+### ============================================
+GET {{baseUrl}}/barbers/00000000-0000-0000-0000-000000000000/

@@ -1,2 +1,0 @@
-class BarberNotFound(Exception):
-    pass

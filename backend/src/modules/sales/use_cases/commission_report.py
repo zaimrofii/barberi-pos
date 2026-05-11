@@ -1,7 +1,8 @@
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP  
 from uuid import UUID
-from datetime import date
+from datetime import datetime, date
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+from django.utils import timezone
 from src.infrastructure.database.models import TransactionItem
 from src.modules.staff.exceptions import BarberNotFoundError
 from src.modules.staff.repositories.barber_repository import AbstractBarberRepository
@@ -19,33 +20,32 @@ class CommissionReportUseCase:
         page: int,
         per_page: int,
     ) -> dict:
-        # Validate barber exists
         barber = self.barber_repo.get_by_id(barber_id)
         if barber is None:
             raise BarberNotFoundError(f"Barber {barber_id} not found")
 
-        # Build base queryset
+        start_datetime = timezone.make_aware(datetime.combine(start_date, datetime.min.time()))
+        end_datetime = timezone.make_aware(datetime.combine(end_date, datetime.max.time()))
+
         qs = (
             TransactionItem.objects.filter(
                 barber_id=barber_id,
-                created_at__date__gte=start_date,
-                created_at__date__lte=end_date,
+                created_at__gte=start_datetime,
+                created_at__lte=end_datetime,
                 transaction__status="COMPLETED",
             )
             .select_related("transaction")
             .annotate(
                 commission_amount=ExpressionWrapper(
                     F("price_at_sale") * F("quantity") * F("commission_rate"),
-                    output_field=DecimalField(max_digits=10, decimal_places=2),
+                    output_field=DecimalField(max_digits=15, decimal_places=6),
                 )
             )
             .order_by("created_at")
         )
 
-        # Total commission (before pagination)
         total_commission = qs.aggregate(total=Sum("commission_amount"))["total"] or Decimal("0.00")
 
-        # Paginate
         offset = (page - 1) * per_page
         page_qs = qs[offset : offset + per_page]
 
@@ -58,7 +58,7 @@ class CommissionReportUseCase:
                     "quantity": ti.quantity,
                     "price_at_sale": ti.price_at_sale,
                     "commission_rate": ti.commission_rate,
-                    "commission_amount": ti.commission_amount,
+                    "commission_amount":  ti.commission_amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
                     "created_at": ti.created_at,
                 }
             )
