@@ -1,41 +1,45 @@
-import React from 'react';
-import { Scissors, Package, Clock, AlertCircle } from 'lucide-react';
+import React from 'react'
+import { Scissors, Package, Clock } from 'lucide-react'
 
 function formatPrice(price) {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
     minimumFractionDigits: 0,
-  }).format(price).replace('Rp', 'Rp ').trim();
+  })
+    .format(price)
+    .replace('Rp', 'Rp ')
+    .trim()
 }
 
 export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuantity }) {
-  const isOutOfStock = item.type === 'PRODUCT' && item.stock === 0;
-  const stockStatus = item.type === 'PRODUCT'
-    ? item.stock <= 1
-      ? 'critical'
-      : item.stock <= 5
-      ? 'warning'
-      : 'normal'
-    : null;
+  const isOutOfStock = item.type === 'PRODUCT' && item.stock === 0
+  const stockStatus =
+    item.type === 'PRODUCT'
+      ? item.stock <= 1
+        ? 'critical'
+        : item.stock <= 5
+        ? 'warning'
+        : 'normal'
+      : null
 
   const handleClick = () => {
     if (!isOutOfStock) {
-      onAdd();
+      onAdd()
     }
-  };
+  }
 
   const handleKeyDown = (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && !isOutOfStock) {
-      e.preventDefault();
-      onAdd();
+      e.preventDefault()
+      onAdd()
     }
-  };
+  }
 
   const handleButtonClick = (e) => {
-    e.stopPropagation();
-    onAdd();
-  };
+    e.stopPropagation()
+    onAdd()
+  }
 
   return (
     <div
@@ -102,9 +106,7 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
               Sisa {item.stock}
             </div>
           ) : (
-            <div className="text-gray-400 text-xs">
-              Stok: {item.stock}
-            </div>
+            <div className="text-gray-400 text-xs">Stok: {item.stock}</div>
           )}
         </div>
       )}
@@ -128,5 +130,5 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
           : '+ Tambah'}
       </button>
     </div>
-  );
-});
+  )
+})

@@ -11,12 +11,33 @@ export async function getBarbers() {
 
 /**
  * Fetch items filtered by type (SERVICE or PRODUCT).
+ * Returns mock data for now.
  *
  * @param {'SERVICE'|'PRODUCT'} type – Item type to filter by.
- * @returns {Promise<import('axios').AxiosResponse>} Axios response containing item array.
+ * @returns {Promise<Array>} Array of items.
  */
 export async function getItems(type) {
-  return api.get('/items/', { params: { type } })
+  // Mock data
+  const SERVICES = [
+    { id: 1, name: 'Haircut', price: 50000, type: 'SERVICE', stock: null, duration: 30, category: 'hair' },
+    { id: 2, name: 'Shave', price: 30000, type: 'SERVICE', stock: null, duration: 20, category: 'beard' },
+    { id: 3, name: 'Hair Wash', price: 20000, type: 'SERVICE', stock: null, duration: 15, category: 'hair' },
+    { id: 4, name: 'Styling', price: 40000, type: 'SERVICE', stock: null, duration: 25, category: 'hair' },
+  ]
+
+  const PRODUCTS = [
+    { id: 101, name: 'Shampoo Premium', price: 25000, type: 'PRODUCT', stock: 3, category: 'care' },
+    { id: 102, name: 'Conditioner', price: 20000, type: 'PRODUCT', stock: 0, category: 'care' },
+    { id: 103, name: 'Beard Oil', price: 35000, type: 'PRODUCT', stock: 8, category: 'beard' },
+    { id: 104, name: 'Hair Wax', price: 15000, type: 'PRODUCT', stock: 12, category: 'hair' },
+  ]
+
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 300))
+
+  if (type === 'SERVICE') return SERVICES
+  if (type === 'PRODUCT') return PRODUCTS
+  return [...SERVICES, ...PRODUCTS]
 }
 
 /**

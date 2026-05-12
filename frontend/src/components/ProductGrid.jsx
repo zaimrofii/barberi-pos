@@ -1,134 +1,106 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search, PackageSearch, Scissors, Droplets } from 'lucide-react';
-import ProductCard from './ProductCard';
+import React, { useState, useEffect, useMemo } from 'react'
+import { Search, PackageSearch, Scissors, Droplets } from 'lucide-react'
+import ProductCard from './ProductCard'
+import useItemStore from '../stores/itemStore'
+import useCartStore from '../stores/cartStore'
 
-// Mock Zustand store - replace with actual import when available
-const useItemStore = () => {
-  const [items, setItems] = useState({ services: [], products: [] });
-  const [loading, setLoading] = useState(false);
+export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSearch }) {
+  const { items, loading, error, fetchItems } = useItemStore()
+  const addItem = useCartStore((s) => s.addItem)
+  const cartItems = useCartStore((s) => s.items)
 
-  const fetchItems = async () => {
-    setLoading(true);
-    try {
-      // Mock data - replace with actual API call
-      setItems({
-        services: [
-          { id: 1, name: 'Haircut', price: 50000, type: 'SERVICE', duration: 30, category: 'hair' },
-          { id: 2, name: 'Shave', price: 30000, type: 'SERVICE', duration: 20, category: 'beard' },
-          { id: 3, name: 'Hair Wash', price: 20000, type: 'SERVICE', duration: 15, category: 'hair' },
-          { id: 4, name: 'Styling', price: 40000, type: 'SERVICE', duration: 25, category: 'hair' },
-        ],
-        products: [
-          { id: 101, name: 'Shampoo Premium', price: 25000, type: 'PRODUCT', stock: 3, category: 'care' },
-          { id: 102, name: 'Conditioner', price: 20000, type: 'PRODUCT', stock: 0, category: 'care' },
-          { id: 103, name: 'Beard Oil', price: 35000, type: 'PRODUCT', stock: 8, category: 'beard' },
-          { id: 104, name: 'Hair Wax', price: 15000, type: 'PRODUCT', stock: 12, category: 'hair' },
-        ],
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { items, loading, fetchItems };
-};
-
-export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSearch, onAddToCart }) {
-  const { items, loading, fetchItems } = useItemStore();
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all')
 
   // Fetch items on mount
   useEffect(() => {
-    fetchItems();
-  }, []);
+    fetchItems()
+  }, [fetchItems])
 
   // F1 keyboard shortcut for search
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'F1') {
-        e.preventDefault();
-        const mobileSearch = document.querySelector('[data-mobile-search]');
+        e.preventDefault()
+        const mobileSearch = document.querySelector('[data-mobile-search]')
         if (mobileSearch) {
-          setMobileSearchOpen(true);
-          setTimeout(() => mobileSearch.focus(), 100);
+          setTimeout(() => mobileSearch.focus(), 100)
         }
       }
-    };
+    }
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Get display items based on tab and search
   const displayItems = useMemo(() => {
-    let result = [];
+    let result = [...items]
 
     // Filter by tab
-    if (activeTab === 'all') {
-      result = [...items.services, ...items.products];
-    } else if (activeTab === 'service') {
-      result = items.services;
+    if (activeTab === 'service') {
+      result = result.filter((item) => item.type === 'SERVICE')
     } else if (activeTab === 'product') {
-      result = items.products;
+      result = result.filter((item) => item.type === 'PRODUCT')
     }
 
     // Filter by search query
     if (searchQuery) {
       result = result.filter((item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      )
     }
 
     // Filter by category
     if (selectedCategory !== 'all') {
-      result = result.filter((item) => item.category === selectedCategory);
+      result = result.filter((item) => item.category === selectedCategory)
     }
 
-    return result;
-  }, [items, activeTab, searchQuery, selectedCategory]);
+    return result
+  }, [items, activeTab, searchQuery, selectedCategory])
 
-  // Get unique categories from display items
+  // Get unique categories from items
   const categories = useMemo(() => {
-    const uniqueCategories = new Set();
-    [...items.services, ...items.products].forEach((item) => {
+    const uniqueCategories = new Set()
+    items.forEach((item) => {
       if (item.category) {
-        uniqueCategories.add(item.category);
+        uniqueCategories.add(item.category)
       }
-    });
-    return Array.from(uniqueCategories);
-  }, [items]);
+    })
+    return Array.from(uniqueCategories)
+  }, [items])
 
   const getCategoryLabel = (category) => {
     const labels = {
       hair: 'Rambut',
       beard: 'Jenggot',
       care: 'Perawatan',
-    };
-    return labels[category] || category;
-  };
+    }
+    return labels[category] || category
+  }
 
   const getCategoryIcon = (category) => {
-    if (category === 'hair') return <Scissors size={12} />;
-    if (category === 'care') return <Droplets size={12} />;
-    return null;
-  };
+    if (category === 'hair') return <Scissors size={12} />
+    if (category === 'care') return <Droplets size={12} />
+    return null
+  }
 
-  // Mock cart store - replace with actual import
-  const cartItems = {};
-  const getCartInfo = (itemId) => ({
-    isInCart: false,
-    quantity: 0,
-  });
+  const getCartInfo = (itemId) => {
+    const cartItem = cartItems.find((i) => i.id === itemId)
+    return {
+      isInCart: !!cartItem,
+      quantity: cartItem ? cartItem.quantity : 0,
+    }
+  }
 
   const handleAddToCart = (item) => {
-    onAddToCart(item);
-  };
+    addItem(item)
+  }
 
+  // Loading state
   if (loading) {
     return (
       <div className="p-3 md:p-4">
-        <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3`}>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
@@ -137,7 +109,24 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
           ))}
         </div>
       </div>
-    );
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+        <PackageSearch size={48} className="text-red-300 mb-3" />
+        <h3 className="text-red-500 font-semibold text-lg">Gagal memuat data</h3>
+        <p className="text-gray-400 text-sm text-center mb-4">{error}</p>
+        <button
+          onClick={fetchItems}
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+        >
+          Coba lagi
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -175,7 +164,6 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
             }`}
           >
             <span className="hidden sm:inline">Produk</span>
-            {activeTab === 'product' && <Scissors size={0} />}
           </button>
         </div>
       </div>
@@ -211,7 +199,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
       </div>
 
       {/* Mobile Search Bar */}
-      <div className="hidden md:hidden sticky top-24 z-9 bg-white px-3 py-2 border-b border-gray-100">
+      <div className="md:hidden sticky top-24 z-9 bg-white px-3 py-2 border-b border-gray-100">
         <div className="relative flex items-center">
           <Search size={18} className="absolute left-3 text-gray-400 pointer-events-none" />
           <input
@@ -246,7 +234,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
         <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 md:py-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {displayItems.map((item) => {
-              const { isInCart, quantity } = getCartInfo(item.id);
+              const { isInCart, quantity } = getCartInfo(item.id)
               return (
                 <ProductCard
                   key={item.id}
@@ -255,11 +243,11 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
                   isInCart={isInCart}
                   cartQuantity={quantity}
                 />
-              );
+              )
             })}
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
