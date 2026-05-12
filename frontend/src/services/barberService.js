@@ -2,11 +2,23 @@ import api from './api'
 
 /**
  * Fetch the list of barbers.
+ * Returns mock data for now.
  *
- * @returns {Promise<import('axios').AxiosResponse>} Axios response containing barber array.
+ * @returns {Promise<Array>} Array of barbers.
  */
 export async function getBarbers() {
-  return api.get('/barbers/')
+  // Mock data
+  const BARBERS = [
+    { id: 1, name: 'Barber Ani', isActive: true },
+    { id: 2, name: 'Barber Budi', isActive: true },
+    { id: 3, name: 'Barber Cici', isActive: true },
+    { id: 4, name: 'Barber Dodi', isActive: false },
+  ]
+
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  return BARBERS.filter((b) => b.isActive)
 }
 
 /**

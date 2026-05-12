@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   ShoppingCart,
   Trash2,
@@ -16,35 +16,17 @@ import {
   Loader2,
   CheckCircle2,
   CloudUpload,
-} from 'lucide-react';
-
-// Mock store imports - replace with actual store paths
-const useCartStore = () => ({
-  items: [],
-  discount: 0,
-  setDiscount: () => {},
-  updateQuantity: () => {},
-  removeItem: () => {},
-  clearCart: () => {},
-  getSubtotal: () => 0,
-  getTotal: () => 0,
-});
-
-const useBarberStore = () => ({
-  barbers: [],
-  fetchBarbers: async () => {},
-  selectedBarber: null,
-  setSelectedBarber: () => {},
-});
-
-const checkout = async (payload) => ({ data: {} });
+} from 'lucide-react'
+import useCartStore from '../stores/cartStore'
+import useBarberStore from '../stores/barberStore'
+import { checkout } from '../services/barberService'
 
 // Internal CartItem component
 function CartItem({ item, onUpdate, onRemove }) {
-  const isAtStockLimit = item.type === 'PRODUCT' && item.quantity >= item.stock;
-  const isNearStockLimit = item.type === 'PRODUCT' && item.quantity >= item.stock - 1;
+  const isAtStockLimit = item.type === 'PRODUCT' && item.quantity >= item.stock
+  const isNearStockLimit = item.type === 'PRODUCT' && item.quantity >= item.stock - 1
 
-  const itemTotal = item.price * item.quantity;
+  const itemTotal = item.price * item.quantity
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-3 mb-2 shadow-sm hover:shadow-md transition-shadow relative animate-in duration-200">
@@ -129,109 +111,120 @@ function CartItem({ item, onUpdate, onRemove }) {
         )}
       </div>
     </div>
-  );
+  )
 }
 
 // Main CartPanel component
 export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
-  const { items, discount, setDiscount, updateQuantity, removeItem, clearCart, getSubtotal, getTotal } =
-    useCartStore();
-  const { barbers, fetchBarbers, selectedBarber, setSelectedBarber } = useBarberStore();
+  const {
+    items,
+    discount,
+    setDiscount,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    getSubtotal,
+    getTotal,
+  } = useCartStore()
+  const { barbers, fetchBarbers, selectedBarber, setSelectedBarber } = useBarberStore()
 
-  const [barberOpen, setBarberOpen] = useState(false);
-  const [discountType, setDiscountType] = useState('nominal');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [barberLoading, setBarberLoading] = useState(false);
-  const [successState, setSuccessState] = useState(false);
+  const [barberOpen, setBarberOpen] = useState(false)
+  const [discountType, setDiscountType] = useState('nominal')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [barberLoading, setBarberLoading] = useState(false)
+  const [successState, setSuccessState] = useState(false)
 
   // Fetch barbers on mount
   useEffect(() => {
-    setBarberLoading(true);
-    fetchBarbers().finally(() => setBarberLoading(false));
-  }, []);
+    setBarberLoading(true)
+    fetchBarbers().finally(() => setBarberLoading(false))
+  }, [fetchBarbers])
 
   // Close barber dropdown when clicking outside
   useEffect(() => {
-    if (!barberOpen) return;
+    if (!barberOpen) return
 
     const handleMouseDown = (e) => {
-      const dropdown = document.getElementById('barber-dropdown');
+      const dropdown = document.getElementById('barber-dropdown')
       if (dropdown && !dropdown.contains(e.target)) {
-        setBarberOpen(false);
+        setBarberOpen(false)
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleMouseDown);
-    return () => document.removeEventListener('mousedown', handleMouseDown);
-  }, [barberOpen]);
+    document.addEventListener('mousedown', handleMouseDown)
+    return () => document.removeEventListener('mousedown', handleMouseDown)
+  }, [barberOpen])
 
   // Auto-dismiss error after 3 seconds
   useEffect(() => {
-    if (!error) return;
+    if (!error) return
 
-    const timer = setTimeout(() => setError(null), 3000);
-    return () => clearTimeout(timer);
-  }, [error]);
+    const timer = setTimeout(() => setError(null), 3000)
+    return () => clearTimeout(timer)
+  }, [error])
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'F2' && !loading) {
-        e.preventDefault();
-        handleCheckout();
+        e.preventDefault()
+        handleCheckout()
       }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [loading, items, selectedBarber, discount]);
-
-  const handleUpdateQuantity = useCallback((itemId, newQuantity) => {
-    if (newQuantity <= 0) {
-      removeItem(itemId);
-    } else {
-      updateQuantity(itemId, newQuantity);
     }
-  }, [updateQuantity, removeItem]);
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [loading, items, selectedBarber, discount])
+
+  const handleUpdateQuantity = useCallback(
+    (itemId, newQuantity) => {
+      if (newQuantity <= 0) {
+        removeItem(itemId)
+      } else {
+        updateQuantity(itemId, newQuantity)
+      }
+    },
+    [updateQuantity, removeItem]
+  )
 
   const handleRemoveItem = useCallback((itemId) => {
-    removeItem(itemId);
-  }, [removeItem]);
+    removeItem(itemId)
+  }, [removeItem])
 
   const handleClearCart = useCallback(() => {
     if (window.confirm('Hapus semua item dari keranjang?')) {
-      clearCart();
+      clearCart()
     }
-  }, [clearCart]);
+  }, [clearCart])
 
   const handleDiscountChange = (e) => {
-    const value = parseFloat(e.target.value) || 0;
+    const value = parseFloat(e.target.value) || 0
     if (discountType === 'percent') {
-      setDiscount((getSubtotal() * value) / 100);
+      setDiscount((getSubtotal() * value) / 100)
     } else {
-      setDiscount(value);
+      setDiscount(value)
     }
-  };
+  }
 
   const computedDiscount = useMemo(() => {
     if (discountType === 'percent' && discount > 0) {
-      return Math.round((discount / getSubtotal()) * 100);
+      return Math.round((discount / getSubtotal()) * 100)
     }
-    return discount;
-  }, [discount, discountType, getSubtotal()]);
+    return discount
+  }, [discount, discountType, getSubtotal()])
 
   const handleCheckout = useCallback(async () => {
-    setError(null);
+    setError(null)
 
     if (items.length === 0) {
-      setError('Keranjang masih kosong');
-      return;
+      setError('Keranjang masih kosong')
+      return
     }
 
     if (!selectedBarber) {
-      setError('Pilih barber terlebih dahulu');
-      return;
+      setError('Pilih barber terlebih dahulu')
+      return
     }
 
     if (isOffline) {
@@ -241,63 +234,59 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
         barber_id: selectedBarber,
         discount: discount,
         items: items.map((item) => ({ item_id: item.id, quantity: item.quantity })),
-      };
+      }
 
-      const queue = JSON.parse(localStorage.getItem('pos_offline_queue') || '[]');
-      queue.push(payload);
-      localStorage.setItem('pos_offline_queue', JSON.stringify(queue));
+      const queue = JSON.parse(localStorage.getItem('pos_offline_queue') || '[]')
+      queue.push(payload)
+      localStorage.setItem('pos_offline_queue', JSON.stringify(queue))
 
-      setSuccessState(true);
-      window.dispatchEvent(
-        new CustomEvent('pos:offline-save', { detail: payload })
-      );
+      setSuccessState(true)
+      window.dispatchEvent(new CustomEvent('pos:offline-save', { detail: payload }))
 
       setTimeout(() => {
-        clearCart();
-        setSuccessState(false);
-      }, 1500);
+        clearCart()
+        setSuccessState(false)
+      }, 1500)
 
-      return;
+      return
     }
 
     // Online checkout
-    setLoading(true);
+    setLoading(true)
     try {
       const payload = {
         local_id: crypto.randomUUID(),
         barber_id: selectedBarber,
         discount: discount,
         items: items.map((item) => ({ item_id: item.id, quantity: item.quantity })),
-      };
+      }
 
-      const response = await checkout(payload);
+      const response = await checkout(payload)
 
-      setSuccessState(true);
-      window.dispatchEvent(
-        new CustomEvent('pos:checkout-success', { detail: response.data })
-      );
+      setSuccessState(true)
+      window.dispatchEvent(new CustomEvent('pos:checkout-success', { detail: response.data }))
 
       setTimeout(() => {
-        clearCart();
-        setSuccessState(false);
-      }, 1500);
+        clearCart()
+        setSuccessState(false)
+      }, 1500)
     } catch (err) {
-      setError(err.response?.data?.detail || 'Transaksi gagal. Coba lagi.');
+      setError(err.response?.data?.detail || 'Transaksi gagal. Coba lagi.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [items, selectedBarber, discount, isOffline, clearCart]);
+  }, [items, selectedBarber, discount, isOffline, clearCart])
 
-  const subtotal = getSubtotal();
-  const total = getTotal();
-  const selectedBarberName = barbers.find((b) => b.id === selectedBarber)?.name;
+  const subtotal = getSubtotal()
+  const total = getTotal()
+  const selectedBarberName = barbers.find((b) => b.id === selectedBarber)?.name
   const barberColors = [
     'bg-red-100',
     'bg-blue-100',
     'bg-green-100',
     'bg-purple-100',
     'bg-orange-100',
-  ];
+  ]
 
   // Desktop version
   const desktopPanel = (
@@ -364,8 +353,8 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                     <button
                       key={barber.id}
                       onClick={() => {
-                        setSelectedBarber(barber.id);
-                        setBarberOpen(false);
+                        setSelectedBarber(barber.id)
+                        setBarberOpen(false)
                       }}
                       className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-green-50 transition ${
                         selectedBarber === barber.id
@@ -373,13 +362,9 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                           : 'text-gray-800'
                       }`}
                     >
-                      <div
-                        className={`w-2 h-2 rounded-full ${barberColors[idx % 5]}`}
-                      ></div>
+                      <div className={`w-2 h-2 rounded-full ${barberColors[idx % 5]}`}></div>
                       <span className="flex-1 text-left text-sm">{barber.name}</span>
-                      {selectedBarber === barber.id && (
-                        <Check size={16} />
-                      )}
+                      {selectedBarber === barber.id && <Check size={16} />}
                     </button>
                   ))}
                 </div>
@@ -502,11 +487,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
 
             <button
               onClick={handleCheckout}
-              disabled={
-                loading ||
-                items.length === 0 ||
-                (!selectedBarber && !isOffline)
-              }
+              disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
               className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all ${
                 loading
                   ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
@@ -560,7 +541,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
         )}
       </div>
     </div>
-  );
+  )
 
   // Mobile bottom sheet version
   const mobilePanel = (
@@ -593,10 +574,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
               </span>
             )}
           </div>
-          <button
-            onClick={onMobileClose}
-            className="text-gray-400 hover:text-gray-600 transition p-1"
-          >
+          <button onClick={onMobileClose} className="text-gray-400 hover:text-gray-600 transition p-1">
             <X size={20} />
           </button>
         </div>
@@ -619,11 +597,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                 >
                   <div className="flex items-center gap-2">
                     <User size={16} className="text-gray-400" />
-                    <span
-                      className={
-                        selectedBarber ? 'text-gray-800' : 'text-gray-400'
-                      }
-                    >
+                    <span className={selectedBarber ? 'text-gray-800' : 'text-gray-400'}>
                       {selectedBarberName || 'Pilih barber...'}
                     </span>
                     {selectedBarber && (
@@ -632,9 +606,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                   </div>
                   <ChevronDown
                     size={16}
-                    className={`text-gray-400 transition transform ${
-                      barberOpen ? 'rotate-180' : ''
-                    }`}
+                    className={`text-gray-400 transition transform ${barberOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
 
@@ -644,8 +616,8 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                       <button
                         key={barber.id}
                         onClick={() => {
-                          setSelectedBarber(barber.id);
-                          setBarberOpen(false);
+                          setSelectedBarber(barber.id)
+                          setBarberOpen(false)
                         }}
                         className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-green-50 transition ${
                           selectedBarber === barber.id
@@ -653,17 +625,9 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                             : 'text-gray-800'
                         }`}
                       >
-                        <div
-                          className={`w-2 h-2 rounded-full ${
-                            barberColors[idx % 5]
-                          }`}
-                        ></div>
-                        <span className="flex-1 text-left text-sm">
-                          {barber.name}
-                        </span>
-                        {selectedBarber === barber.id && (
-                          <Check size={16} />
-                        )}
+                        <div className={`w-2 h-2 rounded-full ${barberColors[idx % 5]}`}></div>
+                        <span className="flex-1 text-left text-sm">{barber.name}</span>
+                        {selectedBarber === barber.id && <Check size={16} />}
                       </button>
                     ))}
                   </div>
@@ -679,9 +643,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
             <div className="h-full flex flex-col items-center justify-center">
               <ShoppingCart size={40} className="text-gray-300" />
               <p className="text-gray-400 font-medium mt-2">Keranjang kosong</p>
-              <p className="text-gray-300 text-sm">
-                Ketuk produk untuk menambahkan
-              </p>
+              <p className="text-gray-300 text-sm">Ketuk produk untuk menambahkan</p>
               <div className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-400 mt-4">
                 💡 Tekan F1 untuk cari produk
               </div>
@@ -731,9 +693,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                 </div>
                 <input
                   type="number"
-                  value={
-                    discountType === 'percent' ? computedDiscount : discount
-                  }
+                  value={discountType === 'percent' ? computedDiscount : discount}
                   onChange={handleDiscountChange}
                   min="0"
                   max={discountType === 'percent' ? 100 : undefined}
@@ -747,21 +707,14 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
               {successState ? (
                 <div className="flex flex-col items-center justify-center py-6">
                   <CheckCircle2 size={48} className="text-green-500 animate-bounce" />
-                  <p className="text-green-600 font-bold text-lg mt-2">
-                    Transaksi Berhasil!
-                  </p>
-                  <p className="text-gray-500">
-                    Rp {total.toLocaleString('id-ID')}
-                  </p>
+                  <p className="text-green-600 font-bold text-lg mt-2">Transaksi Berhasil!</p>
+                  <p className="text-gray-500">Rp {total.toLocaleString('id-ID')}</p>
                 </div>
               ) : (
                 <>
                   {error && (
                     <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3 flex items-center gap-2 animate-in slide-in-from-top-2">
-                      <AlertCircle
-                        size={14}
-                        className="text-red-500 flex-shrink-0"
-                      />
+                      <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
                       <p className="text-red-600 text-sm">{error}</p>
                     </div>
                   )}
@@ -783,9 +736,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                     )}
                     <div className="border-t border-dashed border-gray-200 my-2"></div>
                     <div className="flex justify-between">
-                      <span className="text-gray-800 font-bold text-base">
-                        TOTAL
-                      </span>
+                      <span className="text-gray-800 font-bold text-base">TOTAL</span>
                       <span className="text-green-600 font-bold text-xl">
                         Rp {total.toLocaleString('id-ID')}
                       </span>
@@ -794,11 +745,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
 
                   <button
                     onClick={handleCheckout}
-                    disabled={
-                      loading ||
-                      items.length === 0 ||
-                      (!selectedBarber && !isOffline)
-                    }
+                    disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
                     className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all ${
                       loading
                         ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
@@ -839,12 +786,12 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
         )}
       </div>
     </div>
-  );
+  )
 
   return (
     <>
       {desktopPanel}
       {mobilePanel}
     </>
-  );
+  )
 }
