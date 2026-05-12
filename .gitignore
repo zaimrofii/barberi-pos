@@ -34,3 +34,4 @@ backend/db.sqlite3
 backend/output.txt
 backend/.env
 backend/.env
+.aider*
