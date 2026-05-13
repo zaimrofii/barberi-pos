@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { X, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ConfirmModal from './ConfirmModal';
 import { voidTransaction } from '../services/barberService';
 
 const VOID_REASONS = [
@@ -15,6 +16,8 @@ export default function VoidModal({ isOpen, onClose, transaction, onVoidSuccess 
   const [reason, setReason] = useState('');
   const [customReason, setCustomReason] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   const handleSubmit = async () => {
     const finalReason = reason === 'Other' ? customReason : reason;
@@ -23,6 +26,11 @@ export default function VoidModal({ isOpen, onClose, transaction, onVoidSuccess 
       return;
     }
 
+    setConfirmModalOpen(true);
+  };
+
+  const handleConfirmVoid = async () => {
+    const finalReason = reason === 'Other' ? customReason : reason;
     setLoading(true);
     try {
       await voidTransaction(transaction.id, finalReason);
@@ -33,12 +41,35 @@ export default function VoidModal({ isOpen, onClose, transaction, onVoidSuccess 
       toast.error('Gagal void transaksi: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
+      setConfirmModalOpen(false);
     }
   };
 
   if (!transaction) return null;
 
   return (
+    <>
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={handleConfirmVoid}
+        title="Konfirmasi Void"
+        message={`Apakah Anda yakin ingin void transaksi ${transaction.id}?`}
+        confirmText="Ya, Void"
+        cancelText="Batal"
+        confirmVariant="danger"
+      />
+    <>
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={handleConfirmVoid}
+        title="Konfirmasi Void"
+        message={`Apakah Anda yakin ingin void transaksi ${transaction.id}?`}
+        confirmText="Ya, Void"
+        cancelText="Batal"
+        confirmVariant="danger"
+      />
     <Dialog
       open={isOpen}
       onClose={onClose}
@@ -143,5 +174,6 @@ export default function VoidModal({ isOpen, onClose, transaction, onVoidSuccess 
         </div>
       </div>
     </Dialog>
+    </>
   );
 }

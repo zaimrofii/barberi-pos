@@ -21,6 +21,7 @@ import {
 import useCartStore from '../stores/cartStore'
 import useBarberStore from '../stores/barberStore'
 import useUIStore from '../stores/uiStore'
+import ConfirmModal from './ConfirmModal'
 import { checkout } from '../services/barberService'
 
 // Internal CartItem component
@@ -138,6 +139,8 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
   const [error, setError] = useState(null)
   const [barberLoading, setBarberLoading] = useState(false)
   const [successState, setSuccessState] = useState(false)
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
 
   // Fetch barbers on mount
   useEffect(() => {
@@ -217,9 +220,12 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
   }, [removeItem])
 
   const handleClearCart = useCallback(() => {
-    if (window.confirm('Hapus semua item dari keranjang?')) {
-      clearCart()
-    }
+    setConfirmModalOpen(true)
+  }, [])
+
+  const handleConfirmClear = useCallback(() => {
+    clearCart()
+    setConfirmModalOpen(false)
   }, [clearCart])
 
   const handleDiscountChange = (e) => {
@@ -834,6 +840,16 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
     <>
       {desktopPanel}
       {mobilePanel}
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={handleConfirmClear}
+        title="Hapus Semua Item"
+        message="Apakah Anda yakin ingin menghapus semua item dari keranjang?"
+        confirmText="🗑️ Hapus"
+        cancelText="Batal"
+        confirmVariant="danger"
+      />
     </>
   )
 }

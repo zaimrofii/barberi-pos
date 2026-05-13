@@ -4,6 +4,7 @@ import MainLayout from './layouts/MainLayout';
 import ProductList from './components/ProductList';
 import CartPanel from './components/CartPanel';
 import History from './pages/History';
+import CommissionReport from './pages/CommissionReport';
 import AutoSaveIndicator from './components/AutoSaveIndicator';
 import useCartStore from './stores/cartStore';
 import useUIStore from './stores/uiStore';
@@ -53,6 +54,7 @@ export default function App() {
   // Simple routing based on hash
   const hash = window.location.hash || '#pos';
   const showHistory = hash === '#history';
+  const showReports = hash === '#reports';
 
   return (
     <>
@@ -87,15 +89,34 @@ export default function App() {
           <header className="bg-gray-900 text-white px-4 py-3">
             <div className="flex items-center justify-between">
               <h1 className="font-bold text-lg">Riwayat Transaksi</h1>
-              <a
-                href="#pos"
-                className="text-sm text-green-400 hover:text-green-300"
-              >
-                Kembali ke POS
-              </a>
+              <div className="flex items-center gap-4">
+                <a href="#reports" className="text-sm text-green-400 hover:text-green-300">
+                  Laporan Komisi
+                </a>
+                <a href="#pos" className="text-sm text-green-400 hover:text-green-300">
+                  Kembali ke POS
+                </a>
+              </div>
             </div>
           </header>
           <History />
+        </div>
+      ) : showReports ? (
+        <div className="min-h-screen bg-gray-50">
+          <header className="bg-gray-900 text-white px-4 py-3">
+            <div className="flex items-center justify-between">
+              <h1 className="font-bold text-lg">Laporan Komisi</h1>
+              <div className="flex items-center gap-4">
+                <a href="#history" className="text-sm text-green-400 hover:text-green-300">
+                  Riwayat Transaksi
+                </a>
+                <a href="#pos" className="text-sm text-green-400 hover:text-green-300">
+                  Kembali ke POS
+                </a>
+              </div>
+            </div>
+          </header>
+          <CommissionReport />
         </div>
       ) : (
         <MainLayout

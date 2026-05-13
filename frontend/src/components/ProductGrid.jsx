@@ -18,13 +18,18 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
     fetchItems()
   }, [fetchItems])
 
-  // F1 keyboard shortcut for search
+  // F1 keyboard shortcut for search with visual feedback
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'F1') {
         e.preventDefault()
         const mobileSearch = document.querySelector('[data-mobile-search]')
         if (mobileSearch) {
+          // Add visual feedback
+          mobileSearch.classList.add('ring-2', 'ring-green-500', 'ring-offset-2')
+          setTimeout(() => {
+            mobileSearch.classList.remove('ring-2', 'ring-green-500', 'ring-offset-2')
+          }, 500)
           setTimeout(() => mobileSearch.focus(), 100)
         }
       }

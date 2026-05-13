@@ -378,6 +378,20 @@ export default function MainLayout({
 
             {/* Right: Status and Kasir info */}
             <div className="flex items-center gap-6">
+              {/* Navigation links */}
+              <a
+                href="#history"
+                className="text-sm text-gray-300 hover:text-white transition"
+              >
+                Riwayat
+              </a>
+              <a
+                href="#reports"
+                className="text-sm text-gray-300 hover:text-white transition"
+              >
+                Laporan
+              </a>
+
               {/* Sync button */}
               <button
                 onClick={openSyncModal}
