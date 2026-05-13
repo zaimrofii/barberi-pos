@@ -3,6 +3,8 @@ import { Toaster } from 'react-hot-toast';
 import MainLayout from './layouts/MainLayout';
 import ProductList from './components/ProductList';
 import CartPanel from './components/CartPanel';
+import History from './pages/History';
+import AutoSaveIndicator from './components/AutoSaveIndicator';
 import useCartStore from './stores/cartStore';
 import useUIStore from './stores/uiStore';
 import useOfflineSync from './hooks/useOfflineSync';
@@ -48,6 +50,10 @@ export default function App() {
     // Implement search logic
   };
 
+  // Simple routing based on hash
+  const hash = window.location.hash || '#pos';
+  const showHistory = hash === '#history';
+
   return (
     <>
       <Toaster
@@ -76,19 +82,37 @@ export default function App() {
           },
         }}
       />
-      <MainLayout
-        kasirName="Kasir"
-        cartItemCount={getItemCount()}
-        cartTotal={getTotal()}
-        onCheckout={() => {}}
-        onSearch={handleSearch}
-        searchValue=""
-        cartContent={<CartPanel />}
-      >
-        <ProductList />
-        <RecoveryPopup />
-        <SyncQueueModal />
-      </MainLayout>
+      {showHistory ? (
+        <div className="min-h-screen bg-gray-50">
+          <header className="bg-gray-900 text-white px-4 py-3">
+            <div className="flex items-center justify-between">
+              <h1 className="font-bold text-lg">Riwayat Transaksi</h1>
+              <a
+                href="#pos"
+                className="text-sm text-green-400 hover:text-green-300"
+              >
+                Kembali ke POS
+              </a>
+            </div>
+          </header>
+          <History />
+        </div>
+      ) : (
+        <MainLayout
+          kasirName="Kasir"
+          cartItemCount={getItemCount()}
+          cartTotal={getTotal()}
+          onCheckout={() => {}}
+          onSearch={handleSearch}
+          searchValue=""
+          cartContent={<CartPanel />}
+        >
+          <ProductList />
+          <RecoveryPopup />
+          <SyncQueueModal />
+        </MainLayout>
+      )}
+      <AutoSaveIndicator />
     </>
   );
 }

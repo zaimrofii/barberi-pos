@@ -6,8 +6,10 @@ const useUIStore = create((set) => ({
   showRecoveryPopup: false,
   recoveryCartData: null,
   syncProgress: 0,
-  syncStatus: 'idle', // 'idle' | 'syncing' | 'error'
+  syncStatus: 'idle',
   pendingCount: 0,
+  lastSaveTime: null,
+  saveStatus: 'idle', // 'idle' | 'saving' | 'saved' | 'error'
 
   setOnlineStatus: (status) => set({ isOnline: status }),
 
@@ -20,6 +22,9 @@ const useUIStore = create((set) => ({
   setSyncProgress: (progress) => set({ syncProgress: progress }),
   setSyncStatus: (status) => set({ syncStatus: status }),
   setPendingCount: (count) => set({ pendingCount: count }),
+
+  setLastSaveTime: (time) => set({ lastSaveTime: time }),
+  setSaveStatus: (status) => set({ saveStatus: status }),
 }));
 
 export default useUIStore;
