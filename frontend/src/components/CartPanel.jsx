@@ -302,15 +302,30 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
             </span>
           )}
         </div>
-        {items.length > 0 && (
+        <div className="flex items-center gap-2">
+          {/* Sync button */}
           <button
-            onClick={handleClearCart}
-            className="text-gray-400 hover:text-red-500 transition p-1"
-            title="Kosongkan keranjang"
+            onClick={() => window.dispatchEvent(new CustomEvent('pos:open-sync-modal'))}
+            className="relative p-1 hover:bg-gray-100 rounded transition"
+            title="Antrian sinkronisasi"
           >
-            <Trash2 size={18} />
+            <CloudUpload size={18} className="text-gray-400" />
+            {pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                {pendingCount}
+              </span>
+            )}
           </button>
-        )}
+          {items.length > 0 && (
+            <button
+              onClick={handleClearCart}
+              className="text-gray-400 hover:text-red-500 transition p-1"
+              title="Kosongkan keranjang"
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Section 2: Barber Selector */}

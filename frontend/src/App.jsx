@@ -7,11 +7,12 @@ import useUIStore from './stores/uiStore';
 import useOfflineSync from './hooks/useOfflineSync';
 import useAutoSave from './hooks/useAutoSave';
 import RecoveryPopup from './components/RecoveryPopup';
+import SyncQueueModal from './components/SyncQueueModal';
 import { CART_BACKUP_KEY } from './utils/constants';
 
 export default function App() {
   const { items, discount, getTotal, getItemCount } = useCartStore();
-  const { setShowRecoveryPopup, setRecoveryCartData } = useUIStore();
+  const { setShowRecoveryPopup, setRecoveryCartData, openSyncModal } = useUIStore();
 
   // Initialize offline sync
   useOfflineSync();
@@ -35,6 +36,13 @@ export default function App() {
     }
   }, []);
 
+  // Listen for custom event to open sync modal
+  React.useEffect(() => {
+    const handleOpenSyncModal = () => openSyncModal();
+    window.addEventListener('pos:open-sync-modal', handleOpenSyncModal);
+    return () => window.removeEventListener('pos:open-sync-modal', handleOpenSyncModal);
+  }, [openSyncModal]);
+
   const handleSearch = (query) => {
     // Implement search logic
   };
@@ -51,6 +59,7 @@ export default function App() {
     >
       <ProductList />
       <RecoveryPopup />
+      <SyncQueueModal />
     </MainLayout>
   );
 }

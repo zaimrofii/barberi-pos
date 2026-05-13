@@ -7,7 +7,10 @@ import {
   WifiOff,
   User,
   AlertCircle,
+  CloudUpload,
 } from 'lucide-react';
+import SyncQueueModal from '../components/SyncQueueModal';
+import useUIStore from '../stores/uiStore';
 
 export default function MainLayout({
   children,
@@ -20,6 +23,7 @@ export default function MainLayout({
   searchValue = '',
   cartContent = null,
 }) {
+  const { pendingCount, openSyncModal } = useUIStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileCartOpen, setMobileCartOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -104,6 +108,34 @@ export default function MainLayout({
             </button>
           </div>
 
+          {/* Sync button mobile */}
+          <button
+            onClick={openSyncModal}
+            className="relative p-1 hover:bg-gray-800 rounded transition"
+            title="Antrian sinkronisasi"
+          >
+            <CloudUpload size={20} className="text-gray-300" />
+            {pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {pendingCount}
+              </span>
+            )}
+          </button>
+
+          {/* Sync button mobile */}
+          <button
+            onClick={openSyncModal}
+            className="relative p-1 hover:bg-gray-800 rounded transition"
+            title="Antrian sinkronisasi"
+          >
+            <CloudUpload size={20} className="text-gray-300" />
+            {pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {pendingCount}
+              </span>
+            )}
+          </button>
+
           {/* Offline badge mobile */}
           {isOffline && (
             <div className="mt-2 flex items-center justify-center gap-2 text-sm">
@@ -182,6 +214,7 @@ export default function MainLayout({
           </div>
         )}
       </div>
+      <SyncQueueModal />
     );
   }
 
@@ -284,6 +317,7 @@ export default function MainLayout({
           </aside>
         </div>
       </div>
+      <SyncQueueModal />
     );
   }
 
@@ -319,6 +353,20 @@ export default function MainLayout({
 
           {/* Right: Status and Kasir info */}
           <div className="flex items-center gap-6">
+            {/* Sync button */}
+            <button
+              onClick={openSyncModal}
+              className="relative p-1 hover:bg-gray-800 rounded transition"
+              title="Antrian sinkronisasi"
+            >
+              <CloudUpload size={20} className="text-gray-300" />
+              {pendingCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {pendingCount}
+                </span>
+              )}
+            </button>
+
             {/* Status indicator */}
             {isOffline ? (
               <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full text-sm animate-pulse">
@@ -407,6 +455,7 @@ export default function MainLayout({
           )}
         </aside>
       </div>
+      <SyncQueueModal />
     </div>
   );
 }
