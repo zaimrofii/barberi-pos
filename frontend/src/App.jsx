@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import MainLayout from './layouts/MainLayout';
-import ProductList from './components/ProductList';
+import ProductGrid from './components/ProductGrid';
 import CartPanel from './components/CartPanel';
 import History from './pages/History';
 import CommissionReport from './pages/CommissionReport';
@@ -16,7 +16,7 @@ import { CART_BACKUP_KEY } from './utils/constants';
 
 export default function App() {
   const { items, discount, getTotal, getItemCount } = useCartStore();
-  const { setShowRecoveryPopup, setRecoveryCartData, openSyncModal } = useUIStore();
+  const { setShowRecoveryPopup, setRecoveryCartData, openSyncModal, isOnline } = useUIStore();
 
   // Initialize offline sync
   useOfflineSync();
@@ -46,6 +46,10 @@ export default function App() {
     window.addEventListener('pos:open-sync-modal', handleOpenSyncModal);
     return () => window.removeEventListener('pos:open-sync-modal', handleOpenSyncModal);
   }, [openSyncModal]);
+
+  const [activeTab, setActiveTab] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [mobileCartOpen, setMobileCartOpen] = useState(false)
 
   const handleSearch = (query) => {
     // Implement search logic
@@ -126,9 +130,20 @@ export default function App() {
           onCheckout={() => {}}
           onSearch={handleSearch}
           searchValue=""
-          cartContent={<CartPanel />}
+          cartContent={
+            <CartPanel
+              isMobileOpen={mobileCartOpen}
+              onMobileClose={() => setMobileCartOpen(false)}
+              isOffline={!isOnline}
+            />
+          }
         >
-          <ProductList />
+          <ProductGrid
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            searchQuery={searchQuery}
+            onSearch={setSearchQuery}
+          />
           <RecoveryPopup />
           <SyncQueueModal />
         </MainLayout>
