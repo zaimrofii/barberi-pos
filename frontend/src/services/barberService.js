@@ -51,7 +51,7 @@ export async function getItems(type) {
   if (type === 'PRODUCT') return PRODUCTS
   return [...SERVICES, ...PRODUCTS]
 }
-
+  
 /**
  * Create a new checkout (transaction).
  *
