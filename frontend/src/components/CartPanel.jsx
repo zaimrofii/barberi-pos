@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import toast from 'react-hot-toast'
 import {
   ShoppingCart,
   Trash2,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react'
 import useCartStore from '../stores/cartStore'
 import useBarberStore from '../stores/barberStore'
+import useUIStore from '../stores/uiStore'
 import { checkout } from '../services/barberService'
 
 // Internal CartItem component
@@ -127,6 +129,8 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
     getTotal,
   } = useCartStore()
   const { barbers, fetchBarbers, selectedBarber, setSelectedBarber } = useBarberStore()
+  const { pendingCount } = useUIStore()
+  const { pendingCount } = useUIStore()
 
   const [barberOpen, setBarberOpen] = useState(false)
   const [discountType, setDiscountType] = useState('nominal')

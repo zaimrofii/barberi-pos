@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Keyboard, Search, CreditCard, Tag, Package, Trash2, Undo, X } from 'lucide-react';
-import toast from 'react-hot-toast';
 
 const SHORTCUTS = [
   { key: 'F1', icon: Search, label: 'Cari produk', description: 'Fokus ke kolom pencarian' },
@@ -43,20 +42,64 @@ export default function ShortcutsHelper() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 hidden md:block">
-      <div className="relative group">
-        {/* Toggle button */}
-        <button
-          onClick={() => setVisible(false)}
-          className="absolute -top-2 -right-2 bg-gray-800 text-white rounded-full p-0.5 hover:bg-gray-700 transition z-10"
-          title="Sembunyikan shortcut"
-        >
-          <X size={12} />
-        </button>
+    <>
+      {/* Desktop version */}
+      <div className="fixed bottom-4 right-4 z-50 hidden md:block">
+        <div className="relative group">
+          {/* Toggle button */}
+          <button
+            onClick={() => setVisible(false)}
+            className="absolute -top-2 -right-2 bg-gray-800 text-white rounded-full p-0.5 hover:bg-gray-700 transition z-10"
+            title="Sembunyikan shortcut"
+          >
+            <X size={12} />
+          </button>
 
-        {/* Main toolbar */}
-        <div className="bg-gray-900/90 backdrop-blur-sm rounded-full shadow-lg px-4 py-2 flex items-center gap-2">
-          <Keyboard size={16} className="text-gray-400 mr-1" />
+          {/* Main toolbar */}
+          <div className="bg-gray-900/90 backdrop-blur-sm rounded-full shadow-lg px-4 py-2 flex items-center gap-2">
+            <Keyboard size={16} className="text-gray-400 mr-1" />
+
+            {SHORTCUTS.map((shortcut) => {
+              const Icon = shortcut.icon;
+              const isPulsing = pulseKey === shortcut.key;
+
+              return (
+                <div
+                  key={shortcut.key}
+                  className="relative"
+                  onMouseEnter={() => setHoveredShortcut(shortcut.key)}
+                  onMouseLeave={() => setHoveredShortcut(null)}
+                >
+                  <div
+                    className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all cursor-default ${
+                      isPulsing
+                        ? 'bg-green-500 text-white scale-110'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    }`}
+                  >
+                    {Icon && <Icon size={12} />}
+                    <span>{shortcut.key}</span>
+                  </div>
+
+                  {/* Tooltip */}
+                  {hoveredShortcut === shortcut.key && (
+                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg whitespace-nowrap z-50">
+                      <p className="font-semibold">{shortcut.label}</p>
+                      <p className="text-gray-400">{shortcut.description}</p>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile version */}
+      <div className="fixed bottom-2 left-2 right-2 z-50 md:hidden">
+        <div className="bg-gray-900/90 backdrop-blur-sm rounded-full shadow-lg px-3 py-1.5 flex items-center justify-center gap-1 overflow-x-auto">
+          <Keyboard size={14} className="text-gray-400 mr-1 flex-shrink-0" />
 
           {SHORTCUTS.map((shortcut) => {
             const Icon = shortcut.icon;
@@ -65,34 +108,19 @@ export default function ShortcutsHelper() {
             return (
               <div
                 key={shortcut.key}
-                className="relative"
-                onMouseEnter={() => setHoveredShortcut(shortcut.key)}
-                onMouseLeave={() => setHoveredShortcut(null)}
+                className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium transition-all cursor-default flex-shrink-0 ${
+                  isPulsing
+                    ? 'bg-green-500 text-white scale-110'
+                    : 'bg-gray-800 text-gray-300'
+                }`}
               >
-                <div
-                  className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all cursor-default ${
-                    isPulsing
-                      ? 'bg-green-500 text-white scale-110'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  {Icon && <Icon size={12} />}
-                  <span>{shortcut.key}</span>
-                </div>
-
-                {/* Tooltip */}
-                {hoveredShortcut === shortcut.key && (
-                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg whitespace-nowrap z-50">
-                    <p className="font-semibold">{shortcut.label}</p>
-                    <p className="text-gray-400">{shortcut.description}</p>
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
-                  </div>
-                )}
+                {Icon && <Icon size={10} />}
+                <span>{shortcut.key}</span>
               </div>
             );
           })}
         </div>
       </div>
-    </div>
+    </>
   );
 }
