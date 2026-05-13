@@ -80,119 +80,208 @@ export default function MainLayout({
   // Mobile layout
   if (isMobile) {
     return (
-      <div className="flex flex-col h-screen bg-gray-50">
-        {/* Mobile Header */}
-        <header
-          className={`fixed top-0 left-0 right-0 z-50 transition-colors ${
-            isOffline ? 'bg-red-700' : 'bg-gray-900'
-          } text-white px-4 py-3`}
-        >
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1 hover:bg-gray-800 rounded"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+      <>
+        <div className="flex flex-col h-screen bg-gray-50">
+          {/* Mobile Header */}
+          <header
+            className={`fixed top-0 left-0 right-0 z-50 transition-colors ${
+              isOffline ? 'bg-red-700' : 'bg-gray-900'
+            } text-white px-4 py-3`}
+          >
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-1 hover:bg-gray-800 rounded"
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
 
-            <div className="flex-1 text-center">
-              <h1 className="font-bold text-lg">BarberPOS</h1>
+              <div className="flex-1 text-center">
+                <h1 className="font-bold text-lg">BarberPOS</h1>
+              </div>
+
+              <button
+                onClick={() => setMobileCartOpen(!mobileCartOpen)}
+                className="relative p-1 hover:bg-gray-800 rounded"
+              >
+                <ShoppingCart size={24} />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
             </div>
 
+            {/* Sync button mobile */}
             <button
-              onClick={() => setMobileCartOpen(!mobileCartOpen)}
-              className="relative p-1 hover:bg-gray-800 rounded"
+              onClick={openSyncModal}
+              className="relative p-1 hover:bg-gray-800 rounded transition"
+              title="Antrian sinkronisasi"
             >
-              <ShoppingCart size={24} />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItemCount}
+              <CloudUpload size={20} className="text-gray-300" />
+              {pendingCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {pendingCount}
                 </span>
               )}
             </button>
-          </div>
 
-          {/* Sync button mobile */}
-          <button
-            onClick={openSyncModal}
-            className="relative p-1 hover:bg-gray-800 rounded transition"
-            title="Antrian sinkronisasi"
-          >
-            <CloudUpload size={20} className="text-gray-300" />
-            {pendingCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {pendingCount}
-              </span>
+            {/* Offline badge mobile */}
+            {isOffline && (
+              <div className="mt-2 flex items-center justify-center gap-2 text-sm">
+                <span className="inline-flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 bg-red-200 rounded-full animate-pulse"></span>
+                  OFFLINE MODE • Data disimpan lokal
+                </span>
+              </div>
             )}
-          </button>
+          </header>
 
-          {/* Sync button mobile */}
-          <button
-            onClick={openSyncModal}
-            className="relative p-1 hover:bg-gray-800 rounded transition"
-            title="Antrian sinkronisasi"
-          >
-            <CloudUpload size={20} className="text-gray-300" />
-            {pendingCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {pendingCount}
-              </span>
-            )}
-          </button>
+          {/* Mobile menu overlay */}
+          {mobileMenuOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40 mt-16" />
+          )}
 
-          {/* Offline badge mobile */}
-          {isOffline && (
-            <div className="mt-2 flex items-center justify-center gap-2 text-sm">
-              <span className="inline-flex items-center gap-1">
-                <span className="inline-block w-2 h-2 bg-red-200 rounded-full animate-pulse"></span>
-                OFFLINE MODE • Data disimpan lokal
+          {/* Main content area - products */}
+          <main className="flex-1 overflow-y-auto pt-16 pb-20">
+            {children}
+          </main>
+
+          {/* Mobile Bottom Navigation */}
+          <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex items-center justify-between gap-2">
+            <div className="flex-1 text-sm">
+              <span className="text-gray-600">Total:</span>
+              <span className="ml-2 font-bold text-lg">
+                Rp {cartTotal.toLocaleString('id-ID')}
               </span>
             </div>
-          )}
-        </header>
-
-        {/* Mobile menu overlay */}
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40 mt-16" />
-        )}
-
-        {/* Main content area - products */}
-        <main className="flex-1 overflow-y-auto pt-16 pb-20">
-          {children}
-        </main>
-
-        {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex items-center justify-between gap-2">
-          <div className="flex-1 text-sm">
-            <span className="text-gray-600">Total:</span>
-            <span className="ml-2 font-bold text-lg">
-              Rp {cartTotal.toLocaleString('id-ID')}
-            </span>
-          </div>
-          <button
-            onClick={onCheckout}
-            disabled={cartItemCount === 0}
-            className={`flex-1 font-bold py-2 px-3 rounded transition-transform ${
-              cartItemCount === 0
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-green-500 text-white hover:scale-[1.02]'
-            }`}
-          >
-            BAYAR
-          </button>
-        </nav>
-
-        {/* Mobile Cart Bottom Sheet */}
-        {mobileCartOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 mt-16"
-            onClick={() => setMobileCartOpen(false)}
-          >
-            <div
-              className="absolute bottom-20 left-0 right-0 bg-white rounded-t-2xl shadow-lg max-h-[50vh] overflow-y-auto transition-transform duration-300"
-              onClick={(e) => e.stopPropagation()}
+            <button
+              onClick={onCheckout}
+              disabled={cartItemCount === 0}
+              className={`flex-1 font-bold py-2 px-3 rounded transition-transform ${
+                cartItemCount === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-green-500 text-white hover:scale-[1.02]'
+              }`}
             >
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 rounded-t-2xl flex items-center justify-between">
+              BAYAR
+            </button>
+          </nav>
+
+          {/* Mobile Cart Bottom Sheet */}
+          {mobileCartOpen && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-30 mt-16"
+              onClick={() => setMobileCartOpen(false)}
+            >
+              <div
+                className="absolute bottom-20 left-0 right-0 bg-white rounded-t-2xl shadow-lg max-h-[50vh] overflow-y-auto transition-transform duration-300"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 rounded-t-2xl flex items-center justify-between">
+                  <h2 className="font-bold text-lg flex items-center gap-2">
+                    🛒 Keranjang
+                    {cartItemCount > 0 && (
+                      <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </h2>
+                </div>
+
+                <div className="p-4">
+                  {cartItemCount === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                      <ShoppingCart size={48} className="mb-3 text-gray-300" />
+                      <p className="font-semibold">Keranjang kosong</p>
+                      <p className="text-sm">Klik produk untuk menambahkan</p>
+                    </div>
+                  ) : (
+                    cartContent
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '14px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            },
+          }}
+        />
+        <SyncQueueModal />
+        <ShortcutsHelper />
+      </>
+    );
+  }
+
+  // Tablet layout (768px - 1024px)
+  if (isTablet) {
+    return (
+      <>
+        <div className="flex flex-col h-screen bg-gray-50">
+          {/* Tablet Header */}
+          <header
+            className={`fixed top-0 left-0 right-0 z-40 transition-colors ${
+              isOffline ? 'bg-red-700' : 'bg-gray-900'
+            } text-white px-6 py-4`}
+          >
+            <div className="flex items-center justify-between">
+              <h1 className="font-bold text-xl">BarberPOS</h1>
+
+              <div className="flex items-center gap-4">
+                {/* Status indicator */}
+                {isOffline ? (
+                  <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full text-sm">
+                    <WifiOff size={16} />
+                    OFFLINE MODE
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-green-400">
+                    <span className="inline-block w-2 h-2 bg-green-400 rounded-full"></span>
+                    Online
+                  </div>
+                )}
+
+                {/* Kasir info */}
+                <div className="flex items-center gap-2 text-sm">
+                  <User size={16} />
+                  {kasirName}
+                </div>
+
+                {/* Cart summary */}
+                <div className="flex items-center gap-2 bg-gray-800 px-3 py-1 rounded">
+                  <ShoppingCart size={16} />
+                  <span>{cartItemCount} item</span>
+                  <span className="text-green-400">
+                    Rp {cartTotal.toLocaleString('id-ID')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Main content - 60% products, 40% cart */}
+          <div className="flex flex-1 pt-16 overflow-hidden">
+            {/* Products area */}
+            <main className="flex-1 w-3/5 overflow-y-auto">
+              {children}
+            </main>
+
+            {/* Cart sidebar */}
+            <aside className="w-2/5 bg-white border-l border-gray-200 shadow-lg flex flex-col overflow-hidden">
+              {/* Cart header */}
+              <div className="border-b border-gray-200 px-4 py-4 sticky top-0 bg-white">
                 <h2 className="font-bold text-lg flex items-center gap-2">
                   🛒 Keranjang
                   {cartItemCount > 0 && (
@@ -203,9 +292,10 @@ export default function MainLayout({
                 </h2>
               </div>
 
-              <div className="p-4">
+              {/* Cart content */}
+              <div className="flex-1 overflow-y-auto p-4">
                 {cartItemCount === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                  <div className="flex flex-col items-center justify-center h-full text-gray-500">
                     <ShoppingCart size={48} className="mb-3 text-gray-300" />
                     <p className="font-semibold">Keranjang kosong</p>
                     <p className="text-sm">Klik produk untuk menambahkan</p>
@@ -214,123 +304,178 @@ export default function MainLayout({
                   cartContent
                 )}
               </div>
-            </div>
+
+              {/* Cart footer */}
+              {cartItemCount > 0 && (
+                <div className="border-t border-gray-200 p-4 bg-white">
+                  <div className="mb-3 pb-3 border-b border-gray-200">
+                    <div className="flex justify-between text-sm text-gray-600 mb-2">
+                      <span>Subtotal</span>
+                      <span>Rp {cartTotal.toLocaleString('id-ID')}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={onCheckout}
+                    className="w-full bg-green-500 text-white font-bold py-3 rounded hover:scale-[1.02] transition-transform"
+                  >
+                    BAYAR
+                  </button>
+                </div>
+              )}
+            </aside>
           </div>
-        )}
-      </div>
-      <Toaster
-        position="bottom-center"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#1f2937',
-            color: '#fff',
-            borderRadius: '12px',
-            padding: '12px 16px',
-            fontSize: '14px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          },
-        }}
-      />
-      <SyncQueueModal />
-      <ShortcutsHelper />
+        </div>
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '14px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            },
+          }}
+        />
+        <SyncQueueModal />
+        <ShortcutsHelper />
+      </>
     );
   }
 
-  // Tablet layout (768px - 1024px)
-  if (isTablet) {
-    return (
+  // Desktop layout (> 1024px)
+  return (
+    <>
       <div className="flex flex-col h-screen bg-gray-50">
-        {/* Tablet Header */}
+        {/* Desktop Header */}
         <header
           className={`fixed top-0 left-0 right-0 z-40 transition-colors ${
             isOffline ? 'bg-red-700' : 'bg-gray-900'
-          } text-white px-6 py-4`}
+          } text-white px-8 py-4`}
         >
-          <div className="flex items-center justify-between">
-            <h1 className="font-bold text-xl">BarberPOS</h1>
+          <div className="flex items-center justify-between gap-8">
+            {/* Left: Logo */}
+            <div className="flex-shrink-0">
+              <h1 className="font-bold text-2xl">BarberPOS</h1>
+            </div>
 
-            <div className="flex items-center gap-4">
+            {/* Center: Search bar */}
+            <div className="flex-1 max-w-md">
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  data-search-input
+                  value={searchValue}
+                  onChange={(e) => onSearch(e.target.value)}
+                  placeholder="Cari produk... (F1)"
+                  className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <Search size={18} className="absolute right-3 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Right: Status and Kasir info */}
+            <div className="flex items-center gap-6">
+              {/* Sync button */}
+              <button
+                onClick={openSyncModal}
+                className="relative p-1 hover:bg-gray-800 rounded transition"
+                title="Antrian sinkronisasi"
+              >
+                <CloudUpload size={20} className="text-gray-300" />
+                {pendingCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {pendingCount}
+                  </span>
+                )}
+              </button>
+
               {/* Status indicator */}
               {isOffline ? (
-                <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full text-sm">
-                  <WifiOff size={16} />
+                <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full text-sm animate-pulse">
+                  <span className="inline-block w-2 h-2 bg-red-200 rounded-full animate-pulse"></span>
                   OFFLINE MODE
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-green-400">
+                <div className="flex items-center gap-2">
                   <span className="inline-block w-2 h-2 bg-green-400 rounded-full"></span>
-                  Online
+                  <span className="text-sm">Online</span>
                 </div>
               )}
 
-              {/* Kasir info */}
+              {/* Kasir name */}
               <div className="flex items-center gap-2 text-sm">
                 <User size={16} />
                 {kasirName}
               </div>
-
-              {/* Cart summary */}
-              <div className="flex items-center gap-2 bg-gray-800 px-3 py-1 rounded">
-                <ShoppingCart size={16} />
-                <span>{cartItemCount} item</span>
-                <span className="text-green-400">
-                  Rp {cartTotal.toLocaleString('id-ID')}
-                </span>
-              </div>
             </div>
           </div>
+
+          {/* Offline badge */}
+          {isOffline && (
+            <div className="mt-3 flex items-center justify-center gap-2 text-sm">
+              <AlertCircle size={14} />
+              🔴 OFFLINE MODE • Data disimpan lokal
+            </div>
+          )}
         </header>
 
-        {/* Main content - 60% products, 40% cart */}
+        {/* Main content - 65% products, 35% cart */}
         <div className="flex flex-1 pt-16 overflow-hidden">
           {/* Products area */}
-          <main className="flex-1 w-3/5 overflow-y-auto">
+          <main className="flex-1 w-13/20 overflow-y-auto">
             {children}
           </main>
 
-          {/* Cart sidebar */}
-          <aside className="w-2/5 bg-white border-l border-gray-200 shadow-lg flex flex-col overflow-hidden">
+          {/* Cart sidebar - sticky */}
+          <aside className="w-7/20 bg-white border-l border-gray-200 shadow-lg flex flex-col overflow-hidden sticky right-0 top-16">
             {/* Cart header */}
-            <div className="border-b border-gray-200 px-4 py-4 sticky top-0 bg-white">
-              <h2 className="font-bold text-lg flex items-center gap-2">
+            <div className="border-b border-gray-200 px-6 py-4 sticky top-0 bg-white">
+              <h2 className="font-bold text-lg flex items-center gap-3">
                 🛒 Keranjang
                 {cartItemCount > 0 && (
-                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                  <span className="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
                     {cartItemCount}
                   </span>
                 )}
               </h2>
             </div>
 
-            {/* Cart content */}
-            <div className="flex-1 overflow-y-auto p-4">
+            {/* Cart content scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
               {cartItemCount === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                  <ShoppingCart size={48} className="mb-3 text-gray-300" />
-                  <p className="font-semibold">Keranjang kosong</p>
-                  <p className="text-sm">Klik produk untuk menambahkan</p>
+                  <ShoppingCart size={56} className="mb-4 text-gray-300" />
+                  <p className="font-semibold text-lg">Keranjang kosong</p>
+                  <p className="text-sm text-gray-400">Klik produk untuk menambahkan</p>
                 </div>
               ) : (
                 cartContent
               )}
             </div>
 
-            {/* Cart footer */}
+            {/* Cart footer - sticky */}
             {cartItemCount > 0 && (
-              <div className="border-t border-gray-200 p-4 bg-white">
-                <div className="mb-3 pb-3 border-b border-gray-200">
-                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+              <div className="border-t border-gray-200 p-6 bg-white sticky bottom-0">
+                <div className="mb-4 pb-4 border-b border-gray-200">
+                  <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal</span>
-                    <span>Rp {cartTotal.toLocaleString('id-ID')}</span>
+                    <span className="font-semibold">
+                      Rp {cartTotal.toLocaleString('id-ID')}
+                    </span>
                   </div>
                 </div>
                 <button
                   onClick={onCheckout}
-                  className="w-full bg-green-500 text-white font-bold py-3 rounded hover:scale-[1.02] transition-transform"
+                  className="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:scale-[1.02] transition-transform mb-2"
                 >
                   BAYAR
                 </button>
+                <p className="text-xs text-gray-400 text-center">
+                  F2 untuk bayar
+                </p>
               </div>
             )}
           </aside>
@@ -352,159 +497,6 @@ export default function MainLayout({
       />
       <SyncQueueModal />
       <ShortcutsHelper />
-    );
-  }
-
-  // Desktop layout (> 1024px)
-  return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Desktop Header */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-colors ${
-          isOffline ? 'bg-red-700' : 'bg-gray-900'
-        } text-white px-8 py-4`}
-      >
-        <div className="flex items-center justify-between gap-8">
-          {/* Left: Logo */}
-          <div className="flex-shrink-0">
-            <h1 className="font-bold text-2xl">BarberPOS</h1>
-          </div>
-
-          {/* Center: Search bar */}
-          <div className="flex-1 max-w-md">
-            <div className="relative flex items-center">
-              <input
-                type="text"
-                data-search-input
-                value={searchValue}
-                onChange={(e) => onSearch(e.target.value)}
-                placeholder="Cari produk... (F1)"
-                className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-              <Search size={18} className="absolute right-3 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
-
-          {/* Right: Status and Kasir info */}
-          <div className="flex items-center gap-6">
-            {/* Sync button */}
-            <button
-              onClick={openSyncModal}
-              className="relative p-1 hover:bg-gray-800 rounded transition"
-              title="Antrian sinkronisasi"
-            >
-              <CloudUpload size={20} className="text-gray-300" />
-              {pendingCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {pendingCount}
-                </span>
-              )}
-            </button>
-
-            {/* Status indicator */}
-            {isOffline ? (
-              <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full text-sm animate-pulse">
-                <span className="inline-block w-2 h-2 bg-red-200 rounded-full animate-pulse"></span>
-                OFFLINE MODE
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <span className="inline-block w-2 h-2 bg-green-400 rounded-full"></span>
-                <span className="text-sm">Online</span>
-              </div>
-            )}
-
-            {/* Kasir name */}
-            <div className="flex items-center gap-2 text-sm">
-              <User size={16} />
-              {kasirName}
-            </div>
-          </div>
-        </div>
-
-        {/* Offline badge */}
-        {isOffline && (
-          <div className="mt-3 flex items-center justify-center gap-2 text-sm">
-            <AlertCircle size={14} />
-            🔴 OFFLINE MODE • Data disimpan lokal
-          </div>
-        )}
-      </header>
-
-      {/* Main content - 65% products, 35% cart */}
-      <div className="flex flex-1 pt-16 overflow-hidden">
-        {/* Products area */}
-        <main className="flex-1 w-13/20 overflow-y-auto">
-          {children}
-        </main>
-
-        {/* Cart sidebar - sticky */}
-        <aside className="w-7/20 bg-white border-l border-gray-200 shadow-lg flex flex-col overflow-hidden sticky right-0 top-16">
-          {/* Cart header */}
-          <div className="border-b border-gray-200 px-6 py-4 sticky top-0 bg-white">
-            <h2 className="font-bold text-lg flex items-center gap-3">
-              🛒 Keranjang
-              {cartItemCount > 0 && (
-                <span className="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                  {cartItemCount}
-                </span>
-              )}
-            </h2>
-          </div>
-
-          {/* Cart content scrollable */}
-          <div className="flex-1 overflow-y-auto p-6">
-            {cartItemCount === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                <ShoppingCart size={56} className="mb-4 text-gray-300" />
-                <p className="font-semibold text-lg">Keranjang kosong</p>
-                <p className="text-sm text-gray-400">Klik produk untuk menambahkan</p>
-              </div>
-            ) : (
-              cartContent
-            )}
-          </div>
-
-          {/* Cart footer - sticky */}
-          {cartItemCount > 0 && (
-            <div className="border-t border-gray-200 p-6 bg-white sticky bottom-0">
-              <div className="mb-4 pb-4 border-b border-gray-200">
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Subtotal</span>
-                  <span className="font-semibold">
-                    Rp {cartTotal.toLocaleString('id-ID')}
-                  </span>
-                </div>
-              </div>
-              <button
-                onClick={onCheckout}
-                className="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:scale-[1.02] transition-transform mb-2"
-              >
-                BAYAR
-              </button>
-              <p className="text-xs text-gray-400 text-center">
-                F2 untuk bayar
-              </p>
-            </div>
-          )}
-        </aside>
-      </div>
-      <Toaster
-        position="bottom-center"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#1f2937',
-            color: '#fff',
-            borderRadius: '12px',
-            padding: '12px 16px',
-            fontSize: '14px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          },
-        }}
-      />
-      <SyncQueueModal />
-      <ShortcutsHelper />
-    </div>
+    </>
   );
 }
