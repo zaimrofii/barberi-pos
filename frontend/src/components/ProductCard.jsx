@@ -58,6 +58,26 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
 
   const handleClick = () => {
     if (!isOutOfStock) {
+      // Check if adding would exceed stock
+      if (item.type === 'PRODUCT' && item.stock !== null && cartQuantity >= item.stock) {
+        toast.error(
+          `⚠️ Stok tidak mencukupi - Maksimal ${item.stock} item (sisa ${item.stock - cartQuantity})`,
+          {
+            duration: 3000,
+            position: 'bottom-center',
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '14px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            },
+            icon: '⚠️',
+          }
+        )
+        return
+      }
       onAdd()
     }
   }
@@ -65,12 +85,52 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
   const handleKeyDown = (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && !isOutOfStock) {
       e.preventDefault()
+      // Check if adding would exceed stock
+      if (item.type === 'PRODUCT' && item.stock !== null && cartQuantity >= item.stock) {
+        toast.error(
+          `⚠️ Stok tidak mencukupi - Maksimal ${item.stock} item (sisa ${item.stock - cartQuantity})`,
+          {
+            duration: 3000,
+            position: 'bottom-center',
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '14px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            },
+            icon: '⚠️',
+          }
+        )
+        return
+      }
       onAdd()
     }
   }
 
   const handleButtonClick = (e) => {
     e.stopPropagation()
+    // Check if adding would exceed stock
+    if (item.type === 'PRODUCT' && item.stock !== null && cartQuantity >= item.stock) {
+      toast.error(
+        `⚠️ Stok tidak mencukupi - Maksimal ${item.stock} item (sisa ${item.stock - cartQuantity})`,
+        {
+          duration: 3000,
+          position: 'bottom-center',
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          },
+          icon: '⚠️',
+        }
+      )
+      return
+    }
     onAdd()
   }
 

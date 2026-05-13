@@ -182,10 +182,30 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
       if (newQuantity <= 0) {
         removeItem(itemId)
       } else {
+        const item = items.find((i) => i.id === itemId)
+        if (item && item.type === 'PRODUCT' && item.stock !== null && newQuantity > item.stock) {
+          toast.error(
+            `⚠️ Stok tidak mencukupi - Maksimal ${item.stock} item (sisa ${item.stock - item.quantity})`,
+            {
+              duration: 3000,
+              position: 'bottom-center',
+              style: {
+                background: '#1f2937',
+                color: '#fff',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                fontSize: '14px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              },
+              icon: '⚠️',
+            }
+          )
+          return
+        }
         updateQuantity(itemId, newQuantity)
       }
     },
-    [updateQuantity, removeItem]
+    [updateQuantity, removeItem, items]
   )
 
   const handleRemoveItem = useCallback((itemId) => {

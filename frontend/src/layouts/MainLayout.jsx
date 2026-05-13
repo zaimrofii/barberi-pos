@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 import {
   ShoppingCart,
   Search,
@@ -217,6 +218,20 @@ export default function MainLayout({
           </div>
         )}
       </div>
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          },
+        }}
+      />
       <SyncQueueModal />
       <ShortcutsHelper />
     );
@@ -321,6 +336,20 @@ export default function MainLayout({
           </aside>
         </div>
       </div>
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          },
+        }}
+      />
       <SyncQueueModal />
       <ShortcutsHelper />
     );
@@ -460,6 +489,20 @@ export default function MainLayout({
           )}
         </aside>
       </div>
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          },
+        }}
+      />
       <SyncQueueModal />
       <ShortcutsHelper />
     </div>

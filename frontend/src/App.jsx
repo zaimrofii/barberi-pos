@@ -1,4 +1,5 @@
 import React from 'react';
+import { Toaster } from 'react-hot-toast';
 import MainLayout from './layouts/MainLayout';
 import ProductList from './components/ProductList';
 import CartPanel from './components/CartPanel';
@@ -48,18 +49,46 @@ export default function App() {
   };
 
   return (
-    <MainLayout
-      kasirName="Kasir"
-      cartItemCount={getItemCount()}
-      cartTotal={getTotal()}
-      onCheckout={() => {}}
-      onSearch={handleSearch}
-      searchValue=""
-      cartContent={<CartPanel />}
-    >
-      <ProductList />
-      <RecoveryPopup />
-      <SyncQueueModal />
-    </MainLayout>
+    <>
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
+      <MainLayout
+        kasirName="Kasir"
+        cartItemCount={getItemCount()}
+        cartTotal={getTotal()}
+        onCheckout={() => {}}
+        onSearch={handleSearch}
+        searchValue=""
+        cartContent={<CartPanel />}
+      >
+        <ProductList />
+        <RecoveryPopup />
+        <SyncQueueModal />
+      </MainLayout>
+    </>
   );
 }
