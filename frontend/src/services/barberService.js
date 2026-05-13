@@ -38,10 +38,10 @@ export async function getItems(type) {
   ]
 
   const PRODUCTS = [
-    { id: 101, name: 'Shampoo Premium', price: 25000, type: 'PRODUCT', stock: 3, category: 'care' },
-    { id: 102, name: 'Conditioner', price: 20000, type: 'PRODUCT', stock: 0, category: 'care' },
-    { id: 103, name: 'Beard Oil', price: 35000, type: 'PRODUCT', stock: 8, category: 'beard' },
-    { id: 104, name: 'Hair Wax', price: 15000, type: 'PRODUCT', stock: 12, category: 'hair' },
+    { id: 101, name: 'Shampoo Premium', price: 25000, type: 'PRODUCT', stock: 3, initial_stock: 50, sold_today: 1, category: 'care' },
+    { id: 102, name: 'Conditioner', price: 20000, type: 'PRODUCT', stock: 0, initial_stock: 30, sold_today: 0, category: 'care' },
+    { id: 103, name: 'Beard Oil', price: 35000, type: 'PRODUCT', stock: 8, initial_stock: 20, sold_today: 2, category: 'beard' },
+    { id: 104, name: 'Hair Wax', price: 15000, type: 'PRODUCT', stock: 12, initial_stock: 25, sold_today: 3, category: 'hair' },
   ]
 
   // Simulate network delay

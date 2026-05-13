@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Scissors, Package, Clock } from 'lucide-react'
+import useSoldToday from '../hooks/useSoldToday'
 
 function formatPrice(price) {
   return new Intl.NumberFormat('id-ID', {
@@ -13,6 +14,11 @@ function formatPrice(price) {
 }
 
 export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuantity }) {
+  const [showTooltip, setShowTooltip] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const hoverTimeoutRef = useRef(null)
+  const { soldToday } = useSoldToday(item.id)
+
   const isOutOfStock = item.type === 'PRODUCT' && item.stock === 0
   const stockStatus =
     item.type === 'PRODUCT'
@@ -22,6 +28,33 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
         ? 'warning'
         : 'normal'
       : null
+
+  const handleMouseEnter = () => {
+    if (item.type !== 'PRODUCT') return
+    setIsHovered(true)
+    // 300ms delay before showing tooltip
+    hoverTimeoutRef.current = setTimeout(() => {
+      setShowTooltip(true)
+    }, 300)
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+      hoverTimeoutRef.current = null
+    }
+    setShowTooltip(false)
+  }
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleClick = () => {
     if (!isOutOfStock) {
@@ -41,10 +74,15 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
     onAdd()
   }
 
+  const initialStock = item.initial_stock || item.stock || 0
+  const needsReorder = item.type === 'PRODUCT' && item.stock <= 3 && item.stock > 0
+
   return (
     <div
       onClick={handleClick}
       onKeyDown={handleKeyDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       role="button"
       tabIndex={0}
       aria-label={`Tambah ${item.name} ke keranjang`}
@@ -58,6 +96,35 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       }`}
       style={{ padding: '12px' }}
     >
+      {/* Tooltip for PRODUCT type */}
+      {showTooltip && item.type === 'PRODUCT' && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
+          <div
+            className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl whitespace-nowrap"
+            style={{
+              opacity: showTooltip ? 1 : 0,
+              transform: showTooltip ? 'translateY(0)' : 'translateY(4px)',
+              transition: 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
+            }}
+          >
+            <p className="font-semibold text-sm mb-1">{item.name}</p>
+            <p className="text-gray-300">
+              Stok: {item.stock} dari {initialStock} awal
+            </p>
+            <p className="text-gray-300">
+              Terjual hari ini: {soldToday} item
+            </p>
+            {needsReorder && (
+              <p className="text-yellow-400 font-medium mt-1">
+                💡 Restok diperlukan!
+              </p>
+            )}
+            {/* Arrow */}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+          </div>
+        </div>
+      )}
+
       {/* Icon/Image Area */}
       <div className="relative bg-gray-100 rounded-lg mb-2 h-16 flex items-center justify-center">
         {item.type === 'SERVICE' ? (
