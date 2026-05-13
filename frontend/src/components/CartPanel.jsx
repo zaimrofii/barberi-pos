@@ -318,9 +318,9 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
 
   // Desktop version
   const desktopPanel = (
-    <div className="hidden md:flex md:flex-col md:h-full bg-white">
+    <div className="hidden md:flex md:flex-col md:h-full bg-white" data-component="CartPanel">
       {/* Section 1: Header */}
-      <div className="border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0" data-component="CartPanel.Header">
         <div className="flex items-center gap-2">
           <ShoppingCart size={20} className="text-green-600" />
           <span className="font-bold text-gray-800">Keranjang</span>
@@ -418,7 +418,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
       </div>
 
       {/* Section 3: Cart Items */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50">
+      <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50" data-component="CartPanel.Items">
         {items.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center">
             <ShoppingCart size={40} className="text-gray-300" />
@@ -590,7 +590,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
 
   // Mobile bottom sheet version
   const mobilePanel = (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50" data-component="CartPanel.Mobile">
       {isMobileOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300"

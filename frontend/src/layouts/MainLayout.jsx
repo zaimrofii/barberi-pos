@@ -81,9 +81,10 @@ export default function MainLayout({
   if (isMobile) {
     return (
       <>
-        <div className="flex flex-col h-screen bg-gray-50">
+        <div className="flex flex-col h-screen bg-gray-50" data-component="MainLayout">
           {/* Mobile Header */}
           <header
+            data-component="MainLayout.Header"
             className={`fixed top-0 left-0 right-0 z-50 transition-colors ${
               isOffline ? 'bg-red-700' : 'bg-gray-900'
             } text-white px-4 py-3`}
@@ -144,12 +145,12 @@ export default function MainLayout({
           )}
 
           {/* Main content area - products */}
-          <main className="flex-1 overflow-y-auto pt-16 pb-20">
+          <main className="flex-1 overflow-y-auto pt-16 pb-20" data-component="MainLayout.Main">
             {children}
           </main>
 
           {/* Mobile Bottom Navigation */}
-          <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex items-center justify-between gap-2">
+          <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex items-center justify-between gap-2" data-component="MainLayout.Nav">
             <div className="flex-1 text-sm">
               <span className="text-gray-600">Total:</span>
               <span className="ml-2 font-bold text-lg">
@@ -229,9 +230,10 @@ export default function MainLayout({
   if (isTablet) {
     return (
       <>
-        <div className="flex flex-col h-screen bg-gray-50">
+        <div className="flex flex-col h-screen bg-gray-50" data-component="MainLayout">
           {/* Tablet Header */}
           <header
+            data-component="MainLayout.Header"
             className={`fixed top-0 left-0 right-0 z-40 transition-colors ${
               isOffline ? 'bg-red-700' : 'bg-gray-900'
             } text-white px-6 py-4`}
@@ -274,12 +276,12 @@ export default function MainLayout({
           {/* Main content - 60% products, 40% cart */}
           <div className="flex flex-1 pt-16 overflow-hidden">
             {/* Products area */}
-            <main className="flex-1 w-3/5 overflow-y-auto">
+            <main className="flex-1 w-3/5 overflow-y-auto" data-component="MainLayout.Main">
               {children}
             </main>
 
             {/* Cart sidebar */}
-            <aside className="w-2/5 bg-white border-l border-gray-200 shadow-lg flex flex-col overflow-hidden">
+            <aside className="w-2/5 bg-white border-l border-gray-200 shadow-lg flex flex-col overflow-hidden" data-component="MainLayout.Aside">
               {/* Cart header */}
               <div className="border-b border-gray-200 px-4 py-4 sticky top-0 bg-white">
                 <h2 className="font-bold text-lg flex items-center gap-2">
@@ -348,9 +350,10 @@ export default function MainLayout({
   // Desktop layout (> 1024px)
   return (
     <>
-      <div className="flex flex-col h-screen bg-gray-50">
+      <div className="flex flex-col h-screen bg-gray-50" data-component="MainLayout">
         {/* Desktop Header */}
         <header
+          data-component="MainLayout.Header"
           className={`fixed top-0 left-0 right-0 z-40 transition-colors ${
             isOffline ? 'bg-red-700' : 'bg-gray-900'
           } text-white px-8 py-4`}
@@ -439,12 +442,12 @@ export default function MainLayout({
         {/* Main content - 65% products, 35% cart */}
         <div className="flex flex-1 pt-16 overflow-hidden">
           {/* Products area */}
-          <main className="flex-1 w-13/20 overflow-y-auto">
+          <main className="flex-1 w-13/20 overflow-y-auto" data-component="MainLayout.Main">
             {children}
           </main>
 
           {/* Cart sidebar - sticky */}
-          <aside className="w-7/20 bg-white border-l border-gray-200 shadow-lg flex flex-col overflow-hidden sticky right-0 top-16">
+          <aside className="w-7/20 bg-white border-l border-gray-200 shadow-lg flex flex-col overflow-hidden sticky right-0 top-16" data-component="MainLayout.Aside">
             {/* Cart header */}
             <div className="border-b border-gray-200 px-6 py-4 sticky top-0 bg-white">
               <h2 className="font-bold text-lg flex items-center gap-3">

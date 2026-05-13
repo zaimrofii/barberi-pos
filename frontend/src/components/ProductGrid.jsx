@@ -137,9 +137,9 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden" data-component="ProductGrid">
       {/* Tab Bar */}
-      <div className="sticky top-0 z-10 bg-white px-3 md:px-4 py-3 md:py-4 border-b border-gray-200">
+      <div className="sticky top-0 z-10 bg-white px-3 md:px-4 py-3 md:py-4 border-b border-gray-200" data-component="ProductGrid.Tabs">
         <div className="flex gap-1 bg-gray-100 rounded-full p-1 inline-flex w-full md:w-auto">
           <button
             onClick={() => onTabChange('all')}
@@ -206,7 +206,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
       </div>
 
       {/* Mobile Search Bar */}
-      <div className="md:hidden sticky top-24 z-9 bg-white px-3 py-2 border-b border-gray-100">
+      <div className="md:hidden sticky top-24 z-9 bg-white px-3 py-2 border-b border-gray-100" data-component="ProductGrid.Search">
         <div className="relative flex items-center">
           <Search size={18} className="absolute left-3 text-gray-400 pointer-events-none" />
           <input
@@ -238,7 +238,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
 
       {/* Products Grid */}
       {displayItems.length > 0 && (
-        <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 md:py-4">
+        <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 md:py-4" data-component="ProductGrid.Grid">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {displayItems.map((item) => {
               const { isInCart, quantity } = getCartInfo(item.id)

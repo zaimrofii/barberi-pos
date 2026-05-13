@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
+// Import dev inspector only in development mode
+if (import.meta.env.DEV) {
+  import('./utils/devInspector.js')
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

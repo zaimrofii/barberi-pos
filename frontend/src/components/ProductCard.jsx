@@ -140,6 +140,7 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
 
   return (
     <div
+      data-component="ProductCard"
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       onMouseEnter={handleMouseEnter}

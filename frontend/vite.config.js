@@ -4,7 +4,14 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: [
+          ['@locator/babel-plugin', { projectRoot: 'src' }],
+          '@babel/plugin-transform-react-jsx-source',
+        ],
+      },
+    }),
     tailwindcss(),
   ],
   server: {
@@ -14,5 +21,8 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
-  }
+  },
+  build: {
+    sourcemap: true,
+  },
 })
