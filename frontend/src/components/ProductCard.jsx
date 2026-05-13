@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast'
 import React, { useState, useRef, useEffect } from 'react'
 import { Scissors, Package, Clock } from 'lucide-react'
 import useSoldToday from '../hooks/useSoldToday'

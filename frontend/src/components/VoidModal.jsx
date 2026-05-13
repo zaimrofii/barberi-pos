@@ -17,7 +17,6 @@ export default function VoidModal({ isOpen, onClose, transaction, onVoidSuccess 
   const [customReason, setCustomReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   const handleSubmit = async () => {
     const finalReason = reason === 'Other' ? customReason : reason;
@@ -48,17 +47,6 @@ export default function VoidModal({ isOpen, onClose, transaction, onVoidSuccess 
   if (!transaction) return null;
 
   return (
-    <>
-      <ConfirmModal
-        isOpen={confirmModalOpen}
-        onClose={() => setConfirmModalOpen(false)}
-        onConfirm={handleConfirmVoid}
-        title="Konfirmasi Void"
-        message={`Apakah Anda yakin ingin void transaksi ${transaction.id}?`}
-        confirmText="Ya, Void"
-        cancelText="Batal"
-        confirmVariant="danger"
-      />
     <>
       <ConfirmModal
         isOpen={confirmModalOpen}
