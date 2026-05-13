@@ -131,7 +131,6 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
   } = useCartStore()
   const { barbers, fetchBarbers, selectedBarber, setSelectedBarber } = useBarberStore()
   const { pendingCount } = useUIStore()
-  const { pendingCount } = useUIStore()
 
   const [barberOpen, setBarberOpen] = useState(false)
   const [discountType, setDiscountType] = useState('nominal')
@@ -139,7 +138,6 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
   const [error, setError] = useState(null)
   const [barberLoading, setBarberLoading] = useState(false)
   const [successState, setSuccessState] = useState(false)
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
 
   // Fetch barbers on mount
