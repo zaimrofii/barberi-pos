@@ -443,6 +443,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
               </button>
             </div>
             <input
+              data-discount-input
               type="number"
               value={discountType === 'percent' ? computedDiscount : discount}
               onChange={handleDiscountChange}
@@ -501,6 +502,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
             )}
 
             <button
+              data-checkout-btn
               onClick={handleCheckout}
               disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
               className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all ${
@@ -707,6 +709,7 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
                   </button>
                 </div>
                 <input
+                  data-discount-input
                   type="number"
                   value={discountType === 'percent' ? computedDiscount : discount}
                   onChange={handleDiscountChange}

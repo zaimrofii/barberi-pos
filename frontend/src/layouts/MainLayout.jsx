@@ -10,7 +10,9 @@ import {
   CloudUpload,
 } from 'lucide-react';
 import SyncQueueModal from '../components/SyncQueueModal';
+import ShortcutsHelper from '../components/ShortcutsHelper';
 import useUIStore from '../stores/uiStore';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 
 export default function MainLayout({
   children,
@@ -24,6 +26,7 @@ export default function MainLayout({
   cartContent = null,
 }) {
   const { pendingCount, openSyncModal } = useUIStore();
+  useKeyboardShortcuts();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileCartOpen, setMobileCartOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -215,6 +218,7 @@ export default function MainLayout({
         )}
       </div>
       <SyncQueueModal />
+      <ShortcutsHelper />
     );
   }
 
@@ -318,6 +322,7 @@ export default function MainLayout({
         </div>
       </div>
       <SyncQueueModal />
+      <ShortcutsHelper />
     );
   }
 
@@ -456,6 +461,7 @@ export default function MainLayout({
         </aside>
       </div>
       <SyncQueueModal />
+      <ShortcutsHelper />
     </div>
   );
 }

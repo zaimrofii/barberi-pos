@@ -2,41 +2,75 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { CART_STORAGE_KEY } from '../utils/constants'
 
+const MAX_HISTORY = 20;
+
 const useCartStore = create(
   persist(
     (set, get) => ({
       items: [],
       discount: 0,
+      history: [], // undo stack
+
+      pushToHistory: () => {
+        const { items, discount, history } = get();
+        const snapshot = { items: JSON.parse(JSON.stringify(items)), discount };
+        const newHistory = [...history, snapshot].slice(-MAX_HISTORY);
+        set({ history: newHistory });
+      },
+
+      undo: () => {
+        const { history } = get();
+        if (history.length === 0) return false;
+        const previous = history[history.length - 1];
+        set({
+          items: previous.items,
+          discount: previous.discount,
+          history: history.slice(0, -1),
+        });
+        return true;
+      },
 
       addItem: (item) =>
         set((state) => {
+          // Push to history before mutation
+          const snapshot = { items: JSON.parse(JSON.stringify(state.items)), discount: state.discount };
+          const newHistory = [...state.history, snapshot].slice(-MAX_HISTORY);
+
           const existing = state.items.find((i) => i.id === item.id)
           if (existing) {
-            // For products, check stock limit
             if (item.type === 'PRODUCT' && item.stock !== null) {
               if (existing.quantity >= item.stock) {
-                // Cannot add more than stock
-                return state
+                return { ...state, history: newHistory }
               }
             }
             return {
+              ...state,
               items: state.items.map((i) =>
                 i.id === item.id
                   ? { ...i, quantity: i.quantity + 1 }
                   : i
               ),
+              history: newHistory,
             }
           }
-          // New item
           return {
+            ...state,
             items: [...state.items, { ...item, quantity: 1 }],
+            history: newHistory,
           }
         }),
 
       updateQuantity: (itemId, quantity) =>
         set((state) => {
+          const snapshot = { items: JSON.parse(JSON.stringify(state.items)), discount: state.discount };
+          const newHistory = [...state.history, snapshot].slice(-MAX_HISTORY);
+
           if (quantity <= 0) {
-            return { items: state.items.filter((i) => i.id !== itemId) }
+            return {
+              ...state,
+              items: state.items.filter((i) => i.id !== itemId),
+              history: newHistory,
+            }
           }
           const item = state.items.find((i) => i.id === itemId)
           if (item && item.type === 'PRODUCT' && item.stock !== null) {
@@ -45,20 +79,36 @@ const useCartStore = create(
             }
           }
           return {
+            ...state,
             items: state.items.map((i) =>
               i.id === itemId ? { ...i, quantity } : i
             ),
+            history: newHistory,
           }
         }),
 
       removeItem: (itemId) =>
-        set((state) => ({
-          items: state.items.filter((i) => i.id !== itemId),
-        })),
+        set((state) => {
+          const snapshot = { items: JSON.parse(JSON.stringify(state.items)), discount: state.discount };
+          const newHistory = [...state.history, snapshot].slice(-MAX_HISTORY);
+          return {
+            ...state,
+            items: state.items.filter((i) => i.id !== itemId),
+            history: newHistory,
+          }
+        }),
 
-      setDiscount: (value) => set({ discount: value }),
+      setDiscount: (value) => set((state) => {
+        const snapshot = { items: JSON.parse(JSON.stringify(state.items)), discount: state.discount };
+        const newHistory = [...state.history, snapshot].slice(-MAX_HISTORY);
+        return { ...state, discount: value, history: newHistory };
+      }),
 
-      clearCart: () => set({ items: [], discount: 0 }),
+      clearCart: () => set((state) => {
+        const snapshot = { items: JSON.parse(JSON.stringify(state.items)), discount: state.discount };
+        const newHistory = [...state.history, snapshot].slice(-MAX_HISTORY);
+        return { ...state, items: [], discount: 0, history: newHistory };
+      }),
 
       getSubtotal: () => {
         const { items } = get()
@@ -88,6 +138,7 @@ const useCartStore = create(
       partialize: (state) => ({
         items: state.items,
         discount: state.discount,
+        history: state.history,
       }),
     }
   )

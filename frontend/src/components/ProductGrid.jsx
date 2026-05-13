@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Search, PackageSearch, Scissors, Droplets } from 'lucide-react'
+import { Search, PackageSearch, Scissors, Droplets, X } from 'lucide-react'
 import ProductCard from './ProductCard'
 import useItemStore from '../stores/itemStore'
 import useCartStore from '../stores/cartStore'
+import useUIStore from '../stores/uiStore'
 
 export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSearch }) {
   const { items, loading, error, fetchItems } = useItemStore()
   const addItem = useCartStore((s) => s.addItem)
   const cartItems = useCartStore((s) => s.items)
+  const { isQuickPickOpen, closeQuickPickModal } = useUIStore()
 
   const [selectedCategory, setSelectedCategory] = useState('all')
 
@@ -245,6 +247,48 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
                 />
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Quick Pick Modal (F4) */}
+      {isQuickPickOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-lg">Pilih Produk Cepat</h2>
+              <button
+                onClick={closeQuickPickModal}
+                className="p-1 hover:bg-gray-100 rounded"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {items.slice(0, 8).map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    handleAddToCart(item);
+                    closeQuickPickModal();
+                  }}
+                  className="p-3 bg-gray-50 rounded-lg border border-gray-100 hover:bg-green-50 hover:border-green-200 transition text-left"
+                >
+                  <p className="font-medium text-sm">{item.name}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Rp {item.price.toLocaleString('id-ID')}
+                  </p>
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={closeQuickPickModal}
+              className="w-full mt-4 py-2 px-4 rounded font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+            >
+              Tutup (ESC)
+            </button>
           </div>
         </div>
       )}
