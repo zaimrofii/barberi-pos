@@ -36,7 +36,7 @@ const OfflineBanner = ({ isOffline = false, position = 'top', onDismiss = null }
         <WifiOff className="w-4 h-4" />
         <span className="text-sm font-medium">OFFLINE MODE</span>
         <span className="text-xs opacity-80 ml-2">
-          • Transaksi akan disimpan & disinkronkan nanti
+          &bull; Transaksi akan disimpan &amp; disinkronkan nanti
         </span>
       </div>
       {onDismiss && (
