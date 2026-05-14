@@ -57,6 +57,22 @@
       "dependencies": ["../stores/uiStore"],
       "usedBy": []
     },
+    "LoadingSpinner": {
+      "path": "src/components/LoadingSpinner.jsx",
+      "type": "presentational",
+      "props": ["size", "color", "className"],
+      "responsibility": "Komponen animasi loading dengan skeleton grid untuk feedback saat memuat data",
+      "dependencies": [],
+      "usedBy": ["components/ProductGrid.jsx"]
+    },
+    "OfflineBanner": {
+      "path": "src/components/OfflineBanner.jsx",
+      "type": "presentational",
+      "props": ["isOffline", "position", "onDismiss"],
+      "responsibility": "Banner peringatan mode offline yang muncul di header saat koneksi internet terputus",
+      "dependencies": ["lucide-react"],
+      "usedBy": ["layouts/MainLayout.jsx", "components/Header.jsx"]
+    },
     "ProductCard": {
       "path": "src/components/ProductCard.jsx",
       "type": "presentational",
