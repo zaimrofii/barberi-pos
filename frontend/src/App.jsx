@@ -1,51 +1,51 @@
-import React, { useState } from 'react';
-import { Toaster } from 'react-hot-toast';
-import MainLayout from './layouts/MainLayout';
-import ProductGrid from './components/ProductGrid';
-import CartPanel from './components/CartPanel';
-import History from './pages/History';
-import CommissionReport from './pages/CommissionReport';
-import AutoSaveIndicator from './components/AutoSaveIndicator';
-import useCartStore from './stores/cartStore';
-import useUIStore from './stores/uiStore';
-import useOfflineSync from './hooks/useOfflineSync';
-import useAutoSave from './hooks/useAutoSave';
-import RecoveryPopup from './components/RecoveryPopup';
-import SyncQueueModal from './components/SyncQueueModal';
-import { CART_BACKUP_KEY } from './utils/constants';
+import React, { useState } from 'react'
+import { Toaster } from 'react-hot-toast'
+import MainLayout from './layouts/MainLayout'
+import ProductGrid from './components/ProductGrid'
+import CartPanel from './components/CartPanel'
+import History from './pages/History'
+// import CommissionReport from './pages/CommissionReport';
+import AutoSaveIndicator from './components/AutoSaveIndicator'
+import useCartStore from './stores/cartStore'
+import useUIStore from './stores/uiStore'
+import useOfflineSync from './hooks/useOfflineSync'
+import useAutoSave from './hooks/useAutoSave'
+import RecoveryPopup from './components/RecoveryPopup'
+import SyncQueueModal from './components/SyncQueueModal'
+import { CART_BACKUP_KEY } from './utils/constants'
 
 export default function App() {
-  const { items, discount, getTotal, getItemCount } = useCartStore();
-  const { setShowRecoveryPopup, setRecoveryCartData, openSyncModal, isOnline } = useUIStore();
+  const { items, discount, getTotal, getItemCount } = useCartStore()
+  const { setShowRecoveryPopup, setRecoveryCartData, openSyncModal, isOnline } = useUIStore()
 
   // Initialize offline sync
-  useOfflineSync();
+  useOfflineSync()
 
   // Initialize auto-save
-  useAutoSave();
+  useAutoSave()
 
   // Check for backup on mount
   React.useEffect(() => {
     try {
-      const backup = localStorage.getItem(CART_BACKUP_KEY);
+      const backup = localStorage.getItem(CART_BACKUP_KEY)
       if (backup) {
-        const parsed = JSON.parse(backup);
+        const parsed = JSON.parse(backup)
         if (parsed.items && parsed.items.length > 0) {
-          setRecoveryCartData(parsed);
-          setShowRecoveryPopup(true);
+          setRecoveryCartData(parsed)
+          setShowRecoveryPopup(true)
         }
       }
     } catch (e) {
-      console.error('Failed to check backup:', e);
+      console.error('Failed to check backup:', e)
     }
-  }, []);
+  }, [])
 
   // Listen for custom event to open sync modal
   React.useEffect(() => {
-    const handleOpenSyncModal = () => openSyncModal();
-    window.addEventListener('pos:open-sync-modal', handleOpenSyncModal);
-    return () => window.removeEventListener('pos:open-sync-modal', handleOpenSyncModal);
-  }, [openSyncModal]);
+    const handleOpenSyncModal = () => openSyncModal()
+    window.addEventListener('pos:open-sync-modal', handleOpenSyncModal)
+    return () => window.removeEventListener('pos:open-sync-modal', handleOpenSyncModal)
+  }, [openSyncModal])
 
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
@@ -53,12 +53,12 @@ export default function App() {
 
   const handleSearch = (query) => {
     // Implement search logic
-  };
+  }
 
   // Simple routing based on hash
-  const hash = window.location.hash || '#pos';
-  const showHistory = hash === '#history';
-  const showReports = hash === '#reports';
+  const hash = window.location.hash || '#pos'
+  const showHistory = hash === '#history'
+  const showReports = hash === '#reports'
 
   return (
     <>
@@ -120,7 +120,7 @@ export default function App() {
               </div>
             </div>
           </header>
-          <CommissionReport />
+          {/* <CommissionReport /> */}
         </div>
       ) : (
         <MainLayout
@@ -132,7 +132,6 @@ export default function App() {
           searchValue=""
           cartContent={
             <CartPanel
-              isMobileOpen={mobileCartOpen}
               onMobileClose={() => setMobileCartOpen(false)}
               isOffline={!isOnline}
             />
@@ -150,5 +149,5 @@ export default function App() {
       )}
       <AutoSaveIndicator />
     </>
-  );
+  )
 }
