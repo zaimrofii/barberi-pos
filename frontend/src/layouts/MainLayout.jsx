@@ -1,4 +1,5 @@
   import React, { useState, useEffect } from 'react'
+  import { Link } from 'react-router-dom'
   import { Toaster } from 'react-hot-toast'
   import {
     ShoppingCart,
@@ -407,12 +408,12 @@
               {/* Right: Status and Kasir info */}
               <div className="flex items-center gap-6">
                 {/* Navigation links */}
-                <a href="#history" className="text-sm text-gray-300 hover:text-white transition">
+                <Link to="/history" className="text-sm text-gray-300 hover:text-white transition">
                   Riwayat
-                </a>
-                <a href="#reports" className="text-sm text-gray-300 hover:text-white transition">
+                </Link>
+                <Link to="/reports" className="text-sm text-gray-300 hover:text-white transition">
                   Laporan
-                </a>
+                </Link>
 
                 {/* Sync button */}
                 <button

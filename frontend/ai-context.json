@@ -249,6 +249,11 @@
   "entryPoints": {
     "main": "src/main.jsx",
     "app": "src/App.jsx",
-    "router": "Uses hash-based routing (#pos, #history, #reports) via window.location.hash"
+    "router": "src/router/index.jsx",
+    "routes": {
+      "/pos": "POS页面 - ProductGrid + CartPanel",
+      "/history": "Riwayat transaksi",
+      "/reports": "Laporan komisi"
+    }
   }
 }

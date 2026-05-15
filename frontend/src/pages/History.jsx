@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, X, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import VoidModal from '../components/VoidModal';
 import { getCommissionReport } from '../services/barberService';

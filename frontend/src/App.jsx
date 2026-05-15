@@ -94,12 +94,12 @@ export default function App() {
             <div className="flex items-center justify-between">
               <h1 className="font-bold text-lg">Riwayat Transaksi</h1>
               <div className="flex items-center gap-4">
-                <a href="#reports" className="text-sm text-green-400 hover:text-green-300">
+                <Link to="/reports" className="text-sm text-green-400 hover:text-green-300">
                   Laporan Komisi
-                </a>
-                <a href="#pos" className="text-sm text-green-400 hover:text-green-300">
+                </Link>
+                <Link to="/pos" className="text-sm text-green-400 hover:text-green-300">
                   Kembali ke POS
-                </a>
+                </Link>
               </div>
             </div>
           </header>
@@ -111,12 +111,12 @@ export default function App() {
             <div className="flex items-center justify-between">
               <h1 className="font-bold text-lg">Laporan Komisi</h1>
               <div className="flex items-center gap-4">
-                <a href="#history" className="text-sm text-green-400 hover:text-green-300">
+                <Link to="/history" className="text-sm text-green-400 hover:text-green-300">
                   Riwayat Transaksi
-                </a>
-                <a href="#pos" className="text-sm text-green-400 hover:text-green-300">
+                </Link>
+                <Link to="/pos" className="text-sm text-green-400 hover:text-green-300">
                   Kembali ke POS
-                </a>
+                </Link>
               </div>
             </div>
           </header>
