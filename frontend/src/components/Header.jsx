@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShoppingCart, Search, User, CloudUpload } from 'lucide-react';
 import useUIStore from '../stores/uiStore';
+import useBarberStore from '../stores/barberStore';
 
 export default function Header({
   kasirName = 'Kasir',
@@ -13,6 +14,10 @@ export default function Header({
   isMobile = false,
 }) {
   const { pendingCount, openSyncModal } = useUIStore();
+  const { selectedBarber, barbers } = useBarberStore();
+  
+  // Get barber name from store, fallback to kasirName prop if no barber selected
+  const displayName = barbers.find(b => b.id === selectedBarber)?.name || kasirName;
 
   return (
     <header className="bg-gray-900 text-white px-4 py-3">
@@ -52,9 +57,10 @@ export default function Header({
             )}
           </button>
 
+          {/* Barber name - now shows actual selected barber */}
           <div className="flex items-center gap-2 text-sm">
             <User size={16} />
-            {kasirName}
+            {displayName}
           </div>
 
           <button
