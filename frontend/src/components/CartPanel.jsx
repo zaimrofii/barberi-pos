@@ -22,6 +22,7 @@ import useCartStore from '../stores/cartStore'
 import useBarberStore from '../stores/barberStore'
 import useUIStore from '../stores/uiStore'
 import ConfirmModal from './ConfirmModal'
+import BarberSelectionModal from './BarberSelectionModal'
 import { checkout } from '../services/barberService'
 
 // Internal CartItem component
@@ -131,6 +132,7 @@ export default function CartPanel({ isOffline }) {
   const [barberLoading, setBarberLoading] = useState(false)
   const [successState, setSuccessState] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [showBarberModal, setShowBarberModal] = useState(false)
 
   // Fetch barbers on mount
   useEffect(() => {
@@ -221,6 +223,11 @@ export default function CartPanel({ isOffline }) {
     setConfirmModalOpen(false)
   }, [clearCart])
 
+  const handleBarberSelected = useCallback(() => {
+    setShowBarberModal(false)
+    setTimeout(() => handleCheckout(), 100)
+  }, [handleCheckout])
+
   const handleDiscountChange = (e) => {
     const value = parseFloat(e.target.value) || 0
     if (discountType === 'percent') {
@@ -245,8 +252,8 @@ export default function CartPanel({ isOffline }) {
       return
     }
 
-    if (!selectedBarber) {
-      setError('Pilih barber terlebih dahulu')
+    if (!selectedBarber && items.length > 0) {
+      setShowBarberModal(true)
       return
     }
 
@@ -314,7 +321,7 @@ export default function CartPanel({ isOffline }) {
   // Desktop version
   // Desktop Panel - Bagian Summary & Checkout (ringkas & lega)
 const desktopPanel = (
-  <div className="flex flex-col h-full bg-white " data-component="CartPanel">
+  <div className="flex flex-col h-full bg-white" data-component="CartPanel">
     {/* Section 1: Header - tetap sama */}
     <div className=" border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
       <div className="flex items-center gap-2">
@@ -778,6 +785,11 @@ const desktopPanel = (
         confirmText="🗑️ Hapus"
         cancelText="Batal"
         confirmVariant="danger"
+      />
+      <BarberSelectionModal
+        isOpen={showBarberModal}
+        onClose={() => setShowBarberModal(false)}
+        onSelect={handleBarberSelected}
       />
     </>
   )

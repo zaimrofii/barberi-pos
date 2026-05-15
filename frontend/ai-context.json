@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-05-14T12:00:00.000Z",
+  "lastUpdated": "2026-05-15T12:00:00.000Z",
   "project": {
     "name": "Salon POS App",
     "tech": [
@@ -33,12 +33,20 @@
       "dependencies": ["../stores/uiStore"],
       "usedBy": ["App.jsx"]
     },
+    "BarberSelectionModal": {
+      "path": "src/components/BarberSelectionModal.jsx",
+      "type": "container",
+      "props": ["isOpen", "onClose", "onSelect"],
+      "responsibility": "Modal pemilihan barber yang muncul saat checkout tanpa memilih barber, menampilkan daftar barber dengan avatar dan indikator terpilih",
+      "dependencies": ["../stores/barberStore"],
+      "usedBy": ["components/CartPanel.jsx"]
+    },
     "CartPanel": {
       "path": "src/components/CartPanel.jsx",
       "type": "container",
-      "props": ["isMobileOpen", "onMobileClose", "isOffline"],
-      "responsibility": "Panel keranjang belanja dengan daftar item, pemilihan barber, input diskon, ringkasan total, dan tombol checkout (online/offline)",
-      "dependencies": ["../stores/cartStore", "../stores/barberStore", "../stores/uiStore", "../services/barberService", "./ConfirmModal"],
+      "props": ["isOffline"],
+      "responsibility": "Panel keranjang belanja dengan daftar item, pemilihan barber (via modal jika belum dipilih), input diskon, ringkasan total, dan tombol checkout (online/offline)",
+      "dependencies": ["../stores/cartStore", "../stores/barberStore", "../stores/uiStore", "../services/barberService", "./ConfirmModal", "./BarberSelectionModal"],
       "usedBy": ["App.jsx", "layouts/MainLayout.jsx"]
     },
     "ConfirmModal": {

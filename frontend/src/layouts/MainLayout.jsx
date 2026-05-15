@@ -179,7 +179,7 @@ export default function MainLayout({
               onClick={() => setMobileCartOpen(false)}
             >
               <div
-                className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-lg max-h-[60vh] overflow-y-auto transition-transform duration-300"
+                className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-lg h-[70vh] overflow-y-auto transition-transform duration-300"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="sticky z-10 top-0 bg-white border-b border-gray-200 px-4 py-3 rounded-t-2xl flex items-center justify-between">
