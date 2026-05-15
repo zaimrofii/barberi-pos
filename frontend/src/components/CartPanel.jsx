@@ -134,35 +134,6 @@ export default function CartPanel({ isOffline }) {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const [showBarberModal, setShowBarberModal] = useState(false)
 
-  // Fetch barbers on mount
-  useEffect(() => {
-    setBarberLoading(true)
-    fetchBarbers().finally(() => setBarberLoading(false))
-  }, [fetchBarbers])
-
-  // Close barber dropdown when clicking outside
-  useEffect(() => {
-    if (!barberOpen) return
-
-    const handleMouseDown = (e) => {
-      const dropdown = document.getElementById('barber-dropdown')
-      if (dropdown && !dropdown.contains(e.target)) {
-        setBarberOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleMouseDown)
-    return () => document.removeEventListener('mousedown', handleMouseDown)
-  }, [barberOpen])
-
-  // Auto-dismiss error after 3 seconds
-  useEffect(() => {
-    if (!error) return
-
-    const timer = setTimeout(() => setError(null), 3000)
-    return () => clearTimeout(timer)
-  }, [error])
-
   const handleUpdateQuantity = useCallback(
     (itemId, newQuantity) => {
       if (newQuantity <= 0) {
@@ -213,15 +184,12 @@ export default function CartPanel({ isOffline }) {
   const handleCheckout = useCallback(async () => {
     setError(null)
 
-    // Get fresh selectedBarber directly from store (bypass stale closure)
-    const currentBarber = useBarberStore.getState().selectedBarber
-
     if (items.length === 0) {
       setError('Keranjang masih kosong')
       return
     }
 
-    if (!currentBarber && items.length > 0) {
+    if (!selectedBarber && items.length > 0) {
       setShowBarberModal(true)
       return
     }
@@ -230,7 +198,7 @@ export default function CartPanel({ isOffline }) {
       // Save to localStorage
       const payload = {
         local_id: crypto.randomUUID(),
-        barber_id: currentBarber,
+        barber_id: selectedBarber,
         discount: discount,
         items: items.map((item) => ({ item_id: item.id, quantity: item.quantity })),
       }
@@ -255,7 +223,7 @@ export default function CartPanel({ isOffline }) {
     try {
       const payload = {
         local_id: crypto.randomUUID(),
-        barber_id: currentBarber,
+        barber_id: selectedBarber,
         discount: discount,
         items: items.map((item) => ({ item_id: item.id, quantity: item.quantity })),
       }
@@ -274,11 +242,14 @@ export default function CartPanel({ isOffline }) {
     } finally {
       setLoading(false)
     }
-  }, [items, discount, isOffline, clearCart])
+  }, [items, selectedBarber, discount, isOffline, clearCart])
 
   const handleBarberSelected = useCallback(() => {
     setShowBarberModal(false)
-    handleCheckout()  // Direct call - no setTimeout needed
+    // Beri waktu sedikit untuk state update
+    setTimeout(() => {
+      handleCheckout()
+    }, 50)
   }, [handleCheckout])
 
   const handleDiscountChange = (e) => {
@@ -297,7 +268,37 @@ export default function CartPanel({ isOffline }) {
     return discount
   }, [discount, discountType, getSubtotal()])
 
-  // Keyboard shortcuts (must be after handleCheckout definition)
+  
+  // Fetch barbers on mount
+  useEffect(() => {
+    setBarberLoading(true)
+    fetchBarbers().finally(() => setBarberLoading(false))
+  }, [fetchBarbers])
+
+  // Close barber dropdown when clicking outside
+  useEffect(() => {
+    if (!barberOpen) return
+
+    const handleMouseDown = (e) => {
+      const dropdown = document.getElementById('barber-dropdown')
+      if (dropdown && !dropdown.contains(e.target)) {
+        setBarberOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleMouseDown)
+    return () => document.removeEventListener('mousedown', handleMouseDown)
+  }, [barberOpen])
+
+  // Auto-dismiss error after 3 seconds
+  useEffect(() => {
+    if (!error) return
+
+    const timer = setTimeout(() => setError(null), 3000)
+    return () => clearTimeout(timer)
+  }, [error])
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'F2' && !loading) {
@@ -308,14 +309,14 @@ export default function CartPanel({ isOffline }) {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [loading, items, selectedBarber, discount, handleCheckout])
+  }, [loading, items, selectedBarber, discount])
 
-  // Listen for mobile checkout trigger from bottom navigation
+  
   useEffect(() => {
     const handleMobileCheckout = () => {
       handleCheckout()
     }
-
+    
     window.addEventListener('pos:mobile-checkout', handleMobileCheckout)
     return () => window.removeEventListener('pos:mobile-checkout', handleMobileCheckout)
   }, [handleCheckout])
