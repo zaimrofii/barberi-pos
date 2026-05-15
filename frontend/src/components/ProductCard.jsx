@@ -26,8 +26,8 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       ? item.stock <= 1
         ? 'critical'
         : item.stock <= 5
-        ? 'warning'
-        : 'normal'
+          ? 'warning'
+          : 'normal'
       : null
 
   const handleMouseEnter = () => {
@@ -149,17 +149,17 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       tabIndex={0}
       aria-label={`Tambah ${item.name} ke keranjang`}
       aria-disabled={isOutOfStock}
-      className={`relative bg-white rounded-xl border transition-all duration-150 cursor-pointer select-none ${
+      className={`relative bg-white rounded-xl border  transition-all duration-150 cursor-pointer select-none ${
         isOutOfStock
-          ? 'opacity-50 cursor-not-allowed'
+          ? 'opacity-50 cursor-not-allowed border border-gray-100'
           : isInCart
-          ? 'border-green-500 bg-green-50 hover:border-green-600 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]'
-          : 'border-gray-200 hover:border-green-400 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]'
+            ? 'border-green-500 bg-green-50 hover:border-green-600 hover:shadow-sm hover:scale-[1.02] active:scale-[0.98]'
+            : 'border-gray-100 hover:border-green-400 hover:shadow-sm hover:scale-[1.02] active:scale-[0.98]'
       }`}
       style={{ padding: '12px' }}
     >
       {/* Tooltip for PRODUCT type */}
-      {showTooltip && item.type === 'PRODUCT' && (
+      {showTooltip && item.type === 'PRODUCT' && !isOutOfStock && (
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
           <div
             className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl whitespace-nowrap"
@@ -173,13 +173,9 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
             <p className="text-gray-300">
               Stok: {item.stock} dari {initialStock} awal
             </p>
-            <p className="text-gray-300">
-              Terjual hari ini: {soldToday} item
-            </p>
+            <p className="text-gray-300">Terjual hari ini: {soldToday} item</p>
             {needsReorder && (
-              <p className="text-yellow-400 font-medium mt-1">
-                💡 Restok diperlukan!
-              </p>
+              <p className="text-yellow-400 font-medium mt-1">💡 Restok diperlukan!</p>
             )}
             {/* Arrow */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
@@ -188,7 +184,7 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       )}
 
       {/* Icon/Image Area */}
-      <div className="relative bg-gray-100 rounded-lg mb-2 h-16 flex items-center justify-center">
+      <div className="relative bg-gray-50 rounded-lg mb-2 h-16 flex items-center justify-center">
         {item.type === 'SERVICE' ? (
           <Scissors size={28} className="text-green-600" />
         ) : (
@@ -209,10 +205,13 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       </h3>
 
       {/* Price */}
-      <div className="text-green-600 font-bold text-sm mt-1 flex items-center gap-2">
+      {/* Price */}
+      {/* Price */}
+      {/* Price */}
+      <div className="text-green-600 font-normal text-sm mt-1 flex flex-col items-start gap-1 md:flex-row md:items-center md:gap-2">
         {formatPrice(item.price)}
         {item.type === 'SERVICE' && (
-          <span className="text-gray-400 text-xs flex items-center gap-1">
+          <span className="text-gray-400 font-normal text-xs flex items-center gap-1">
             <Clock size={10} />
             {item.duration} min
           </span>
@@ -221,7 +220,7 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
 
       {/* Stock Indicator (Products only) */}
       {item.type === 'PRODUCT' && (
-        <div className="mt-2">
+        <div className="mt-2 b">
           {item.stock === 0 ? (
             <div className="bg-red-500 text-white text-xs font-semibold py-1 px-2 rounded text-center">
               HABIS
@@ -248,15 +247,11 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
           isOutOfStock
             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
             : isInCart
-            ? 'bg-green-100 text-green-700 border border-green-300 hover:bg-green-200'
-            : 'bg-green-600 text-white hover:bg-green-700'
+              ? 'bg-green-100 text-green-700 border border-green-300 hover:bg-green-200'
+              : 'bg-green-600 text-white hover:bg-green-700'
         }`}
       >
-        {isOutOfStock
-          ? 'Stok Habis'
-          : isInCart
-          ? `✓ Ditambah (${cartQuantity})`
-          : '+ Tambah'}
+        {isOutOfStock ? 'Stok Habis' : isInCart ? `✓ Ditambah (${cartQuantity})` : '+ Tambah'}
       </button>
     </div>
   )

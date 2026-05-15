@@ -23,9 +23,6 @@ export default function Header({
   return (
     <header className={`bg-gray-900 text-white px-4 py-3 ${isOffline ? 'bg-red-700' : ''}`}>
       <div className="flex items-center justify-between gap-4">
-        <div className="flex-shrink-0">
-          <h1 className="font-bold text-lg">BarberPOS</h1>
-        </div>
 
         {!isMobile && (
           <div className="flex-1 max-w-md">

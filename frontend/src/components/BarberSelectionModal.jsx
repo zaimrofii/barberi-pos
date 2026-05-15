@@ -16,8 +16,10 @@ export default function BarberSelectionModal({ isOpen, onClose, onSelect }) {
 
   const handleBarberClick = (barber) => {
     setSelectedBarber(barber.id)
-    onSelect(barber)
     onClose()
+    if (onSelect) {
+      onSelect(barber)  // Panggil setelah onClose
+    }
   }
 
   return (

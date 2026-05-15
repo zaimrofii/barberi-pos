@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Search, PackageSearch, Scissors, Droplets, X } from 'lucide-react'
+import { Search, PackageSearch, Scissors, Droplets, X, Package } from 'lucide-react'
 import ProductCard from './ProductCard'
 import useItemStore from '../stores/itemStore'
 import useCartStore from '../stores/cartStore'
@@ -52,9 +52,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
 
     // Filter by search query
     if (searchQuery) {
-      result = result.filter((item) =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      result = result.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
     }
 
     // Filter by category
@@ -139,14 +137,15 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
   return (
     <div className="flex flex-col h-full overflow-hidden" data-component="ProductGrid">
       {/* Tab Bar */}
-      <div className="sticky top-0 z-10 bg-white px-3 md:px-4 py-3 md:py-4 border-b border-gray-200" data-component="ProductGrid.Tabs">
-        <div className="flex gap-1 bg-gray-100 rounded-full p-1 inline-flex w-full md:w-auto">
+      <div
+        className="sticky top-0 z-10 bg-white px-3 md:px-4 py-3 md:py-4"
+        data-component="ProductGrid.Tabs"
+      >
+        <div className="flex gap-1 bg-gray-50 rounded-full p-1 inline-flex w-full md:w-auto">
           <button
             onClick={() => onTabChange('all')}
             className={`flex-1 md:flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              activeTab === 'all'
-                ? 'bg-green-600 text-white'
-                : 'text-gray-500 hover:text-gray-800'
+              activeTab === 'all' ? 'bg-green-600 text-white' : 'text-gray-500 hover:text-gray-800'
             }`}
           >
             Semua
@@ -170,6 +169,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
                 : 'text-gray-500 hover:text-gray-800'
             }`}
           >
+            <Package size={16} />
             <span className="hidden sm:inline">Produk</span>
           </button>
         </div>
@@ -183,7 +183,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
             className={`flex-shrink-0 px-3 py-1 rounded-full border text-xs font-medium transition-colors ${
               selectedCategory === 'all'
                 ? 'bg-green-100 text-green-700 border-green-300'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                : 'bg-white text-gray-600 border-gray-100 hover:border-gray-300'
             }`}
           >
             Semua Kategori
@@ -195,7 +195,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
               className={`flex-shrink-0 px-3 py-1 rounded-full border text-xs font-medium transition-colors flex items-center gap-1 ${
                 selectedCategory === category
                   ? 'bg-green-100 text-green-700 border-green-300'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                  : 'bg-white text-gray-600 border-gray-100 hover:border-gray-300'
               }`}
             >
               {getCategoryIcon(category)}
@@ -206,7 +206,10 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
       </div>
 
       {/* Mobile Search Bar */}
-      <div className="md:hidden sticky top-24 z-9 bg-white px-3 py-2 border-b border-gray-100" data-component="ProductGrid.Search">
+      <div
+        className="md:hidden sticky top-24 z-9 bg-white px-3 py-2"
+        data-component="ProductGrid.Search"
+      >
         <div className="relative flex items-center">
           <Search size={18} className="absolute left-3 text-gray-400 pointer-events-none" />
           <input
@@ -215,7 +218,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
             placeholder="Cari layanan atau produk..."
-            className="w-full bg-gray-50 text-gray-800 pl-10 pr-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+            className="w-full bg-gray-50 text-gray-800 pl-10 pr-4 py-2 rounded-full border border-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
           />
         </div>
       </div>
@@ -229,17 +232,18 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
             Coba kata kunci lain atau pilih kategori berbeda
           </p>
           {searchQuery && (
-            <p className="text-green-600 text-xs font-medium mt-3">
-              Hasil untuk: "{searchQuery}"
-            </p>
+            <p className="text-green-600 text-xs font-medium mt-3">Hasil untuk: "{searchQuery}"</p>
           )}
         </div>
       )}
 
       {/* Products Grid */}
       {displayItems.length > 0 && (
-        <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 md:py-4" data-component="ProductGrid.Grid">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div
+          className="flex-1 overflow-y-auto px-3 md:px-4 py-3 md:py-4"
+          data-component="ProductGrid.Grid"
+        >
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
             {displayItems.map((item) => {
               const { isInCart, quantity } = getCartInfo(item.id)
               return (
@@ -262,10 +266,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
           <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-lg">Pilih Produk Cepat</h2>
-              <button
-                onClick={closeQuickPickModal}
-                className="p-1 hover:bg-gray-100 rounded"
-              >
+              <button onClick={closeQuickPickModal} className="p-1 hover:bg-gray-100 rounded">
                 <X size={20} />
               </button>
             </div>
@@ -275,8 +276,8 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
                 <button
                   key={item.id}
                   onClick={() => {
-                    handleAddToCart(item);
-                    closeQuickPickModal();
+                    handleAddToCart(item)
+                    closeQuickPickModal()
                   }}
                   className="p-3 bg-gray-50 rounded-lg border border-gray-100 hover:bg-green-50 hover:border-green-200 transition text-left"
                 >

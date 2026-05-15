@@ -90,7 +90,7 @@
             <header
               data-component="MainLayout.Header"
               className={`fixed top-0 left-0 right-0 z-50 transition-colors ${
-                isOffline ? 'bg-red-700' : 'bg-gray-900'
+                isOffline ? 'bg-red-700' : 'bg-blue-900'
               } text-white px-4 py-3`}
             >
               <div className="flex items-center justify-between">
@@ -101,15 +101,13 @@
                   {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
 
-                <div className="flex-1 text-center">
-                  <h1 className="font-bold text-lg">BarberPOS</h1>
-                </div>
+                <div className="flex items-center gap-1 text-md mr-2">
+                    <User size={20} className="text-green-200" />
+                    <span className="truncate max-w-[130px]">{currentBarberName}</span>
+                  </div>
                 <div className="flex items-center gap-2">
                   {/* Barber name mobile */}
-                  <div className="flex items-center gap-1 text-sm mr-2">
-                    <User size={14} />
-                    <span className="truncate max-w-[80px]">{currentBarberName}</span>
-                  </div>
+                  
                   <button
                     onClick={openSyncModal}
                     className="relative p-1 hover:bg-gray-800 rounded transition"
