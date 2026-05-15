@@ -13,6 +13,7 @@
   import SyncQueueModal from '../components/SyncQueueModal'
   // import ShortcutsHelper from '../components/ShortcutsHelper'
   import useUIStore from '../stores/uiStore'
+  import useBarberStore from '../stores/barberStore'
   import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
 
   export default function MainLayout({
@@ -27,6 +28,8 @@
     cartContent = null,
   }) {
     const { pendingCount, openSyncModal } = useUIStore()
+    const { selectedBarber, barbers } = useBarberStore()
+    const currentBarberName = barbers.find(b => b.id === selectedBarber)?.name || kasirName
     useKeyboardShortcuts()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [mobileCartOpen, setMobileCartOpen] = useState(false)
@@ -105,7 +108,7 @@
                   {/* Barber name mobile */}
                   <div className="flex items-center gap-1 text-sm mr-2">
                     <User size={14} />
-                    <span className="truncate max-w-[80px]">{kasirName}</span>
+                    <span className="truncate max-w-[80px]">{currentBarberName}</span>
                   </div>
                   <button
                     onClick={openSyncModal}
@@ -281,7 +284,7 @@
                   {/* Kasir info */}
                   <div className="flex items-center gap-2 text-sm">
                     <User size={16} />
-                    {kasirName}
+                    {currentBarberName}
                   </div>
 
                   {/* Cart summary */}
