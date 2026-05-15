@@ -364,8 +364,8 @@ export default function CartPanel({ isOffline }) {
   // Desktop Panel - Bagian Summary & Checkout (ringkas & lega)
 const desktopPanel = (
   <div className="flex flex-col h-full bg-white" data-component="CartPanel">
-    {/* Section 1: Header - tetap sama */}
-    <div className=" border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
+    {/* Section 1: Header */}
+    <div className="border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
       <div className="flex items-center gap-2">
         <ShoppingCart size={20} className="text-green-600" />
         <span className="font-bold text-gray-800">Keranjang</span>
@@ -400,9 +400,8 @@ const desktopPanel = (
       </div>
     </div>
 
-    {/* Section 2: Barber Selector - tetap sama */}
+    {/* Section 2: Barber Selector */}
     <div className="bg-gray-50 border-b border-gray-100 px-4 py-1 flex-shrink-0">
-      
       <div id="barber-dropdown" className="relative">
         {barberLoading ? (
           <div className="space-y-1">
@@ -453,7 +452,7 @@ const desktopPanel = (
       </div>
     </div>
 
-    {/* Section 2.5: Error Banner - di pindah ke sini agar lebih terlihat */}
+    {/* Section 2.5: Error Banner */}
     {error && (
       <div className="bg-red-50 border-l-4 border-red-500 mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2 animate-in slide-in-from-top-2">
         <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
@@ -461,9 +460,9 @@ const desktopPanel = (
       </div>
     )}
 
-    {/* Section 3: Cart Items */}
+    {/* Section 3: Cart Items - Add padding bottom to prevent overlap with fixed panel on mobile */}
     <div 
-      className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50" 
+      className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50 pb-20 md:pb-2" 
       data-component="CartPanel.Items"
       data-cart-items-container
     >
@@ -488,110 +487,207 @@ const desktopPanel = (
       )}
     </div>
 
-    {/* Section 4: Discount Input - minimalis */}
+    {/* MOBILE FIXED BOTTOM PANEL - Only visible on mobile */}
     {items.length > 0 && (
-      <div className=" bg-white px-4 py-1 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-1">
-          <Tag size={14} className="text-gray-400" />
-          <span className="text-xs text-gray-500">Diskon</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
-            <button
-              onClick={() => setDiscountType('nominal')}
-              className={`text-xs px-2 py-1 rounded transition ${
-                discountType === 'nominal'
-                  ? 'bg-white text-green-600 shadow-sm'
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              Rp
-            </button>
-            <button
-              onClick={() => setDiscountType('percent')}
-              className={`text-xs px-2 py-1 rounded transition ${
-                discountType === 'percent'
-                  ? 'bg-white text-green-600 shadow-sm'
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              %
-            </button>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-20">
+        {/* Section 4: Discount Input */}
+        <div className="px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <Tag size={14} className="text-gray-400" />
+            <span className="text-xs text-gray-500">Diskon</span>
           </div>
-          <input
-            data-discount-input
-            type="number"
-            value={discountType === 'percent' ? computedDiscount : discount}
-            onChange={handleDiscountChange}
-            min="0"
-            max={discountType === 'percent' ? 100 : undefined}
-            className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-green-500"
-            placeholder="0"
-          />
+          <div className="flex items-center gap-2">
+            <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setDiscountType('nominal')}
+                className={`text-xs px-2 py-1 rounded transition ${
+                  discountType === 'nominal'
+                    ? 'bg-white text-green-600 shadow-sm'
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                Rp
+              </button>
+              <button
+                onClick={() => setDiscountType('percent')}
+                className={`text-xs px-2 py-1 rounded transition ${
+                  discountType === 'percent'
+                    ? 'bg-white text-green-600 shadow-sm'
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                %
+              </button>
+            </div>
+            <input
+              data-discount-input
+              type="number"
+              value={discountType === 'percent' ? computedDiscount : discount}
+              onChange={handleDiscountChange}
+              min="0"
+              max={discountType === 'percent' ? 100 : undefined}
+              className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-green-500"
+              placeholder="0"
+            />
+          </div>
+        </div>
+
+        {/* Section 5: Checkout Button */}
+        <div className="px-4 pb-3 pt-1">
+          {successState ? (
+            <div className="flex flex-col items-center justify-center py-4">
+              <CheckCircle2 size={40} className="text-green-500 animate-bounce" />
+              <p className="text-green-600 font-bold text-base mt-1">Transaksi Berhasil!</p>
+              <p className="text-gray-500 text-sm">Rp {total.toLocaleString('id-ID')}</p>
+            </div>
+          ) : (
+            <button
+              data-checkout-btn
+              onClick={handleCheckout}
+              disabled={loading || items.length === 0}
+              className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
+                loading
+                  ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
+                  : isOffline
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                    : items.length === 0
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
+              }`}
+              title={items.length === 0 ? 'Keranjang masih kosong' : ''}
+            >
+              <div className="flex items-center gap-2">
+                {loading ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : isOffline ? (
+                  <CloudUpload size={18} />
+                ) : (
+                  <CreditCard size={18} />
+                )}
+                <span>
+                  {loading
+                    ? 'Memproses...'
+                    : isOffline
+                      ? 'Simpan Lokal'
+                      : 'Bayar'}
+                </span>
+              </div>
+              <span className="text-lg font-bold">
+                Rp {total.toLocaleString('id-ID')}
+              </span>
+            </button>
+          )}
+          
+          {isOffline && items.length > 0 && !successState && (
+            <p className="text-amber-600 text-xs text-center mt-2">
+              🔄 Akan disinkronkan saat online
+            </p>
+          )}
         </div>
       </div>
     )}
 
-    {/* Section 5: Checkout Button - ringkas & total di dalam tombol */}
-    {items.length > 0 && (
-      <div className=" px-4 pb-3 pt-1 flex-shrink-0 ">
-        {successState ? (
-          <div className="flex flex-col items-center justify-center py-4">
-            <CheckCircle2 size={40} className="text-green-500 animate-bounce" />
-            <p className="text-green-600 font-bold text-base mt-1">Transaksi Berhasil!</p>
-            <p className="text-gray-500 text-sm">Rp {total.toLocaleString('id-ID')}</p>
-          </div>
-        ) : (
-          <button
-            data-checkout-btn
-            onClick={handleCheckout}
-            disabled={loading || items.length === 0}
-            className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
-              loading
-                ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
-                : isOffline
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                  : items.length === 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
-            }`}
-            title={items.length === 0 ? 'Keranjang masih kosong' : ''}
-          >
-            <div className="flex items-center gap-2">
-              {loading ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : isOffline ? (
-                <CloudUpload size={18} />
-              ) : (
-                <CreditCard size={18} />
-              )}
-              <span>
-                {loading
-                  ? 'Memproses...'
-                  : isOffline
-                    ? 'Simpan Lokal'
-                    : 'Bayar'}
-              </span>
+    {/* DESKTOP NORMAL FLOW - Only visible on desktop */}
+    <div className="hidden md:block">
+      {items.length > 0 && (
+        <>
+          {/* Section 4: Discount Input */}
+          <div className="bg-white px-4 py-1 flex items-center justify-between flex-shrink-0 border-t border-gray-100">
+            <div className="flex items-center gap-1">
+              <Tag size={14} className="text-gray-400" />
+              <span className="text-xs text-gray-500">Diskon</span>
             </div>
-            <span className="text-lg font-bold">
-              Rp {total.toLocaleString('id-ID')}
-            </span>
-          </button>
-        )}
-        
-        {isOffline && items.length > 0 && !successState && (
-          <p className="text-amber-600 text-xs text-center mt-2">
-            🔄 Akan disinkronkan saat online
-          </p>
-        )}
-        
-        {/* {items.length > 0 && !successState && (
-          <p className="text-gray-400 text-xs text-center mt-2 hidden md:block">
-            ⌨ Tekan F2 untuk checkout cepat
-          </p>
-        )} */}
-      </div>
-    )}
+            <div className="flex items-center gap-2">
+              <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                <button
+                  onClick={() => setDiscountType('nominal')}
+                  className={`text-xs px-2 py-1 rounded transition ${
+                    discountType === 'nominal'
+                      ? 'bg-white text-green-600 shadow-sm'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  Rp
+                </button>
+                <button
+                  onClick={() => setDiscountType('percent')}
+                  className={`text-xs px-2 py-1 rounded transition ${
+                    discountType === 'percent'
+                      ? 'bg-white text-green-600 shadow-sm'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  %
+                </button>
+              </div>
+              <input
+                data-discount-input
+                type="number"
+                value={discountType === 'percent' ? computedDiscount : discount}
+                onChange={handleDiscountChange}
+                min="0"
+                max={discountType === 'percent' ? 100 : undefined}
+                className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-green-500"
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+          {/* Section 5: Checkout Button */}
+          <div className="px-4 pb-3 pt-1 flex-shrink-0 bg-white">
+            {successState ? (
+              <div className="flex flex-col items-center justify-center py-4">
+                <CheckCircle2 size={40} className="text-green-500 animate-bounce" />
+                <p className="text-green-600 font-bold text-base mt-1">Transaksi Berhasil!</p>
+                <p className="text-gray-500 text-sm">Rp {total.toLocaleString('id-ID')}</p>
+              </div>
+            ) : (
+              <button
+                data-checkout-btn
+                onClick={handleCheckout}
+                disabled={loading || items.length === 0}
+                className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
+                  loading
+                    ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
+                    : isOffline
+                      ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                      : items.length === 0
+                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
+                }`}
+                title={items.length === 0 ? 'Keranjang masih kosong' : ''}
+              >
+                <div className="flex items-center gap-2">
+                  {loading ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : isOffline ? (
+                    <CloudUpload size={18} />
+                  ) : (
+                    <CreditCard size={18} />
+                  )}
+                  <span>
+                    {loading
+                      ? 'Memproses...'
+                      : isOffline
+                        ? 'Simpan Lokal'
+                        : 'Bayar'}
+                  </span>
+                </div>
+                <span className="text-lg font-bold">
+                  Rp {total.toLocaleString('id-ID')}
+                </span>
+              </button>
+            )}
+            
+            {isOffline && items.length > 0 && !successState && (
+              <p className="text-amber-600 text-xs text-center mt-2">
+                🔄 Akan disinkronkan saat online
+              </p>
+            )}
+          </div>
+        </>
+      )}
+    </div>
   </div>
 )
   return (
