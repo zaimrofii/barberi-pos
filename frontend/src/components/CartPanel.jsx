@@ -309,7 +309,7 @@ export default function CartPanel({ isOffline }) {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [loading, items, selectedBarber, discount])
+  }, [loading, items, selectedBarber, discount, handleCheckout])
 
   
   useEffect(() => {

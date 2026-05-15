@@ -44,7 +44,8 @@ export default function MainLayout({
       if (e.key === 'F2') {
         e.preventDefault()
         if (cartItemCount > 0) {
-          onCheckout()
+          // Use same custom event as the mobile BAYAR button
+          window.dispatchEvent(new CustomEvent('pos:mobile-checkout'))
         }
       }
       if (e.key === 'Escape') {
@@ -56,7 +57,7 @@ export default function MainLayout({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [cartItemCount, onCheckout])
+  }, [cartItemCount])
 
   // Handle responsive breakpoints
   useEffect(() => {
