@@ -163,29 +163,6 @@ export default function CartPanel({ isOffline }) {
     return () => clearTimeout(timer)
   }, [error])
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'F2' && !loading) {
-        e.preventDefault()
-        handleCheckout()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [loading, items, selectedBarber, discount])
-
-  // Listen for mobile checkout trigger from bottom navigation
-  useEffect(() => {
-    const handleMobileCheckout = () => {
-      handleCheckout()
-    }
-
-    window.addEventListener('pos:mobile-checkout', handleMobileCheckout)
-    return () => window.removeEventListener('pos:mobile-checkout', handleMobileCheckout)
-  }, [handleCheckout])
-
   const handleUpdateQuantity = useCallback(
     (itemId, newQuantity) => {
       if (newQuantity <= 0) {
@@ -319,6 +296,29 @@ export default function CartPanel({ isOffline }) {
     }
     return discount
   }, [discount, discountType, getSubtotal()])
+
+  // Keyboard shortcuts (must be after handleCheckout definition)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'F2' && !loading) {
+        e.preventDefault()
+        handleCheckout()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [loading, items, selectedBarber, discount, handleCheckout])
+
+  // Listen for mobile checkout trigger from bottom navigation
+  useEffect(() => {
+    const handleMobileCheckout = () => {
+      handleCheckout()
+    }
+
+    window.addEventListener('pos:mobile-checkout', handleMobileCheckout)
+    return () => window.removeEventListener('pos:mobile-checkout', handleMobileCheckout)
+  }, [handleCheckout])
 
   
   const subtotal = getSubtotal()
