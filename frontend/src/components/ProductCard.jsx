@@ -186,14 +186,14 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       {/* Icon/Image Area */}
       <div className="relative bg-gray-50 rounded-lg mb-2 h-16 flex items-center justify-center">
         {item.type === 'SERVICE' ? (
-          <Scissors size={28} className="text-green-600" />
+          <Scissors size={28} className="text-success" />
         ) : (
           <Package size={28} className="text-blue-600" />
         )}
 
         {/* Cart quantity badge */}
         {cartQuantity > 0 && (
-          <div className="absolute top-1 right-1 bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+          <div className="absolute top-1 right-1 bg-success text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
             {cartQuantity}
           </div>
         )}
@@ -208,7 +208,7 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       {/* Price */}
       {/* Price */}
       {/* Price */}
-      <div className="text-green-600 font-normal text-sm mt-1 flex flex-col items-start gap-1 md:flex-row md:items-center md:gap-2">
+      <div className="text-success font-normal text-sm mt-1 flex flex-col items-start gap-1 md:flex-row md:items-center md:gap-2">
         {formatPrice(item.price)}
         {item.type === 'SERVICE' && (
           <span className="text-gray-400 font-normal text-xs flex items-center gap-1">
@@ -222,15 +222,15 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       {item.type === 'PRODUCT' && (
         <div className="mt-2 b">
           {item.stock === 0 ? (
-            <div className="bg-red-500 text-white text-xs font-semibold py-1 px-2 rounded text-center">
+            <div className="bg-error text-white text-xs font-semibold py-1 px-2 rounded text-center">
               HABIS
             </div>
           ) : stockStatus === 'critical' ? (
-            <div className="bg-red-100 text-red-600 border border-red-200 rounded-full px-2 py-1 text-xs font-medium animate-pulse">
+            <div className="bg-error/10 text-error-dark border border-error/30 rounded-full px-2 py-1 text-xs font-medium animate-pulse">
               ⚠ Sisa {item.stock}
             </div>
           ) : stockStatus === 'warning' ? (
-            <div className="bg-orange-100 text-orange-600 border border-orange-200 rounded-full px-2 py-1 text-xs font-medium">
+            <div className="bg-warning/10 text-warning-dark border border-warning/30 rounded-full px-2 py-1 text-xs font-medium">
               Sisa {item.stock}
             </div>
           ) : (
@@ -247,8 +247,8 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
           isOutOfStock
             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
             : isInCart
-              ? 'bg-green-100 text-green-700 border border-green-300 hover:bg-green-200'
-              : 'bg-green-600 text-white hover:bg-green-700'
+              ? 'bg-success/10 text-success-dark border border-success/30 hover:bg-success/20'
+              : 'bg-success-dark text-white hover:bg-success-dark'
         }`}
       >
         {isOutOfStock ? 'Stok Habis' : isInCart ? `✓ Ditambah (${cartQuantity})` : '+ Tambah'}

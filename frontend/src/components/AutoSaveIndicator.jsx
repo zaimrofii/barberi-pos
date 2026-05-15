@@ -22,10 +22,10 @@ export default function AutoSaveIndicator() {
         <Loader2 size={12} className="animate-spin text-gray-300" />
       )}
       {saveStatus === 'saved' && (
-        <Cloud size={12} className="text-green-400" />
+        <Cloud size={12} className="text-success" />
       )}
       {saveStatus === 'error' && (
-        <CloudOff size={12} className="text-red-400" />
+        <CloudOff size={12} className="text-error" />
       )}
       <span className="text-gray-300">
         {saveStatus === 'saving' && 'Menyimpan...'}

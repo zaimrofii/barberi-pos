@@ -28,7 +28,7 @@ export default function SyncQueueModal() {
 
           {pendingCount === 0 ? (
             <div className="flex flex-col items-center py-6">
-              <CheckCircle2 size={40} className="text-green-500 mb-2" />
+              <CheckCircle2 size={40} className="text-success mb-2" />
               <p className="text-gray-600 font-medium">Semua transaksi tersinkronisasi</p>
             </div>
           ) : (
@@ -44,7 +44,7 @@ export default function SyncQueueModal() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-green-500 h-2 rounded-full transition-all"
+                      className="bg-success h-2 rounded-full transition-all"
                       style={{ width: `${syncProgress}%` }}
                     />
                   </div>

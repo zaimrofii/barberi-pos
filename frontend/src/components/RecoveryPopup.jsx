@@ -108,7 +108,7 @@ export default function RecoveryPopup() {
             </button>
             <button
               onClick={handleRestore}
-              className="flex-1 py-2 px-4 rounded font-bold bg-green-500 text-white hover:bg-green-600 transition-colors"
+              className="flex-1 py-2 px-4 rounded font-bold bg-success text-white hover:bg-success-dark transition-colors"
             >
               ✅ Lanjutkan
             </button>

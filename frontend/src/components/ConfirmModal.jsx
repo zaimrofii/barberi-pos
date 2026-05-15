@@ -24,7 +24,7 @@ export default function ConfirmModal({
         <div className="relative bg-white rounded-lg shadow-xl max-w-sm w-full mx-4 p-6">
           <div className="flex items-center justify-between mb-4">
             <Dialog.Title className="text-lg font-bold flex items-center gap-2">
-              <AlertTriangle size={20} className={confirmVariant === 'danger' ? 'text-red-500' : 'text-green-500'} />
+              <AlertTriangle size={20} className={confirmVariant === 'danger' ? 'text-error' : 'text-success'} />
               {title}
             </Dialog.Title>
             <button
@@ -51,8 +51,8 @@ export default function ConfirmModal({
               }}
               className={`flex-1 py-2 px-4 rounded font-bold transition-colors ${
                 confirmVariant === 'danger'
-                  ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-green-500 text-white hover:bg-green-600'
+                  ? 'bg-error text-white hover:bg-error-dark'
+                  : 'bg-success text-white hover:bg-success-dark'
               }`}
             >
               {confirmText}

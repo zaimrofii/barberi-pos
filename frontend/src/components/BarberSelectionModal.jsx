@@ -63,8 +63,8 @@ export default function BarberSelectionModal({ isOpen, onClose, onSelect }) {
                       onClick={() => handleBarberClick(barber)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                         selectedBarber === barber.id
-                          ? 'bg-green-50 text-green-700 ring-2 ring-green-500'
-                          : 'bg-gray-50 text-gray-800 hover:bg-green-50 hover:text-green-700'
+                          ? 'bg-success/10 text-success-dark ring-2 ring-accent'
+                          : 'bg-gray-50 text-gray-800 hover:bg-success/5 hover:text-success-dark'
                       }`}
                     >
                       <div
@@ -76,7 +76,7 @@ export default function BarberSelectionModal({ isOpen, onClose, onSelect }) {
                       </div>
                       <span className="flex-1 text-left font-medium">{barber.name}</span>
                       {selectedBarber === barber.id && (
-                        <Check size={18} className="text-green-600" />
+                        <Check size={18} className="text-success" />
                       )}
                     </button>
                   ))}

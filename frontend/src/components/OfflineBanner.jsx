@@ -24,7 +24,7 @@ const OfflineBanner = ({ isOffline = false, position = 'top', onDismiss = null }
     <div
       className={`
         fixed ${positionClasses[position]} left-0 right-0 
-        bg-red-600 text-white py-2 px-4 
+        bg-error text-white py-2 px-4 
         flex items-center justify-between
         shadow-lg z-50
         animate-slide-down

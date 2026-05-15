@@ -21,7 +21,7 @@ export default function Header({
   const displayName = barbers.find(b => b.id === selectedBarber)?.name || kasirName;
 
   return (
-    <header className={`bg-gray-900 text-white px-4 py-3 ${isOffline ? 'bg-red-700' : ''}`}>
+    <header className={`bg-primary text-white px-4 py-3 ${isOffline ? 'bg-error' : ''}`}>
       <div className="flex items-center justify-between gap-4">
 
         {!isMobile && (
@@ -33,7 +33,7 @@ export default function Header({
                 value={searchValue}
                 onChange={(e) => onSearch(e.target.value)}
                 placeholder="Cari produk... (F1)"
-                className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full bg-primary-light text-white px-4 py-2 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent"
               />
               <Search size={18} className="absolute right-3 text-gray-400 pointer-events-none" />
             </div>
@@ -49,7 +49,7 @@ export default function Header({
           >
             <CloudUpload size={20} className="text-gray-300" />
             {pendingCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-warning text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {pendingCount}
               </span>
             )}
@@ -67,7 +67,7 @@ export default function Header({
           >
             <ShoppingCart size={24} />
             {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-success text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {cartItemCount}
               </span>
             )}

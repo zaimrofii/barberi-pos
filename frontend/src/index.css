@@ -1,7 +1,72 @@
 @import "tailwindcss";
 
-/* Kalau mau custom tema (opsional) */
+/* Custom Design System Theme */
 @theme {
-  --color-primary: #3b82f6;
-  --font-sans: "Inter", sans-serif;
+  /* Primary colors */
+  --color-primary: #0A1128;
+  --color-primary-dark: #080e20;
+  --color-primary-light: #1a2a4a;
+  
+  /* Accent/CTA colors */
+  --color-accent: #00F0FF;
+  --color-accent-dark: #00c0cc;
+  --color-accent-light: #4df5ff;
+  
+  /* Status colors */
+  --color-success: #06FFA5;
+  --color-success-dark: #04cc84;
+  --color-success-light: #4dffbf;
+  
+  --color-warning: #FFC107;
+  --color-warning-dark: #cc9a06;
+  --color-warning-light: #ffd54f;
+  
+  --color-error: #FF4D4D;
+  --color-error-dark: #cc3d3d;
+  --color-error-light: #ff8080;
+  
+  /* Neutrals (keep existing) */
+  --color-white: #FFFFFF;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* Font family */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* Optional: Custom utility classes for convenience */
+.btn-primary {
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-dark);
+  transform: scale(0.98);
+}
+
+.btn-success {
+  background-color: var(--color-success);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.btn-warning {
+  background-color: var(--color-warning);
+  color: var(--color-primary);
+}
+
+.btn-error {
+  background-color: var(--color-error);
+  color: white;
 }

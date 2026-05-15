@@ -90,7 +90,7 @@
             <header
               data-component="MainLayout.Header"
               className={`fixed top-0 left-0 right-0 z-50 transition-colors ${
-                isOffline ? 'bg-red-700' : 'bg-blue-900'
+                isOffline ? 'bg-error' : 'bg-primary'
               } text-white px-4 py-3`}
             >
               <div className="flex items-center justify-between">
@@ -115,7 +115,7 @@
                   >
                     <CloudUpload size={20} className="text-gray-300" />
                     {pendingCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-warning text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {pendingCount}
                       </span>
                     )}
@@ -126,7 +126,7 @@
                   >
                     <ShoppingCart size={24} />
                     {cartItemCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-success text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {cartItemCount}
                       </span>
                     )}
@@ -138,7 +138,7 @@
               {isOffline && (
                 <div className="mt-2 flex items-center justify-center gap-2 text-sm">
                   <span className="inline-flex items-center gap-1">
-                    <span className="inline-block w-2 h-2 bg-red-200 rounded-full animate-pulse"></span>
+                    <span className="inline-block w-2 h-2 bg-error/50 rounded-full animate-pulse"></span>
                     OFFLINE MODE • Data disimpan lokal
                   </span>
                 </div>
@@ -186,7 +186,7 @@
                   flex-1 font-semibold py-2 px-3 rounded-lg transition-all duration-200
                   ${cartItemCount === 0 
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                    : 'bg-green-500 text-white hover:bg-green-600 active:scale-95 shadow-md'
+                    : 'bg-success text-white hover:bg-success-dark active:scale-95 shadow-md'
                   }
                 `}
               >
@@ -208,7 +208,7 @@
                     <h2 className="font-bold text-lg flex items-center gap-2">
                       🛒 Keranjang
                       {cartItemCount > 0 && (
-                        <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        <span className="bg-success text-white text-xs px-2 py-1 rounded-full">
                           {cartItemCount}
                         </span>
                       )}
@@ -259,7 +259,7 @@
             <header
               data-component="MainLayout.Header"
               className={`fixed top-0 left-0 right-0 z-40 transition-colors ${
-                isOffline ? 'bg-red-700' : 'bg-gray-900'
+                isOffline ? 'bg-error' : 'bg-primary'
               } text-white px-6 py-4`}
             >
               <div className="flex items-center justify-between">
@@ -289,7 +289,7 @@
                   <div className="flex items-center gap-2 bg-gray-800 px-3 py-1 rounded">
                     <ShoppingCart size={16} />
                     <span>{cartItemCount} item</span>
-                    <span className="text-green-400">Rp {cartTotal.toLocaleString('id-ID')}</span>
+                    <span className="text-accent">Rp {cartTotal.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
               </div>
@@ -312,7 +312,7 @@
                   <h2 className="font-bold text-lg flex items-center gap-2">
                     🛒 Keranjang
                     {cartItemCount > 0 && (
-                      <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="bg-success text-white text-xs px-2 py-1 rounded-full">
                         {cartItemCount}
                       </span>
                     )}
@@ -343,7 +343,7 @@
                     </div>
                     <button
                       onClick={onCheckout}
-                      className="w-full bg-green-500 text-white font-bold py-3 rounded hover:scale-[1.02] transition-transform"
+                      className="w-full bg-success text-white font-bold py-3 rounded hover:scale-[1.02] transition-transform"
                     >
                       BAYAR
                     </button>
@@ -380,7 +380,7 @@
           <header
             data-component="MainLayout.Header"
             className={`fixed top-0 left-0 right-0 z-40 transition-colors ${
-              isOffline ? 'bg-red-700' : 'bg-gray-900'
+              isOffline ? 'bg-error' : 'bg-primary'
             } text-white px-8 py-4`}
           >
             <div className="flex items-center justify-between gap-8">
@@ -398,7 +398,7 @@
                     value={searchValue}
                     onChange={(e) => onSearch(e.target.value)}
                     placeholder="Cari produk... (F1)"
-                    className="w-full bg-gray-800 text-white px-4 py-2 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full bg-primary-light text-white px-4 py-2 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   <Search size={18} className="absolute right-3 text-gray-400 pointer-events-none" />
                 </div>
@@ -422,7 +422,7 @@
                 >
                   <CloudUpload size={20} className="text-gray-300" />
                   {pendingCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-warning text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                       {pendingCount}
                     </span>
                   )}
@@ -430,13 +430,13 @@
 
                 {/* Status indicator */}
                 {isOffline ? (
-                  <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full text-sm animate-pulse">
-                    <span className="inline-block w-2 h-2 bg-red-200 rounded-full animate-pulse"></span>
+                  <div className="flex items-center gap-2 bg-error-dark px-3 py-1 rounded-full text-sm animate-pulse">
+                    <span className="inline-block w-2 h-2 bg-error/50 rounded-full animate-pulse"></span>
                     OFFLINE MODE
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <span className="inline-block w-2 h-2 bg-green-400 rounded-full"></span>
+                    <span className="inline-block w-2 h-2 bg-success rounded-full"></span>
                     <span className="text-sm">Online</span>
                   </div>
                 )}

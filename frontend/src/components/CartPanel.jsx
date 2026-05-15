@@ -91,7 +91,7 @@ function CartItem({ item, onUpdate, onRemove }) {
             className={`w-7 h-7 rounded-lg flex items-center justify-center transition ${
               isAtStockLimit
                 ? 'bg-gray-100 text-gray-300 cursor-not-allowed opacity-50'
-                : 'bg-green-50 text-green-600 border border-green-200 hover:bg-green-100'
+                : 'bg-success/10 text-success border border-success/30 hover:bg-success/20'
             }`}
             aria-label="Increase quantity"
           >
@@ -367,10 +367,10 @@ const desktopPanel = (
     {/* Section 1: Header */}
     <div className="border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
       <div className="flex items-center gap-2">
-        <ShoppingCart size={20} className="text-green-600" />
+        <ShoppingCart size={20} className="text-success" />
         <span className="font-bold text-gray-800">Keranjang</span>
         {items.length > 0 && (
-          <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 ml-2 font-medium">
+          <span className="bg-success-dark text-white text-xs rounded-full px-2 py-0.5 ml-2 font-medium">
             {items.length} item
           </span>
         )}
@@ -454,9 +454,9 @@ const desktopPanel = (
 
     {/* Section 2.5: Error Banner */}
     {error && (
-      <div className="bg-red-50 border-l-4 border-red-500 mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2 animate-in slide-in-from-top-2">
-        <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
-        <p className="text-red-600 text-xs">{error}</p>
+      <div className="bg-error/10 border-l-4 border-error mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2 animate-in slide-in-from-top-2">
+        <AlertCircle size={14} className="text-error flex-shrink-0" />
+        <p className="text-error-dark text-xs">{error}</p>
       </div>
     )}
 
@@ -502,7 +502,7 @@ const desktopPanel = (
                 onClick={() => setDiscountType('nominal')}
                 className={`text-xs px-2 py-1 rounded transition ${
                   discountType === 'nominal'
-                    ? 'bg-white text-green-600 shadow-sm'
+                    ? 'bg-white text-accent shadow-sm'
                     : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
@@ -512,7 +512,7 @@ const desktopPanel = (
                 onClick={() => setDiscountType('percent')}
                 className={`text-xs px-2 py-1 rounded transition ${
                   discountType === 'percent'
-                    ? 'bg-white text-green-600 shadow-sm'
+                    ? 'bg-white text-accent shadow-sm'
                     : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
@@ -526,7 +526,7 @@ const desktopPanel = (
               onChange={handleDiscountChange}
               min="0"
               max={discountType === 'percent' ? 100 : undefined}
-              className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-green-500"
+              className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-accent"
               placeholder="0"
             />
           </div>
@@ -536,8 +536,8 @@ const desktopPanel = (
         <div className="px-4 pb-3 pt-1">
           {successState ? (
             <div className="flex flex-col items-center justify-center py-4">
-              <CheckCircle2 size={40} className="text-green-500 animate-bounce" />
-              <p className="text-green-600 font-bold text-base mt-1">Transaksi Berhasil!</p>
+              <CheckCircle2 size={40} className="text-success animate-bounce" />
+              <p className="text-success-dark font-bold text-base mt-1">Transaksi Berhasil!</p>
               <p className="text-gray-500 text-sm">Rp {total.toLocaleString('id-ID')}</p>
             </div>
           ) : (
@@ -547,12 +547,12 @@ const desktopPanel = (
               disabled={loading || items.length === 0}
               className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
                 loading
-                  ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
+                  ? 'bg-success-dark text-white opacity-90 cursor-not-allowed'
                   : isOffline
-                    ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                    ? 'bg-warning hover:bg-warning-dark text-white'
                     : items.length === 0
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
+                      : 'bg-success-dark hover:bg-success-dark text-white shadow-md hover:shadow-lg'
               }`}
               title={items.length === 0 ? 'Keranjang masih kosong' : ''}
             >
@@ -579,7 +579,7 @@ const desktopPanel = (
           )}
           
           {isOffline && items.length > 0 && !successState && (
-            <p className="text-amber-600 text-xs text-center mt-2">
+            <p className="text-warning-dark text-xs text-center mt-2">
               🔄 Akan disinkronkan saat online
             </p>
           )}
@@ -603,7 +603,7 @@ const desktopPanel = (
                   onClick={() => setDiscountType('nominal')}
                   className={`text-xs px-2 py-1 rounded transition ${
                     discountType === 'nominal'
-                      ? 'bg-white text-green-600 shadow-sm'
+                      ? 'bg-white text-accent shadow-sm'
                       : 'text-gray-400 hover:text-gray-600'
                   }`}
                 >
@@ -613,7 +613,7 @@ const desktopPanel = (
                   onClick={() => setDiscountType('percent')}
                   className={`text-xs px-2 py-1 rounded transition ${
                     discountType === 'percent'
-                      ? 'bg-white text-green-600 shadow-sm'
+                      ? 'bg-white text-accent shadow-sm'
                       : 'text-gray-400 hover:text-gray-600'
                   }`}
                 >
@@ -627,7 +627,7 @@ const desktopPanel = (
                 onChange={handleDiscountChange}
                 min="0"
                 max={discountType === 'percent' ? 100 : undefined}
-                className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-green-500"
+                className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-accent"
                 placeholder="0"
               />
             </div>
@@ -648,12 +648,12 @@ const desktopPanel = (
                 disabled={loading || items.length === 0}
                 className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
                   loading
-                    ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
+                    ? 'bg-success-dark text-white opacity-90 cursor-not-allowed'
                     : isOffline
-                      ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                      ? 'bg-warning hover:bg-warning-dark text-white'
                       : items.length === 0
                         ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
+                        : 'bg-success-dark hover:bg-success-dark text-white shadow-md hover:shadow-lg'
                 }`}
                 title={items.length === 0 ? 'Keranjang masih kosong' : ''}
               >
@@ -680,7 +680,7 @@ const desktopPanel = (
             )}
             
             {isOffline && items.length > 0 && !successState && (
-              <p className="text-amber-600 text-xs text-center mt-2">
+              <p className="text-warning-dark text-xs text-center mt-2">
                 🔄 Akan disinkronkan saat online
               </p>
             )}

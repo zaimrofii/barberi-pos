@@ -126,7 +126,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
         <p className="text-gray-400 text-sm text-center mb-4">{error}</p>
         <button
           onClick={fetchItems}
-          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          className="px-4 py-2 bg-success-dark text-white rounded-lg hover:bg-success-dark transition"
         >
           Coba lagi
         </button>
@@ -145,7 +145,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
           <button
             onClick={() => onTabChange('all')}
             className={`flex-1 md:flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              activeTab === 'all' ? 'bg-green-600 text-white' : 'text-gray-500 hover:text-gray-800'
+              activeTab === 'all' ? 'bg-success-dark text-white' : 'text-gray-500 hover:text-gray-800'
             }`}
           >
             Semua
@@ -154,7 +154,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
             onClick={() => onTabChange('service')}
             className={`flex-1 md:flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
               activeTab === 'service'
-                ? 'bg-green-600 text-white'
+                ? 'bg-success-dark text-white'
                 : 'text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -165,7 +165,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
             onClick={() => onTabChange('product')}
             className={`flex-1 md:flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
               activeTab === 'product'
-                ? 'bg-green-600 text-white'
+                ? 'bg-success-dark text-white'
                 : 'text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -182,7 +182,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
             onClick={() => setSelectedCategory('all')}
             className={`flex-shrink-0 px-3 py-1 rounded-full border text-xs font-medium transition-colors ${
               selectedCategory === 'all'
-                ? 'bg-green-100 text-green-700 border-green-300'
+                ? 'bg-success/10 text-success-dark border-success/30'
                 : 'bg-white text-gray-600 border-gray-100 hover:border-gray-300'
             }`}
           >
@@ -194,7 +194,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
               onClick={() => setSelectedCategory(category)}
               className={`flex-shrink-0 px-3 py-1 rounded-full border text-xs font-medium transition-colors flex items-center gap-1 ${
                 selectedCategory === category
-                  ? 'bg-green-100 text-green-700 border-green-300'
+                  ? 'bg-success/10 text-success-dark border-success/30'
                   : 'bg-white text-gray-600 border-gray-100 hover:border-gray-300'
               }`}
             >
@@ -218,7 +218,7 @@ export default function ProductGrid({ activeTab, onTabChange, searchQuery, onSea
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
             placeholder="Cari layanan atau produk..."
-            className="w-full bg-gray-50 text-gray-800 pl-10 pr-4 py-2 rounded-full border border-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+            className="w-full bg-gray-50 text-gray-800 pl-10 pr-4 py-2 rounded-full border border-gray-50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
           />
         </div>
       </div>
