@@ -161,19 +161,30 @@ export default function MainLayout({
               </span>
             </div>
             <button
-            
               onClick={() => {
-                if (cartItemCount > 0) {
-                  // Buka bottom sheet dulu
+                if (cartItemCount === 0) return
+                
+                if (!mobileCartOpen) {
                   setMobileCartOpen(true)
-                  // Beri waktu untuk render, lalu trigger checkout
+                  setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('pos:scroll-cart-to-bottom'))
+                    window.dispatchEvent(new CustomEvent('pos:mobile-checkout'))
+                  }, 200)
+                } else {
+                  window.dispatchEvent(new CustomEvent('pos:scroll-cart-to-bottom'))
                   setTimeout(() => {
                     window.dispatchEvent(new CustomEvent('pos:mobile-checkout'))
-                  }, 100)
+                  }, 50)
                 }
               }}
               disabled={cartItemCount === 0}
-              className={`...`}
+              className={`
+                flex-1 font-semibold py-2 px-3 rounded-lg transition-all duration-200
+                ${cartItemCount === 0 
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                  : 'bg-green-500 text-white hover:bg-green-600 active:scale-95 shadow-md'
+                }
+              `}
             >
               BAYAR
             </button>

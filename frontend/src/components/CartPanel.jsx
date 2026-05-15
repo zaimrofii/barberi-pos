@@ -322,6 +322,32 @@ export default function CartPanel({ isOffline }) {
   }, [handleCheckout])
   
 
+  // Auto-scroll to bottom when cart items change or when requested
+  useEffect(() => {
+    const scrollToBottom = () => {
+      const cartItemsContainer = document.querySelector('[data-cart-items-container]')
+      if (cartItemsContainer) {
+        cartItemsContainer.scrollTo({
+          top: cartItemsContainer.scrollHeight,
+          behavior: 'smooth'
+        })
+      }
+    }
+
+    // Scroll when items change (new item added)
+    if (items.length > 0) {
+      scrollToBottom()
+    }
+
+    // Listen for manual scroll request from mobile checkout
+    const handleScrollRequest = () => {
+      scrollToBottom()
+    }
+    
+    window.addEventListener('pos:scroll-cart-to-bottom', handleScrollRequest)
+    return () => window.removeEventListener('pos:scroll-cart-to-bottom', handleScrollRequest)
+  }, [items.length])
+
   
   const subtotal = getSubtotal()
   const total = getTotal()
@@ -436,7 +462,11 @@ const desktopPanel = (
     )}
 
     {/* Section 3: Cart Items */}
-    <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50" data-component="CartPanel.Items">
+    <div 
+      className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50" 
+      data-component="CartPanel.Items"
+      data-cart-items-container
+    >
       {items.length === 0 ? (
         <div className="h-full flex flex-col items-center justify-center">
           <ShoppingCart size={40} className="text-gray-300" />
