@@ -32,7 +32,7 @@ function CartItem({ item, onUpdate, onRemove }) {
   const itemTotal = item.price * item.quantity
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-3 mb-2 shadow-sm hover:shadow-md transition-shadow relative animate-in duration-200">
+    <div className="bg-white rounded-xl p-3 mb-2 shadow-sm hover:shadow-md transition-shadow relative animate-in duration-200">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <div
@@ -42,16 +42,10 @@ function CartItem({ item, onUpdate, onRemove }) {
                 : 'bg-blue-100 text-blue-600'
             }`}
           >
-            {item.type === 'SERVICE' ? (
-              <Scissors size={14} />
-            ) : (
-              <Package size={14} />
-            )}
+            {item.type === 'SERVICE' ? <Scissors size={14} /> : <Package size={14} />}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-gray-800 line-clamp-1">
-              {item.name}
-            </p>
+            <p className="font-semibold text-sm text-gray-800 line-clamp-1">{item.name}</p>
             {item.type === 'SERVICE' && item.duration && (
               <div className="flex items-center gap-1 text-gray-400 text-xs mt-0.5">
                 <Clock size={12} />
@@ -89,9 +83,7 @@ function CartItem({ item, onUpdate, onRemove }) {
           >
             −
           </button>
-          <div className="w-8 text-center font-bold text-sm text-gray-800">
-            {item.quantity}
-          </div>
+          <div className="w-8 text-center font-bold text-sm text-gray-800">{item.quantity}</div>
           <button
             onClick={() => onUpdate(item.id, item.quantity + 1)}
             disabled={isAtStockLimit}
@@ -118,7 +110,7 @@ function CartItem({ item, onUpdate, onRemove }) {
 }
 
 // Main CartPanel component
-export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
+export default function CartPanel({ isOffline }) {
   const {
     items,
     discount,
@@ -213,9 +205,12 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
     [updateQuantity, removeItem, items]
   )
 
-  const handleRemoveItem = useCallback((itemId) => {
-    removeItem(itemId)
-  }, [removeItem])
+  const handleRemoveItem = useCallback(
+    (itemId) => {
+      removeItem(itemId)
+    },
+    [removeItem]
+  )
 
   const handleClearCart = useCallback(() => {
     setConfirmModalOpen(true)
@@ -317,527 +312,463 @@ export default function CartPanel({ isMobileOpen, onMobileClose, isOffline }) {
   ]
 
   // Desktop version
-  const desktopPanel = (
-    <div className="hidden md:flex md:flex-col md:h-full bg-white" data-component="CartPanel">
-      {/* Section 1: Header */}
-      <div className="border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0" data-component="CartPanel.Header">
-        <div className="flex items-center gap-2">
-          <ShoppingCart size={20} className="text-green-600" />
-          <span className="font-bold text-gray-800">Keranjang</span>
-          {items.length > 0 && (
-            <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 ml-2 font-medium">
-              {items.length} item
+  // Desktop Panel - Bagian Summary & Checkout (ringkas & lega)
+const desktopPanel = (
+  <div className="flex flex-col h-full bg-white " data-component="CartPanel">
+    {/* Section 1: Header - tetap sama */}
+    <div className=" border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="flex items-center gap-2">
+        <ShoppingCart size={20} className="text-green-600" />
+        <span className="font-bold text-gray-800">Keranjang</span>
+        {items.length > 0 && (
+          <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 ml-2 font-medium">
+            {items.length} item
+          </span>
+        )}
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('pos:open-sync-modal'))}
+          className="relative p-1 hover:bg-gray-100 rounded transition"
+          title="Antrian sinkronisasi"
+        >
+          <CloudUpload size={18} className="text-gray-400" />
+          {pendingCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+              {pendingCount}
             </span>
           )}
+        </button>
+        {items.length > 0 && (
+          <button
+            onClick={handleClearCart}
+            className="text-gray-400 hover:text-red-500 transition p-1"
+            title="Kosongkan keranjang"
+          >
+            <Trash2 size={18} />
+          </button>
+        )}
+      </div>
+    </div>
+
+    {/* Section 2: Barber Selector - tetap sama */}
+    <div className="bg-gray-50 border-b border-gray-100 px-4 py-1 flex-shrink-0">
+      
+      <div id="barber-dropdown" className="relative">
+        {barberLoading ? (
+          <div className="space-y-1">
+            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+          </div>
+        ) : (
+          <>
+            <button
+              onClick={() => setBarberOpen(!barberOpen)}
+              className="w-full bg-white border border-gray-200 rounded-lg h-10 px-3 flex items-center justify-between hover:border-gray-300 transition"
+            >
+              <div className="flex items-center gap-2">
+                <User size={16} className="text-gray-400" />
+                <span className={selectedBarber ? 'text-gray-800' : 'text-gray-400'}>
+                  {selectedBarberName || 'Pilih barber...'}
+                </span>
+                {selectedBarber && <div className="w-2 h-2 rounded-full bg-green-500"></div>}
+              </div>
+              <ChevronDown
+                size={16}
+                className={`text-gray-400 transition transform ${barberOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            {barberOpen && (
+              <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
+                {barbers.map((barber, idx) => (
+                  <button
+                    key={barber.id}
+                    onClick={() => {
+                      setSelectedBarber(barber.id)
+                      setBarberOpen(false)
+                    }}
+                    className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-green-50 transition ${
+                      selectedBarber === barber.id ? 'bg-green-50 text-green-700' : 'text-gray-800'
+                    }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${barberColors[idx % barberColors.length]}`}></div>
+                    <span className="flex-1 text-left text-sm">{barber.name}</span>
+                    {selectedBarber === barber.id && <Check size={16} />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+
+    {/* Section 2.5: Error Banner - di pindah ke sini agar lebih terlihat */}
+    {error && (
+      <div className="bg-red-50 border-l-4 border-red-500 mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2 animate-in slide-in-from-top-2">
+        <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
+        <p className="text-red-600 text-xs">{error}</p>
+      </div>
+    )}
+
+    {/* Section 3: Cart Items */}
+    <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50" data-component="CartPanel.Items">
+      {items.length === 0 ? (
+        <div className="h-full flex flex-col items-center justify-center">
+          <ShoppingCart size={40} className="text-gray-300" />
+          <p className="text-gray-400 font-medium mt-2">Keranjang kosong</p>
+          <p className="text-gray-300 text-sm">Ketuk produk untuk menambahkan</p>
+          <div className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-400 mt-4">
+            💡 Tekan F1 untuk cari produk
+          </div>
+        </div>
+      ) : (
+        items.map((item) => (
+          <CartItem
+            key={item.id}
+            item={item}
+            onUpdate={handleUpdateQuantity}
+            onRemove={handleRemoveItem}
+          />
+        ))
+      )}
+    </div>
+
+    {/* Section 4: Discount Input - minimalis */}
+    {items.length > 0 && (
+      <div className=" bg-white px-4 py-1 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-1">
+          <Tag size={14} className="text-gray-400" />
+          <span className="text-xs text-gray-500">Diskon</span>
         </div>
         <div className="flex items-center gap-2">
-          {/* Sync button */}
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent('pos:open-sync-modal'))}
-            className="relative p-1 hover:bg-gray-100 rounded transition"
-            title="Antrian sinkronisasi"
-          >
-            <CloudUpload size={18} className="text-gray-400" />
-            {pendingCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {pendingCount}
-              </span>
-            )}
-          </button>
-          {items.length > 0 && (
+          <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
             <button
-              onClick={handleClearCart}
-              className="text-gray-400 hover:text-red-500 transition p-1"
-              title="Kosongkan keranjang"
-            >
-              <Trash2 size={18} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Section 2: Barber Selector */}
-      <div className="bg-gray-50 border-b border-gray-100 px-4 py-3 flex-shrink-0">
-        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-2">
-          Barber
-        </label>
-        <div id="barber-dropdown" className="relative">
-          {barberLoading ? (
-            <div className="space-y-1">
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
-            </div>
-          ) : (
-            <>
-              <button
-                onClick={() => setBarberOpen(!barberOpen)}
-                className="w-full bg-white border border-gray-200 rounded-lg h-10 px-3 flex items-center justify-between hover:border-gray-300 transition"
-              >
-                <div className="flex items-center gap-2">
-                  <User size={16} className="text-gray-400" />
-                  <span className={selectedBarber ? 'text-gray-800' : 'text-gray-400'}>
-                    {selectedBarberName || 'Pilih barber...'}
-                  </span>
-                  {selectedBarber && (
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  )}
-                </div>
-                <ChevronDown
-                  size={16}
-                  className={`text-gray-400 transition transform ${
-                    barberOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              {barberOpen && (
-                <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
-                  {barbers.map((barber, idx) => (
-                    <button
-                      key={barber.id}
-                      onClick={() => {
-                        setSelectedBarber(barber.id)
-                        setBarberOpen(false)
-                      }}
-                      className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-green-50 transition ${
-                        selectedBarber === barber.id
-                          ? 'bg-green-50 text-green-700'
-                          : 'text-gray-800'
-                      }`}
-                    >
-                      <div className={`w-2 h-2 rounded-full ${barberColors[idx % 5]}`}></div>
-                      <span className="flex-1 text-left text-sm">{barber.name}</span>
-                      {selectedBarber === barber.id && <Check size={16} />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Section 3: Cart Items */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50" data-component="CartPanel.Items">
-        {items.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center">
-            <ShoppingCart size={40} className="text-gray-300" />
-            <p className="text-gray-400 font-medium mt-2">Keranjang kosong</p>
-            <p className="text-gray-300 text-sm">Ketuk produk untuk menambahkan</p>
-            <div className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-400 mt-4">
-              💡 Tekan F1 untuk cari produk
-            </div>
-          </div>
-        ) : (
-          items.map((item) => (
-            <CartItem
-              key={item.id}
-              item={item}
-              onUpdate={handleUpdateQuantity}
-              onRemove={handleRemoveItem}
-            />
-          ))
-        )}
-      </div>
-
-      {/* Section 4: Discount Input */}
-      {items.length > 0 && (
-        <div className="bg-white border-t border-gray-100 px-4 py-3 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-1">
-            <Tag size={16} className="text-gray-400" />
-            <span className="text-sm text-gray-600">Diskon</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1">
-              <button
-                onClick={() => setDiscountType('nominal')}
-                className={`text-xs px-2 py-0.5 rounded transition ${
-                  discountType === 'nominal'
-                    ? 'bg-green-600 text-white'
-                    : 'text-gray-400 hover:bg-gray-100'
-                }`}
-              >
-                Rp
-              </button>
-              <button
-                onClick={() => setDiscountType('percent')}
-                className={`text-xs px-2 py-0.5 rounded transition ${
-                  discountType === 'percent'
-                    ? 'bg-green-600 text-white'
-                    : 'text-gray-400 hover:bg-gray-100'
-                }`}
-              >
-                %
-              </button>
-            </div>
-            <input
-              data-discount-input
-              type="number"
-              value={discountType === 'percent' ? computedDiscount : discount}
-              onChange={handleDiscountChange}
-              min="0"
-              max={discountType === 'percent' ? 100 : undefined}
-              className="w-28 text-right border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              placeholder="0"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Section 5: Summary & Checkout */}
-      <div className="bg-white border-t border-gray-200 px-4 py-4 flex-shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        {successState ? (
-          <div className="flex flex-col items-center justify-center py-8">
-            <CheckCircle2 size={48} className="text-green-500 animate-bounce" />
-            <p className="text-green-600 font-bold text-lg mt-2">Transaksi Berhasil!</p>
-            <p className="text-gray-500">Rp {total.toLocaleString('id-ID')}</p>
-          </div>
-        ) : (
-          <>
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3 flex items-center gap-2 animate-in slide-in-from-top-2">
-                <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
-                <p className="text-red-600 text-sm">{error}</p>
-              </div>
-            )}
-
-            {items.length > 0 && (
-              <>
-                <div className="space-y-1.5 mb-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="text-gray-800">
-                      Rp {subtotal.toLocaleString('id-ID')}
-                    </span>
-                  </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Diskon</span>
-                      <span className="text-red-500">
-                        - Rp {discount.toLocaleString('id-ID')}
-                      </span>
-                    </div>
-                  )}
-                  <div className="border-t border-dashed border-gray-200 my-2"></div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-800 font-bold text-base">TOTAL</span>
-                    <span className="text-green-600 font-bold text-xl">
-                      Rp {total.toLocaleString('id-ID')}
-                    </span>
-                  </div>
-                </div>
-              </>
-            )}
-
-            <button
-              data-checkout-btn
-              onClick={handleCheckout}
-              disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
-              className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all ${
-                loading
-                  ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
-                  : isOffline
-                    ? 'bg-amber-500 hover:bg-amber-600 text-white hover:shadow-lg hover:scale-[1.01]'
-                    : items.length === 0 || !selectedBarber
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-green-600 hover:bg-green-700 text-white hover:shadow-lg hover:scale-[1.01]'
+              onClick={() => setDiscountType('nominal')}
+              className={`text-xs px-2 py-1 rounded transition ${
+                discountType === 'nominal'
+                  ? 'bg-white text-green-600 shadow-sm'
+                  : 'text-gray-400 hover:text-gray-600'
               }`}
-              title={
-                !selectedBarber && items.length > 0
-                  ? 'Pilih barber terlebih dahulu'
-                  : items.length === 0
-                    ? 'Keranjang masih kosong'
-                    : ''
-              }
             >
-              {loading ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  <span>Memproses...</span>
-                </>
-              ) : isOffline ? (
-                <>
-                  <CloudUpload size={18} />
-                  <span>SIMPAN LOKAL</span>
-                </>
-              ) : (
-                <>
-                  <CreditCard size={18} />
-                  <span>BAYAR</span>
-                  <span className="text-xs ml-auto">
-                    Rp {total.toLocaleString('id-ID')}
-                  </span>
-                </>
-              )}
+              Rp
             </button>
-
-            {isOffline && (
-              <p className="text-amber-700 text-xs text-center mt-2">
-                Akan disync saat online
-              </p>
-            )}
-
-            {items.length > 0 && (
-              <p className="text-gray-300 text-xs text-center mt-3 hidden md:block">
-                ⌨ Tekan F2 untuk checkout cepat
-              </p>
-            )}
-          </>
-        )}
+            <button
+              onClick={() => setDiscountType('percent')}
+              className={`text-xs px-2 py-1 rounded transition ${
+                discountType === 'percent'
+                  ? 'bg-white text-green-600 shadow-sm'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              %
+            </button>
+          </div>
+          <input
+            data-discount-input
+            type="number"
+            value={discountType === 'percent' ? computedDiscount : discount}
+            onChange={handleDiscountChange}
+            min="0"
+            max={discountType === 'percent' ? 100 : undefined}
+            className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-green-500"
+            placeholder="0"
+          />
+        </div>
       </div>
-    </div>
-  )
+    )}
 
-  // Mobile bottom sheet version
-  const mobilePanel = (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50" data-component="CartPanel.Mobile">
-      {isMobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300"
-          onClick={onMobileClose}
-        ></div>
-      )}
-
-      <div
-        className={`fixed bottom-0 left-0 right-0 h-[85vh] bg-white rounded-t-2xl shadow-2xl transition-transform duration-300 z-50 flex flex-col ${
-          isMobileOpen ? 'translate-y-0' : 'translate-y-full'
-        }`}
-      >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-        </div>
-
-        {/* Header */}
-        <div className="border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <ShoppingCart size={20} className="text-green-600" />
-            <span className="font-bold text-gray-800">Keranjang</span>
-            {items.length > 0 && (
-              <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 ml-2 font-medium">
-                {items.length} item
-              </span>
-            )}
+    {/* Section 5: Checkout Button - ringkas & total di dalam tombol */}
+    {items.length > 0 && (
+      <div className=" px-4 pb-3 pt-1 flex-shrink-0 ">
+        {successState ? (
+          <div className="flex flex-col items-center justify-center py-4">
+            <CheckCircle2 size={40} className="text-green-500 animate-bounce" />
+            <p className="text-green-600 font-bold text-base mt-1">Transaksi Berhasil!</p>
+            <p className="text-gray-500 text-sm">Rp {total.toLocaleString('id-ID')}</p>
           </div>
-          <button onClick={onMobileClose} className="text-gray-400 hover:text-gray-600 transition p-1">
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Barber Selector */}
-        <div className="bg-gray-50 border-b border-gray-100 px-4 py-3 flex-shrink-0">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-2">
-            Barber
-          </label>
-          <div id="barber-dropdown-mobile" className="relative">
-            {barberLoading ? (
-              <div className="space-y-1">
-                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            ) : (
-              <>
-                <button
-                  onClick={() => setBarberOpen(!barberOpen)}
-                  className="w-full bg-white border border-gray-200 rounded-lg h-10 px-3 flex items-center justify-between hover:border-gray-300 transition"
-                >
-                  <div className="flex items-center gap-2">
-                    <User size={16} className="text-gray-400" />
-                    <span className={selectedBarber ? 'text-gray-800' : 'text-gray-400'}>
-                      {selectedBarberName || 'Pilih barber...'}
-                    </span>
-                    {selectedBarber && (
-                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    )}
-                  </div>
-                  <ChevronDown
-                    size={16}
-                    className={`text-gray-400 transition transform ${barberOpen ? 'rotate-180' : ''}`}
-                  />
-                </button>
-
-                {barberOpen && (
-                  <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
-                    {barbers.map((barber, idx) => (
-                      <button
-                        key={barber.id}
-                        onClick={() => {
-                          setSelectedBarber(barber.id)
-                          setBarberOpen(false)
-                        }}
-                        className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-green-50 transition ${
-                          selectedBarber === barber.id
-                            ? 'bg-green-50 text-green-700'
-                            : 'text-gray-800'
-                        }`}
-                      >
-                        <div className={`w-2 h-2 rounded-full ${barberColors[idx % 5]}`}></div>
-                        <span className="flex-1 text-left text-sm">{barber.name}</span>
-                        {selectedBarber === barber.id && <Check size={16} />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Cart Items */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50">
-          {items.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center">
-              <ShoppingCart size={40} className="text-gray-300" />
-              <p className="text-gray-400 font-medium mt-2">Keranjang kosong</p>
-              <p className="text-gray-300 text-sm">Ketuk produk untuk menambahkan</p>
-              <div className="bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-400 mt-4">
-                💡 Tekan F1 untuk cari produk
-              </div>
-            </div>
-          ) : (
-            items.map((item) => (
-              <CartItem
-                key={item.id}
-                item={item}
-                onUpdate={handleUpdateQuantity}
-                onRemove={handleRemoveItem}
-              />
-            ))
-          )}
-        </div>
-
-        {/* Discount & Summary */}
-        {items.length > 0 && (
-          <>
-            <div className="bg-white border-t border-gray-100 px-4 py-3 flex items-center justify-between flex-shrink-0">
-              <div className="flex items-center gap-1">
-                <Tag size={16} className="text-gray-400" />
-                <span className="text-sm text-gray-600">Diskon</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1">
-                  <button
-                    onClick={() => setDiscountType('nominal')}
-                    className={`text-xs px-2 py-0.5 rounded transition ${
-                      discountType === 'nominal'
-                        ? 'bg-green-600 text-white'
-                        : 'text-gray-400 hover:bg-gray-100'
-                    }`}
-                  >
-                    Rp
-                  </button>
-                  <button
-                    onClick={() => setDiscountType('percent')}
-                    className={`text-xs px-2 py-0.5 rounded transition ${
-                      discountType === 'percent'
-                        ? 'bg-green-600 text-white'
-                        : 'text-gray-400 hover:bg-gray-100'
-                    }`}
-                  >
-                    %
-                  </button>
-                </div>
-                <input
-                  data-discount-input
-                  type="number"
-                  value={discountType === 'percent' ? computedDiscount : discount}
-                  onChange={handleDiscountChange}
-                  min="0"
-                  max={discountType === 'percent' ? 100 : undefined}
-                  className="w-28 text-right border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            <div className="bg-white border-t border-gray-200 px-4 py-4 flex-shrink-0">
-              {successState ? (
-                <div className="flex flex-col items-center justify-center py-6">
-                  <CheckCircle2 size={48} className="text-green-500 animate-bounce" />
-                  <p className="text-green-600 font-bold text-lg mt-2">Transaksi Berhasil!</p>
-                  <p className="text-gray-500">Rp {total.toLocaleString('id-ID')}</p>
-                </div>
+        ) : (
+          <button
+            data-checkout-btn
+            onClick={handleCheckout}
+            disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
+            className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
+              loading
+                ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
+                : isOffline
+                  ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                  : items.length === 0 || !selectedBarber
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
+            }`}
+            title={
+              !selectedBarber && items.length > 0
+                ? 'Pilih barber terlebih dahulu'
+                : items.length === 0
+                  ? 'Keranjang masih kosong'
+                  : ''
+            }
+          >
+            <div className="flex items-center gap-2">
+              {loading ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : isOffline ? (
+                <CloudUpload size={18} />
               ) : (
-                <>
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3 flex items-center gap-2 animate-in slide-in-from-top-2">
-                      <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
-                      <p className="text-red-600 text-sm">{error}</p>
-                    </div>
-                  )}
-
-                  <div className="space-y-1.5 mb-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span className="text-gray-800">
-                        Rp {subtotal.toLocaleString('id-ID')}
-                      </span>
-                    </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Diskon</span>
-                        <span className="text-red-500">
-                          - Rp {discount.toLocaleString('id-ID')}
-                        </span>
-                      </div>
-                    )}
-                    <div className="border-t border-dashed border-gray-200 my-2"></div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-800 font-bold text-base">TOTAL</span>
-                      <span className="text-green-600 font-bold text-xl">
-                        Rp {total.toLocaleString('id-ID')}
-                      </span>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handleCheckout}
-                    disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
-                    className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all ${
-                      loading
-                        ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
-                        : isOffline
-                          ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                          : items.length === 0 || !selectedBarber
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-green-600 hover:bg-green-700 text-white'
-                    }`}
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 size={18} className="animate-spin" />
-                        <span>Memproses...</span>
-                      </>
-                    ) : isOffline ? (
-                      <>
-                        <CloudUpload size={18} />
-                        <span>SIMPAN LOKAL</span>
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard size={18} />
-                        <span>BAYAR</span>
-                      </>
-                    )}
-                  </button>
-
-                  {isOffline && (
-                    <p className="text-amber-700 text-xs text-center mt-2">
-                      Akan disync saat online
-                    </p>
-                  )}
-                </>
+                <CreditCard size={18} />
               )}
+              <span>
+                {loading
+                  ? 'Memproses...'
+                  : isOffline
+                    ? 'Simpan Lokal'
+                    : 'Bayar'}
+              </span>
             </div>
-          </>
+            <span className="text-lg font-bold">
+              Rp {total.toLocaleString('id-ID')}
+            </span>
+          </button>
         )}
+        
+        {isOffline && items.length > 0 && !successState && (
+          <p className="text-amber-600 text-xs text-center mt-2">
+            🔄 Akan disinkronkan saat online
+          </p>
+        )}
+        
+        {/* {items.length > 0 && !successState && (
+          <p className="text-gray-400 text-xs text-center mt-2 hidden md:block">
+            ⌨ Tekan F2 untuk checkout cepat
+          </p>
+        )} */}
       </div>
-    </div>
-  )
+    )}
+  </div>
+)
+
+// Mobile Panel - Bagian Summary & Checkout (ringkas & lega)
+// const mobilePanel = (
+//   <div className="md:hidden fixed bottom-0 left-0 right-0 z-50" data-component="CartPanel.Mobile">
+//     {isMobileOpen && (
+//       <div
+//         className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+//         onClick={onMobileClose}
+//       ></div>
+//     )}
+
+//     <div
+//       className={`fixed bottom-0 left-0 right-0 h-[85vh] bg-white rounded-t-2xl shadow-2xl transition-transform duration-300 z-50 flex flex-col ${
+//         isMobileOpen ? 'translate-y-0' : 'translate-y-full'
+//       }`}
+//     >
+//       {/* Drag handle */}
+//       <div className="flex justify-center pt-3 pb-2">
+//         <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+//       </div>
+
+//       {/* Header */}
+//       <div className="border-b border-gray-200 px-4 py-1 flex items-center justify-between flex-shrink-0">
+//         <div className="flex items-center gap-2">
+//           <ShoppingCart size={20} className="text-green-600" />
+//           <span className="font-bold text-gray-800">Keranjang</span>
+//           {items.length > 0 && (
+//             <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 ml-2 font-medium">
+//               {items.length} item
+//             </span>
+//           )}
+//         </div>
+//         <button onClick={onMobileClose} className="text-gray-400 hover:text-gray-600 transition p-1">
+//           <X size={20} />
+//         </button>
+//       </div>
+
+//       {/* Barber Selector */}
+//       <div className="bg-gray-50 border-b border-gray-100 px-4 py-3 flex-shrink-0">
+//         <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-2">
+//           Barber
+//         </label>
+//         <div id="barber-dropdown-mobile" className="relative">
+//           {barberLoading ? (
+//             <div className="space-y-1">
+//               <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+//             </div>
+//           ) : (
+//             <>
+//               <button
+//                 onClick={() => setBarberOpen(!barberOpen)}
+//                 className="w-full bg-white border border-gray-200 rounded-lg h-10 px-3 flex items-center justify-between hover:border-gray-300 transition"
+//               >
+//                 <div className="flex items-center gap-2">
+//                   <User size={16} className="text-gray-400" />
+//                   <span className={selectedBarber ? 'text-gray-800' : 'text-gray-400'}>
+//                     {selectedBarberName || 'Pilih barber...'}
+//                   </span>
+//                   {selectedBarber && <div className="w-2 h-2 rounded-full bg-green-500"></div>}
+//                 </div>
+//                 <ChevronDown
+//                   size={16}
+//                   className={`text-gray-400 transition transform ${barberOpen ? 'rotate-180' : ''}`}
+//                 />
+//               </button>
+
+//               {barberOpen && (
+//                 <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
+//                   {barbers.map((barber, idx) => (
+//                     <button
+//                       key={barber.id}
+//                       onClick={() => {
+//                         setSelectedBarber(barber.id)
+//                         setBarberOpen(false)
+//                       }}
+//                       className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-green-50 transition ${
+//                         selectedBarber === barber.id ? 'bg-green-50 text-green-700' : 'text-gray-800'
+//                       }`}
+//                     >
+//                       <div className={`w-2 h-2 rounded-full ${barberColors[idx % barberColors.length]}`}></div>
+//                       <span className="flex-1 text-left text-sm">{barber.name}</span>
+//                       {selectedBarber === barber.id && <Check size={16} />}
+//                     </button>
+//                   ))}
+//                 </div>
+//               )}
+//             </>
+//           )}
+//         </div>
+//       </div>
+
+//       {/* Error Banner Mobile */}
+//       {error && (
+//         <div className="bg-red-50 border-l-4 border-red-500 mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2">
+//           <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
+//           <p className="text-red-600 text-xs">{error}</p>
+//         </div>
+//       )}
+
+//       {/* Cart Items */}
+//       <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50">
+//         {items.length === 0 ? (
+//           <div className="h-full flex flex-col items-center justify-center">
+//             <ShoppingCart size={40} className="text-gray-300" />
+//             <p className="text-gray-400 font-medium mt-2">Keranjang kosong</p>
+//             <p className="text-gray-300 text-sm">Ketuk produk untuk menambahkan</p>
+//           </div>
+//         ) : (
+//           items.map((item) => (
+//             <CartItem
+//               key={item.id}
+//               item={item}
+//               onUpdate={handleUpdateQuantity}
+//               onRemove={handleRemoveItem}
+//             />
+//           ))
+//         )}
+//       </div>
+
+//       {/* Discount & Checkout Mobile */}
+//       {items.length > 0 && (
+//         <>
+//           <div className="bg-white border-t border-gray-200 px-4 py-2 flex items-center justify-between flex-shrink-0">
+//             <div className="flex items-center gap-1">
+//               <Tag size={14} className="text-gray-400" />
+//               <span className="text-xs text-gray-500">Diskon</span>
+//             </div>
+//             <div className="flex items-center gap-2">
+//               <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
+//                 <button
+//                   onClick={() => setDiscountType('nominal')}
+//                   className={`text-xs px-2 py-1 rounded transition ${
+//                     discountType === 'nominal'
+//                       ? 'bg-white text-green-600 shadow-sm'
+//                       : 'text-gray-400 hover:text-gray-600'
+//                   }`}
+//                 >
+//                   Rp
+//                 </button>
+//                 <button
+//                   onClick={() => setDiscountType('percent')}
+//                   className={`text-xs px-2 py-1 rounded transition ${
+//                     discountType === 'percent'
+//                       ? 'bg-white text-green-600 shadow-sm'
+//                       : 'text-gray-400 hover:text-gray-600'
+//                   }`}
+//                 >
+//                   %
+//                 </button>
+//               </div>
+//               <input
+//                 data-discount-input
+//                 type="number"
+//                 value={discountType === 'percent' ? computedDiscount : discount}
+//                 onChange={handleDiscountChange}
+//                 min="0"
+//                 max={discountType === 'percent' ? 100 : undefined}
+//                 className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-green-500"
+//                 placeholder="0"
+//               />
+//             </div>
+//           </div>
+
+//           <div className="border-t border-gray-200 px-4 py-3 flex-shrink-0 bg-white pb-6">
+//             {successState ? (
+//               <div className="flex flex-col items-center justify-center py-4">
+//                 <CheckCircle2 size={40} className="text-green-500 animate-bounce" />
+//                 <p className="text-green-600 font-bold text-base mt-1">Transaksi Berhasil!</p>
+//                 <p className="text-gray-500 text-sm">Rp {total.toLocaleString('id-ID')}</p>
+//               </div>
+//             ) : (
+//               <button
+//                 onClick={handleCheckout}
+//                 disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
+//                 className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
+//                   loading
+//                     ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
+//                     : isOffline
+//                       ? 'bg-amber-500 hover:bg-amber-600 text-white'
+//                       : items.length === 0 || !selectedBarber
+//                         ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+//                         : 'bg-green-600 hover:bg-green-700 text-white shadow-md'
+//                 }`}
+//               >
+//                 <div className="flex items-center gap-2">
+//                   {loading ? (
+//                     <Loader2 size={18} className="animate-spin" />
+//                   ) : isOffline ? (
+//                     <CloudUpload size={18} />
+//                   ) : (
+//                     <CreditCard size={18} />
+//                   )}
+//                   <span>
+//                     {loading
+//                       ? 'Memproses...'
+//                       : isOffline
+//                         ? 'Simpan Lokal'
+//                         : 'Bayar'}
+//                   </span>
+//                 </div>
+//                 <span className="text-lg font-bold">
+//                   Rp {total.toLocaleString('id-ID')}
+//                 </span>
+//               </button>
+//             )}
+            
+//             {isOffline && items.length > 0 && !successState && (
+//               <p className="text-amber-600 text-xs text-center mt-2">
+//                 🔄 Akan disinkronkan saat online
+//               </p>
+//             )}
+//           </div>
+//         </>
+//       )}
+//     </div>
+//   </div>
+// )
 
   return (
     <>
       {desktopPanel}
-      {mobilePanel}
+      {/* {mobilePanel} */}
       <ConfirmModal
         isOpen={confirmModalOpen}
         onClose={() => setConfirmModalOpen(false)}
