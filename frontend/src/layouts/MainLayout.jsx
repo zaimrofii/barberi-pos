@@ -101,7 +101,12 @@
                 <div className="flex-1 text-center">
                   <h1 className="font-bold text-lg">BarberPOS</h1>
                 </div>
-                <div>
+                <div className="flex items-center gap-2">
+                  {/* Barber name mobile */}
+                  <div className="flex items-center gap-1 text-sm mr-2">
+                    <User size={14} />
+                    <span className="truncate max-w-[80px]">{kasirName}</span>
+                  </div>
                   <button
                     onClick={openSyncModal}
                     className="relative p-1 hover:bg-gray-800 rounded transition"
@@ -127,8 +132,6 @@
                   </button>
                 </div>
               </div>
-
-              {/* Sync button mobile */}
 
               {/* Offline badge mobile */}
               {isOffline && (

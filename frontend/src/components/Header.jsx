@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingCart, Search, User, CloudUpload } from 'lucide-react';
+import { ShoppingCart, Search, User, CloudUpload, AlertCircle } from 'lucide-react';
 import useUIStore from '../stores/uiStore';
 import useBarberStore from '../stores/barberStore';
 
@@ -12,6 +12,7 @@ export default function Header({
   searchValue = '',
   onToggleCart = () => {},
   isMobile = false,
+  isOffline = false,
 }) {
   const { pendingCount, openSyncModal } = useUIStore();
   const { selectedBarber, barbers } = useBarberStore();
@@ -20,7 +21,7 @@ export default function Header({
   const displayName = barbers.find(b => b.id === selectedBarber)?.name || kasirName;
 
   return (
-    <header className="bg-gray-900 text-white px-4 py-3">
+    <header className={`bg-gray-900 text-white px-4 py-3 ${isOffline ? 'bg-red-700' : ''}`}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex-shrink-0">
           <h1 className="font-bold text-lg">BarberPOS</h1>
@@ -76,6 +77,12 @@ export default function Header({
           </button>
         </div>
       </div>
+      {isOffline && !isMobile && (
+        <div className="mt-3 flex items-center justify-center gap-2 text-sm">
+          <AlertCircle size={14} />
+          🔴 OFFLINE MODE • Data disimpan lokal
+        </div>
+      )}
     </header>
   );
 }
