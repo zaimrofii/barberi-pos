@@ -184,12 +184,15 @@ export default function CartPanel({ isOffline }) {
   const handleCheckout = useCallback(async () => {
     setError(null)
 
+    // Get fresh selectedBarber directly from store (bypass stale closure)
+    const currentBarber = useBarberStore.getState().selectedBarber
+
     if (items.length === 0) {
       setError('Keranjang masih kosong')
       return
     }
 
-    if (!selectedBarber && items.length > 0) {
+    if (!currentBarber && items.length > 0) {
       setShowBarberModal(true)
       return
     }
@@ -198,7 +201,7 @@ export default function CartPanel({ isOffline }) {
       // Save to localStorage
       const payload = {
         local_id: crypto.randomUUID(),
-        barber_id: selectedBarber,
+        barber_id: currentBarber,
         discount: discount,
         items: items.map((item) => ({ item_id: item.id, quantity: item.quantity })),
       }
@@ -223,7 +226,7 @@ export default function CartPanel({ isOffline }) {
     try {
       const payload = {
         local_id: crypto.randomUUID(),
-        barber_id: selectedBarber,
+        barber_id: currentBarber,
         discount: discount,
         items: items.map((item) => ({ item_id: item.id, quantity: item.quantity })),
       }
@@ -242,14 +245,11 @@ export default function CartPanel({ isOffline }) {
     } finally {
       setLoading(false)
     }
-  }, [items, selectedBarber, discount, isOffline, clearCart])
+  }, [items, discount, isOffline, clearCart])
 
   const handleBarberSelected = useCallback(() => {
     setShowBarberModal(false)
-    // Beri waktu sedikit untuk state update
-    setTimeout(() => {
-      handleCheckout()
-    }, 50)
+    handleCheckout()  // Direct call - no setTimeout needed
   }, [handleCheckout])
 
   const handleDiscountChange = (e) => {
