@@ -320,6 +320,7 @@ export default function CartPanel({ isOffline }) {
     window.addEventListener('pos:mobile-checkout', handleMobileCheckout)
     return () => window.removeEventListener('pos:mobile-checkout', handleMobileCheckout)
   }, [handleCheckout])
+  
 
   
   const subtotal = getSubtotal()

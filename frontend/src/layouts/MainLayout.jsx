@@ -161,17 +161,19 @@ export default function MainLayout({
               </span>
             </div>
             <button
+            
               onClick={() => {
                 if (cartItemCount > 0) {
-                  window.dispatchEvent(new CustomEvent('pos:mobile-checkout'))
+                  // Buka bottom sheet dulu
+                  setMobileCartOpen(true)
+                  // Beri waktu untuk render, lalu trigger checkout
+                  setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('pos:mobile-checkout'))
+                  }, 100)
                 }
               }}
               disabled={cartItemCount === 0}
-              className={`flex-1 font-semibold py-2 px-3 rounded-lg transition-transform ${
-                cartItemCount === 0
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-green-500 text-white hover:scale-[1.02]'
-              }`}
+              className={`...`}
             >
               BAYAR
             </button>
