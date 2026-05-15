@@ -160,7 +160,11 @@ export default function MainLayout({
               </span>
             </div>
             <button
-              onClick={onCheckout}
+              onClick={() => {
+                if (cartItemCount > 0) {
+                  window.dispatchEvent(new CustomEvent('pos:mobile-checkout'))
+                }
+              }}
               disabled={cartItemCount === 0}
               className={`flex-1 font-semibold py-2 px-3 rounded-lg transition-transform ${
                 cartItemCount === 0

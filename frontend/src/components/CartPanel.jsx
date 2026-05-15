@@ -176,6 +176,16 @@ export default function CartPanel({ isOffline }) {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [loading, items, selectedBarber, discount])
 
+  // Listen for mobile checkout trigger from bottom navigation
+  useEffect(() => {
+    const handleMobileCheckout = () => {
+      handleCheckout()
+    }
+
+    window.addEventListener('pos:mobile-checkout', handleMobileCheckout)
+    return () => window.removeEventListener('pos:mobile-checkout', handleMobileCheckout)
+  }, [handleCheckout])
+
   const handleUpdateQuantity = useCallback(
     (itemId, newQuantity) => {
       if (newQuantity <= 0) {
