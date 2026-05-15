@@ -223,27 +223,6 @@ export default function CartPanel({ isOffline }) {
     setConfirmModalOpen(false)
   }, [clearCart])
 
-  const handleBarberSelected = useCallback(() => {
-    setShowBarberModal(false)
-    setTimeout(() => handleCheckout(), 100)
-  }, [handleCheckout])
-
-  const handleDiscountChange = (e) => {
-    const value = parseFloat(e.target.value) || 0
-    if (discountType === 'percent') {
-      setDiscount((getSubtotal() * value) / 100)
-    } else {
-      setDiscount(value)
-    }
-  }
-
-  const computedDiscount = useMemo(() => {
-    if (discountType === 'percent' && discount > 0) {
-      return Math.round((discount / getSubtotal()) * 100)
-    }
-    return discount
-  }, [discount, discountType, getSubtotal()])
-
   const handleCheckout = useCallback(async () => {
     setError(null)
 
@@ -307,6 +286,31 @@ export default function CartPanel({ isOffline }) {
     }
   }, [items, selectedBarber, discount, isOffline, clearCart])
 
+  const handleBarberSelected = useCallback(() => {
+    setShowBarberModal(false)
+    // Beri waktu sedikit untuk state update
+    setTimeout(() => {
+      handleCheckout()
+    }, 50)
+  }, [handleCheckout])
+
+  const handleDiscountChange = (e) => {
+    const value = parseFloat(e.target.value) || 0
+    if (discountType === 'percent') {
+      setDiscount((getSubtotal() * value) / 100)
+    } else {
+      setDiscount(value)
+    }
+  }
+
+  const computedDiscount = useMemo(() => {
+    if (discountType === 'percent' && discount > 0) {
+      return Math.round((discount / getSubtotal()) * 100)
+    }
+    return discount
+  }, [discount, discountType, getSubtotal()])
+
+  
   const subtotal = getSubtotal()
   const total = getTotal()
   const selectedBarberName = barbers.find((b) => b.id === selectedBarber)?.name
@@ -499,23 +503,17 @@ const desktopPanel = (
           <button
             data-checkout-btn
             onClick={handleCheckout}
-            disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
+            disabled={loading || items.length === 0}
             className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
               loading
                 ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
                 : isOffline
                   ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                  : items.length === 0 || !selectedBarber
+                  : items.length === 0
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
             }`}
-            title={
-              !selectedBarber && items.length > 0
-                ? 'Pilih barber terlebih dahulu'
-                : items.length === 0
-                  ? 'Keranjang masih kosong'
-                  : ''
-            }
+            title={items.length === 0 ? 'Keranjang masih kosong' : ''}
           >
             <div className="flex items-center gap-2">
               {loading ? (
@@ -554,224 +552,6 @@ const desktopPanel = (
     )}
   </div>
 )
-
-// Mobile Panel - Bagian Summary & Checkout (ringkas & lega)
-// const mobilePanel = (
-//   <div className="md:hidden fixed bottom-0 left-0 right-0 z-50" data-component="CartPanel.Mobile">
-//     {isMobileOpen && (
-//       <div
-//         className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
-//         onClick={onMobileClose}
-//       ></div>
-//     )}
-
-//     <div
-//       className={`fixed bottom-0 left-0 right-0 h-[85vh] bg-white rounded-t-2xl shadow-2xl transition-transform duration-300 z-50 flex flex-col ${
-//         isMobileOpen ? 'translate-y-0' : 'translate-y-full'
-//       }`}
-//     >
-//       {/* Drag handle */}
-//       <div className="flex justify-center pt-3 pb-2">
-//         <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-//       </div>
-
-//       {/* Header */}
-//       <div className="border-b border-gray-200 px-4 py-1 flex items-center justify-between flex-shrink-0">
-//         <div className="flex items-center gap-2">
-//           <ShoppingCart size={20} className="text-green-600" />
-//           <span className="font-bold text-gray-800">Keranjang</span>
-//           {items.length > 0 && (
-//             <span className="bg-green-600 text-white text-xs rounded-full px-2 py-0.5 ml-2 font-medium">
-//               {items.length} item
-//             </span>
-//           )}
-//         </div>
-//         <button onClick={onMobileClose} className="text-gray-400 hover:text-gray-600 transition p-1">
-//           <X size={20} />
-//         </button>
-//       </div>
-
-//       {/* Barber Selector */}
-//       <div className="bg-gray-50 border-b border-gray-100 px-4 py-3 flex-shrink-0">
-//         <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-2">
-//           Barber
-//         </label>
-//         <div id="barber-dropdown-mobile" className="relative">
-//           {barberLoading ? (
-//             <div className="space-y-1">
-//               <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-//             </div>
-//           ) : (
-//             <>
-//               <button
-//                 onClick={() => setBarberOpen(!barberOpen)}
-//                 className="w-full bg-white border border-gray-200 rounded-lg h-10 px-3 flex items-center justify-between hover:border-gray-300 transition"
-//               >
-//                 <div className="flex items-center gap-2">
-//                   <User size={16} className="text-gray-400" />
-//                   <span className={selectedBarber ? 'text-gray-800' : 'text-gray-400'}>
-//                     {selectedBarberName || 'Pilih barber...'}
-//                   </span>
-//                   {selectedBarber && <div className="w-2 h-2 rounded-full bg-green-500"></div>}
-//                 </div>
-//                 <ChevronDown
-//                   size={16}
-//                   className={`text-gray-400 transition transform ${barberOpen ? 'rotate-180' : ''}`}
-//                 />
-//               </button>
-
-//               {barberOpen && (
-//                 <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
-//                   {barbers.map((barber, idx) => (
-//                     <button
-//                       key={barber.id}
-//                       onClick={() => {
-//                         setSelectedBarber(barber.id)
-//                         setBarberOpen(false)
-//                       }}
-//                       className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-green-50 transition ${
-//                         selectedBarber === barber.id ? 'bg-green-50 text-green-700' : 'text-gray-800'
-//                       }`}
-//                     >
-//                       <div className={`w-2 h-2 rounded-full ${barberColors[idx % barberColors.length]}`}></div>
-//                       <span className="flex-1 text-left text-sm">{barber.name}</span>
-//                       {selectedBarber === barber.id && <Check size={16} />}
-//                     </button>
-//                   ))}
-//                 </div>
-//               )}
-//             </>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Error Banner Mobile */}
-//       {error && (
-//         <div className="bg-red-50 border-l-4 border-red-500 mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2">
-//           <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
-//           <p className="text-red-600 text-xs">{error}</p>
-//         </div>
-//       )}
-
-//       {/* Cart Items */}
-//       <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50">
-//         {items.length === 0 ? (
-//           <div className="h-full flex flex-col items-center justify-center">
-//             <ShoppingCart size={40} className="text-gray-300" />
-//             <p className="text-gray-400 font-medium mt-2">Keranjang kosong</p>
-//             <p className="text-gray-300 text-sm">Ketuk produk untuk menambahkan</p>
-//           </div>
-//         ) : (
-//           items.map((item) => (
-//             <CartItem
-//               key={item.id}
-//               item={item}
-//               onUpdate={handleUpdateQuantity}
-//               onRemove={handleRemoveItem}
-//             />
-//           ))
-//         )}
-//       </div>
-
-//       {/* Discount & Checkout Mobile */}
-//       {items.length > 0 && (
-//         <>
-//           <div className="bg-white border-t border-gray-200 px-4 py-2 flex items-center justify-between flex-shrink-0">
-//             <div className="flex items-center gap-1">
-//               <Tag size={14} className="text-gray-400" />
-//               <span className="text-xs text-gray-500">Diskon</span>
-//             </div>
-//             <div className="flex items-center gap-2">
-//               <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
-//                 <button
-//                   onClick={() => setDiscountType('nominal')}
-//                   className={`text-xs px-2 py-1 rounded transition ${
-//                     discountType === 'nominal'
-//                       ? 'bg-white text-green-600 shadow-sm'
-//                       : 'text-gray-400 hover:text-gray-600'
-//                   }`}
-//                 >
-//                   Rp
-//                 </button>
-//                 <button
-//                   onClick={() => setDiscountType('percent')}
-//                   className={`text-xs px-2 py-1 rounded transition ${
-//                     discountType === 'percent'
-//                       ? 'bg-white text-green-600 shadow-sm'
-//                       : 'text-gray-400 hover:text-gray-600'
-//                   }`}
-//                 >
-//                   %
-//                 </button>
-//               </div>
-//               <input
-//                 data-discount-input
-//                 type="number"
-//                 value={discountType === 'percent' ? computedDiscount : discount}
-//                 onChange={handleDiscountChange}
-//                 min="0"
-//                 max={discountType === 'percent' ? 100 : undefined}
-//                 className="w-24 text-right border-0 bg-gray-50 rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-green-500"
-//                 placeholder="0"
-//               />
-//             </div>
-//           </div>
-
-//           <div className="border-t border-gray-200 px-4 py-3 flex-shrink-0 bg-white pb-6">
-//             {successState ? (
-//               <div className="flex flex-col items-center justify-center py-4">
-//                 <CheckCircle2 size={40} className="text-green-500 animate-bounce" />
-//                 <p className="text-green-600 font-bold text-base mt-1">Transaksi Berhasil!</p>
-//                 <p className="text-gray-500 text-sm">Rp {total.toLocaleString('id-ID')}</p>
-//               </div>
-//             ) : (
-//               <button
-//                 onClick={handleCheckout}
-//                 disabled={loading || items.length === 0 || (!selectedBarber && !isOffline)}
-//                 className={`w-full h-12 rounded-xl font-bold text-base flex items-center justify-between px-4 transition-all ${
-//                   loading
-//                     ? 'bg-green-600 text-white opacity-90 cursor-not-allowed'
-//                     : isOffline
-//                       ? 'bg-amber-500 hover:bg-amber-600 text-white'
-//                       : items.length === 0 || !selectedBarber
-//                         ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-//                         : 'bg-green-600 hover:bg-green-700 text-white shadow-md'
-//                 }`}
-//               >
-//                 <div className="flex items-center gap-2">
-//                   {loading ? (
-//                     <Loader2 size={18} className="animate-spin" />
-//                   ) : isOffline ? (
-//                     <CloudUpload size={18} />
-//                   ) : (
-//                     <CreditCard size={18} />
-//                   )}
-//                   <span>
-//                     {loading
-//                       ? 'Memproses...'
-//                       : isOffline
-//                         ? 'Simpan Lokal'
-//                         : 'Bayar'}
-//                   </span>
-//                 </div>
-//                 <span className="text-lg font-bold">
-//                   Rp {total.toLocaleString('id-ID')}
-//                 </span>
-//               </button>
-//             )}
-            
-//             {isOffline && items.length > 0 && !successState && (
-//               <p className="text-amber-600 text-xs text-center mt-2">
-//                 🔄 Akan disinkronkan saat online
-//               </p>
-//             )}
-//           </div>
-//         </>
-//       )}
-//     </div>
-//   </div>
-// )
-
   return (
     <>
       {desktopPanel}
