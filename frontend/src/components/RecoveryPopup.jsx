@@ -8,29 +8,41 @@ import { CART_BACKUP_KEY } from '../utils/constants';
 
 export default function RecoveryPopup() {
   const { showRecoveryPopup, recoveryCartData, setShowRecoveryPopup, setRecoveryCartData } = useUIStore();
-  const { items: currentItems, addItem, clearCart } = useCartStore();
+  const { addItem, clearCart } = useCartStore();
 
   const handleRestore = () => {
-    if (recoveryCartData && recoveryCartData.items) {
-      // Clear current cart
-      clearCart();
-      // Add each item from backup
-      recoveryCartData.items.forEach((item) => {
-        addItem(item);
-      });
-      // Clear backup
-      localStorage.removeItem(CART_BACKUP_KEY);
-      setShowRecoveryPopup(false);
-      setRecoveryCartData(null);
-    }
-  };
-
-  const handleStartNew = () => {
-    // Clear backup only
+  if (recoveryCartData && recoveryCartData.items) {
+    // 1. Clear current cart
+    clearCart();
+    
+    // 2. Restore items dengan cara yang lebih efisien
+    //    (Daripada panggil addItem berkali-kali)
+    useCartStore.setState({
+      items: recoveryCartData.items,
+      discount: recoveryCartData.discount || 0,
+      // Jangan restore history karena itu history sesi lama
+    });
+    
+    // 3. Hapus backup
     localStorage.removeItem(CART_BACKUP_KEY);
+    
+    // 4. Tutup popup
     setShowRecoveryPopup(false);
     setRecoveryCartData(null);
-  };
+  }
+};
+
+  const handleStartNew = () => {
+  // 1. Hapus backup dari localStorage
+  localStorage.removeItem(CART_BACKUP_KEY);
+  
+  // 2. Kosongkan cart store (INI YANG MISSING!)
+  clearCart();  // ← Tambahkan ini!
+  
+  // 3. Reset UI state
+  setShowRecoveryPopup(false);
+  setRecoveryCartData(null);
+};
 
   if (!showRecoveryPopup || !recoveryCartData) return null;
 
@@ -49,10 +61,12 @@ export default function RecoveryPopup() {
       onClose={() => {}} // blocking modal
       className="fixed inset-0 z-50 overflow-y-auto"
     >
-      <div className="flex items-center justify-center min-h-screen">
-        <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
+      {/* Overlay */}
+      <div className="fixed inset-0 bg-black bg-black/50" aria-hidden="true" />
 
-        <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+      {/* Modal container */}
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
           <Dialog.Title className="text-lg font-bold mb-4">
             Keranjang Tersimpan
           </Dialog.Title>
@@ -96,7 +110,7 @@ export default function RecoveryPopup() {
               onClick={handleRestore}
               className="flex-1 py-2 px-4 rounded font-bold bg-green-500 text-white hover:bg-green-600 transition-colors"
             >
-              ✅ Kembalikan
+              ✅ Lanjutkan
             </button>
           </div>
         </div>
