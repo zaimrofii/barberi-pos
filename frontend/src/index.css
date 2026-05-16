@@ -3,13 +3,13 @@
 /* Custom Design System Theme */
 @theme {
   /* Primary colors */
-  --color-primary: #0A1128;
+  --color-primary: #004850;
   --color-primary-dark: #080e20;
-  --color-primary-light: #1a2a4a;
+  --color-primary-light: #225A67;
   
   /* Accent/CTA colors */
-  --color-accent: #00F0FF;
-  --color-accent-dark: #00c0cc;
+  --color-accent: #0096C7  ;
+  --color-accent-dark: #005A8A;
   --color-accent-light: #4df5ff;
   
   /* Status colors */

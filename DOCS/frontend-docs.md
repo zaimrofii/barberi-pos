@@ -17,7 +17,7 @@
 
 ### 1. Offline Mode & Sync
 | Feature | Status | Priority |
-|---------|--------|----------|
+|---------------------------|
 | Red "OFFLINE MODE" banner in header | ⬜ | 🔴 Required |
 | WiFi broken icon | ⬜ | 🔴 Required |
 | Auto-save to localStorage every 5 seconds | ⬜ | 🔴 Required |
@@ -39,7 +39,7 @@
 | F3 | Cancel | ⬜ | 🟢 Nice to have |
 | Enter | Calculate total | ⬜ | 🟢 Nice to have |
 | ESC | Clear item from cart | ⬜ | 🟢 Nice to have |
-
+    
 ---
 
 ## 📁 Final Folder Structure

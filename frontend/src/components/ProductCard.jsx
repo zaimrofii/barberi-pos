@@ -153,8 +153,8 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
         isOutOfStock
           ? 'opacity-50 cursor-not-allowed border border-gray-100'
           : isInCart
-            ? 'border-green-500 bg-green-50 hover:border-green-600 hover:shadow-sm hover:scale-[1.02] active:scale-[0.98]'
-            : 'border-gray-100 hover:border-green-400 hover:shadow-sm hover:scale-[1.02] active:scale-[0.98]'
+            ? 'border-success bg-success-dark hover:border-success-dark hover:shadow-sm hover:scale-[1.02] active:scale-[0.98]'
+            : 'border-gray-100 hover:border-success hover:shadow-sm hover:scale-[1.02] active:scale-[0.98]'
       }`}
       style={{ padding: '12px' }}
     >
@@ -208,7 +208,7 @@ export default React.memo(function ProductCard({ item, onAdd, isInCart, cartQuan
       {/* Price */}
       {/* Price */}
       {/* Price */}
-      <div className="text-success font-normal text-sm mt-1 flex flex-col items-start gap-1 md:flex-row md:items-center md:gap-2">
+      <div className="text-primary-light font-bold text-sm mt-1 flex flex-col items-start gap-1 md:flex-row md:items-center md:gap-2">
         {formatPrice(item.price)}
         {item.type === 'SERVICE' && (
           <span className="text-gray-400 font-normal text-xs flex items-center gap-1">

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-05-15T12:00:00.000Z",
+  "lastUpdated": "2026-05-16T12:00:00.000Z",
   "project": {
     "name": "Salon POS App",
     "tech": [
@@ -17,12 +17,13 @@
       "date-fns"
     ],
     "stateManagement": "Zustand stores",
-    "styling": "Tailwind CSS",
+    "styling": "Tailwind CSS (custom design system with CSS variables)",
     "buildTool": "Vite"
   },
   "architecture": {
     "pattern": "Feature-based + Store pattern",
-    "flow": "Pages → Components → Stores → Services → API"
+    "flow": "Pages → Components → Stores → Services → API",
+    "routing": "React Router v7 (BrowserRouter with createBrowserRouter)"
   },
   "components": {
     "AutoSaveIndicator": {
@@ -31,7 +32,7 @@
       "props": [],
       "responsibility": "Menampilkan indikator status auto-save (menyimpan/tersimpan/gagal) di pojok kiri bawah layar desktop",
       "dependencies": ["../stores/uiStore"],
-      "usedBy": ["App.jsx"]
+      "usedBy": ["layouts/RootLayout.jsx"]
     },
     "BarberSelectionModal": {
       "path": "src/components/BarberSelectionModal.jsx",
@@ -45,9 +46,9 @@
       "path": "src/components/CartPanel.jsx",
       "type": "container",
       "props": ["isOffline"],
-      "responsibility": "Panel keranjang belanja dengan daftar item, pemilihan barber (via modal jika belum dipilih), input diskon, ringkasan total, dan tombol checkout (online/offline)",
+      "responsibility": "Panel keranjang belanja dengan daftar item, pemilihan barber (via modal jika belum dipilih), input diskon, ringkasan total, tombol checkout (online/offline), auto-scroll, dan fixed bottom panel untuk mobile",
       "dependencies": ["../stores/cartStore", "../stores/barberStore", "../stores/uiStore", "../services/barberService", "./ConfirmModal", "./BarberSelectionModal"],
-      "usedBy": ["App.jsx", "layouts/MainLayout.jsx"]
+      "usedBy": ["router/index.jsx", "layouts/MainLayout.jsx"]
     },
     "ConfirmModal": {
       "path": "src/components/ConfirmModal.jsx",
@@ -60,10 +61,10 @@
     "Header": {
       "path": "src/components/Header.jsx",
       "type": "presentational",
-      "props": ["kasirName", "cartItemCount", "cartTotal", "onCheckout", "onSearch", "searchValue", "onToggleCart", "isMobile"],
-      "responsibility": "Header aplikasi dengan logo, kolom pencarian, tombol sinkronisasi, nama kasir, dan ikon keranjang",
-      "dependencies": ["../stores/uiStore"],
-      "usedBy": []
+      "props": ["kasirName", "cartItemCount", "cartTotal", "onCheckout", "onSearch", "searchValue", "onToggleCart", "isMobile", "isOffline"],
+      "responsibility": "Header aplikasi dengan logo, kolom pencarian, tombol sinkronisasi, nama barber (dari store), dan ikon keranjang. Mendukung offline badge.",
+      "dependencies": ["../stores/uiStore", "../stores/barberStore"],
+      "usedBy": ["layouts/MainLayout.jsx"]
     },
     "LoadingSpinner": {
       "path": "src/components/LoadingSpinner.jsx",
@@ -71,7 +72,15 @@
       "props": ["size", "color", "className"],
       "responsibility": "Komponen animasi loading dengan skeleton grid untuk feedback saat memuat data",
       "dependencies": [],
-      "usedBy": ["components/ProductGrid.jsx"]
+      "usedBy": ["components/ProductGrid.jsx", "pages/CommissionReport.jsx"]
+    },
+    "Navigation": {
+      "path": "src/components/Navigation.jsx",
+      "type": "presentational",
+      "props": [],
+      "responsibility": "Navigation bar dengan link ke POS, History, dan Reports. Menggunakan NavLink untuk highlight rute aktif.",
+      "dependencies": ["react-router-dom", "lucide-react"],
+      "usedBy": ["layouts/RootLayout.jsx"]
     },
     "OfflineBanner": {
       "path": "src/components/OfflineBanner.jsx",
@@ -95,7 +104,7 @@
       "props": ["activeTab", "onTabChange", "searchQuery", "onSearch"],
       "responsibility": "Grid produk dengan tab filter (Semua/Layanan/Produk), filter kategori, pencarian, dan modal quick pick (F4)",
       "dependencies": ["../stores/itemStore", "../stores/cartStore", "../stores/uiStore", "./ProductCard"],
-      "usedBy": ["App.jsx"]
+      "usedBy": ["router/index.jsx"]
     },
     "RecoveryPopup": {
       "path": "src/components/RecoveryPopup.jsx",
@@ -103,7 +112,7 @@
       "props": [],
       "responsibility": "Modal pemulihan keranjang yang tersimpan sebelumnya, menampilkan daftar item dan opsi restore/mulai baru",
       "dependencies": ["../stores/uiStore", "../stores/cartStore", "../utils/constants"],
-      "usedBy": ["App.jsx"]
+      "usedBy": ["layouts/RootLayout.jsx"]
     },
     "ShortcutsHelper": {
       "path": "src/components/ShortcutsHelper.jsx",
@@ -119,7 +128,7 @@
       "props": [],
       "responsibility": "Modal status sinkronisasi offline yang menampilkan jumlah antrian, progress bar, dan indikator selesai",
       "dependencies": ["../stores/uiStore"],
-      "usedBy": ["App.jsx", "layouts/MainLayout.jsx"]
+      "usedBy": ["layouts/RootLayout.jsx", "layouts/MainLayout.jsx"]
     },
     "VoidModal": {
       "path": "src/components/VoidModal.jsx",
@@ -136,12 +145,12 @@
       "returns": "void",
       "responsibility": "Menyimpan keranjang ke localStorage secara periodik (setiap 5 detik) dan memicu custom event pos:auto-save",
       "dependencies": ["../stores/cartStore", "../stores/uiStore", "../utils/constants"],
-      "usedBy": ["App.jsx"]
+      "usedBy": ["layouts/RootLayout.jsx"]
     },
     "useKeyboardShortcuts": {
       "path": "src/hooks/useKeyboardShortcuts.js",
       "returns": "void",
-      "responsibility": "Mendaftarkan event listener keyboard global untuk shortcut F1 (cari), F4 (quick pick), dan Escape (tutup modal)",
+      "responsibility": "Mendaftarkan event listener keyboard global untuk shortcut F1 (cari), F2 (checkout), F4 (quick pick), dan Escape (tutup modal)",
       "dependencies": [],
       "usedBy": ["layouts/MainLayout.jsx"]
     },
@@ -150,7 +159,7 @@
       "returns": "{ loadQueue, processQueue }",
       "responsibility": "Mengelola antrian transaksi offline, sinkronisasi otomatis saat online, dan memicu event pos:sync-*",
       "dependencies": ["../stores/uiStore", "../services/barberService"],
-      "usedBy": ["App.jsx"]
+      "usedBy": ["layouts/RootLayout.jsx"]
     },
     "useSoldToday": {
       "path": "src/hooks/useSoldToday.js",
@@ -163,11 +172,11 @@
   "stores": {
     "barberStore": {
       "path": "src/stores/barberStore.js",
-      "type": "Zustand slice",
+      "type": "Zustand slice with persist middleware",
       "state": ["barbers", "selectedBarber", "loading", "error"],
-      "actions": ["fetchBarbers", "setSelectedBarber", "getSelectedBarberName"],
-      "responsibility": "Mengelola daftar barber dan barber yang dipilih untuk transaksi",
-      "usedBy": ["components/CartPanel.jsx"]
+      "actions": ["fetchBarbers", "setSelectedBarber", "getSelectedBarberName", "clearStoredBarber"],
+      "responsibility": "Mengelola daftar barber dan barber yang dipilih untuk transaksi. Selected barber persists to localStorage.",
+      "usedBy": ["components/CartPanel.jsx", "components/Header.jsx", "pages/CommissionReport.jsx"]
     },
     "cartStore": {
       "path": "src/stores/cartStore.js",
@@ -175,7 +184,7 @@
       "state": ["items", "discount", "history"],
       "actions": ["addItem", "updateQuantity", "removeItem", "setDiscount", "clearCart", "getSubtotal", "getTotal", "getItemCount", "pushToHistory", "undo"],
       "responsibility": "Mengelola item keranjang, diskon, subtotal/total, dan riwayat undo",
-      "usedBy": ["App.jsx", "components/CartPanel.jsx", "components/ProductGrid.jsx", "components/RecoveryPopup.jsx", "hooks/useAutoSave.js"]
+      "usedBy": ["layouts/RootLayout.jsx", "components/CartPanel.jsx", "components/ProductGrid.jsx", "components/RecoveryPopup.jsx", "hooks/useAutoSave.js"]
     },
     "itemStore": {
       "path": "src/stores/itemStore.js",
@@ -191,7 +200,7 @@
       "state": ["isOnline", "isSyncModalOpen", "showRecoveryPopup", "recoveryCartData", "syncProgress", "syncStatus", "pendingCount", "lastSaveTime", "saveStatus"],
       "actions": ["setOnlineStatus", "openSyncModal", "closeSyncModal", "setShowRecoveryPopup", "setRecoveryCartData", "setSyncProgress", "setSyncStatus", "setPendingCount", "setLastSaveTime", "setSaveStatus"],
       "responsibility": "Mengelola status UI global: koneksi online/offline, modal sinkronisasi, popup recovery, progress sinkronisasi, dan status auto-save",
-      "usedBy": ["App.jsx", "components/AutoSaveIndicator.jsx", "components/CartPanel.jsx", "components/Header.jsx", "components/ProductGrid.jsx", "components/RecoveryPopup.jsx", "components/SyncQueueModal.jsx", "hooks/useAutoSave.js", "hooks/useOfflineSync.js", "layouts/MainLayout.jsx"]
+      "usedBy": ["layouts/RootLayout.jsx", "components/AutoSaveIndicator.jsx", "components/CartPanel.jsx", "components/Header.jsx", "components/ProductGrid.jsx", "components/RecoveryPopup.jsx", "components/SyncQueueModal.jsx", "hooks/useAutoSave.js", "hooks/useOfflineSync.js", "layouts/MainLayout.jsx", "pages/CommissionReport.jsx"]
     }
   },
   "services": {
@@ -212,8 +221,8 @@
     "constants": {
       "path": "src/utils/constants.js",
       "functions": [],
-      "responsibility": "Konstanta aplikasi: kunci localStorage (CART_STORAGE_KEY, CART_BACKUP_KEY) dan interval auto-save (AUTO_SAVE_INTERVAL_MS)",
-      "usedBy": ["stores/cartStore.js", "hooks/useAutoSave.js", "components/RecoveryPopup.jsx"]
+      "responsibility": "Konstanta aplikasi: kunci localStorage (CART_STORAGE_KEY, CART_BACKUP_KEY, BARBER_STORAGE_KEY) dan interval auto-save (AUTO_SAVE_INTERVAL_MS)",
+      "usedBy": ["stores/cartStore.js", "stores/barberStore.js", "hooks/useAutoSave.js", "components/RecoveryPopup.jsx"]
     },
     "devInspector": {
       "path": "src/utils/devInspector.js",
@@ -226,34 +235,49 @@
     "MainLayout": {
       "path": "src/layouts/MainLayout.jsx",
       "sections": ["header", "main content", "cart sidebar", "mobile bottom navigation", "mobile cart bottom sheet"],
-      "responsibility": "Layout utama aplikasi dengan tiga varian responsif (mobile, tablet, desktop) yang mencakup header, area produk, panel keranjang, dan navigasi bawah",
-      "usedBy": ["App.jsx"]
+      "responsibility": "Layout utama aplikasi dengan tiga varian responsif (mobile, tablet, desktop) yang mencakup header, area produk, panel keranjang, dan navigasi bawah. Menampilkan nama barber dari store.",
+      "usedBy": ["router/index.jsx"]
+    },
+    "RootLayout": {
+      "path": "src/layouts/RootLayout.jsx",
+      "sections": ["Toaster", "Outlet", "AutoSaveIndicator", "RecoveryPopup", "SyncQueueModal"],
+      "responsibility": "Root layout yang membungkus seluruh aplikasi dengan provider global, toaster, dan auto-save indicator. Menginisialisasi offline sync dan mengecek backup keranjang.",
+      "usedBy": ["router/index.jsx"]
     }
   },
   "pages": {
     "CommissionReport": {
       "path": "src/pages/CommissionReport.jsx",
-      "responsibility": "Halaman laporan komisi (masih kosong, placeholder)",
-      "usesStores": [],
-      "usesComponents": [],
-      "route": "#reports"
+      "responsibility": "Laporan komisi barber lengkap dengan filter tanggal (date picker dengan preset), pencarian, sorting, export CSV, summary cards, dan peringkat barber (🥇🥈🥉). Mendukung loading state dan offline indicator.",
+      "usesStores": ["barberStore", "uiStore"],
+      "usesComponents": ["LoadingSpinner"],
+      "route": "/reports"
     },
     "History": {
       "path": "src/pages/History.jsx",
       "responsibility": "Halaman riwayat transaksi dengan tabel, pencarian, dan tombol void untuk setiap transaksi",
       "usesStores": [],
       "usesComponents": ["VoidModal"],
-      "route": "#history"
+      "route": "/history"
+    },
+    "NotFound": {
+      "path": "src/pages/NotFound.jsx",
+      "type": "presentational",
+      "props": [],
+      "responsibility": "404 error page untuk rute yang tidak ditemukan, dengan tombol kembali ke POS",
+      "dependencies": ["react-router-dom", "lucide-react"],
+      "route": "*"
     }
   },
   "entryPoints": {
     "main": "src/main.jsx",
-    "app": "src/App.jsx",
     "router": "src/router/index.jsx",
     "routes": {
-      "/pos": "POS页面 - ProductGrid + CartPanel",
-      "/history": "Riwayat transaksi",
-      "/reports": "Laporan komisi"
+      "/": "Redirect to /pos",
+      "/pos": "POS page - ProductGrid + CartPanel dalam MainLayout",
+      "/history": "Transaction history page",
+      "/reports": "Commission report page",
+      "*": "404 Not Found page"
     }
   }
 }

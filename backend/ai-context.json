@@ -1,0 +1,175 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-05-16T12:00:00.000Z",
+  "project": {
+    "name": "Barber Salon POS System",
+    "description": "Point of Sale system for barber salon with offline support, commission tracking, and inventory management",
+    "tech": [
+      "Django 5.2.13",
+      "Django REST Framework 3.17.1",
+      "PostgreSQL",
+      "pytest 9.0.3",
+      "Gunicorn",
+      "django-cors-headers"
+    ],
+    "architecture": "Clean Architecture with DDD",
+    "deployment": "Django with Gunicorn"
+  },
+  "architecture": {
+    "pattern": "Clean Architecture / DDD",
+    "layers": [
+      "Presentation (Django REST Framework views)",
+      "Application (Use Cases)",
+      "Domain (Business logic)",
+      "Infrastructure (Database repositories)"
+    ],
+    "flow": "API → Serializers → Use Cases → Repositories → Database"
+  },
+  "models": {
+    "Barber": {
+      "path": "src/infrastructure/database/models/barber.py",
+      "fields": ["id (UUID)", "name", "created_at", "updated_at"],
+      "table": "barbers"
+    },
+    "Item": {
+      "path": "src/infrastructure/database/models/item.py",
+      "fields": ["id (UUID)", "type (SERVICE/PRODUCT)", "name", "price", "stock", "commission_rate", "created_at", "updated_at"],
+      "table": "items",
+      "constraints": ["price >= 0", "stock >= 0", "commission_rate >= 0"]
+    },
+    "Transaction": {
+      "path": "src/infrastructure/database/models/transaction.py",
+      "fields": ["id (UUID)", "local_id (unique)", "barber_id (FK)", "status (COMPLETED/VOIDED)", "discount", "void_reason", "created_at", "updated_at"],
+      "table": "transactions"
+    },
+    "TransactionItem": {
+      "path": "src/infrastructure/database/models/transaction_item.py",
+      "fields": ["id (UUID)", "transaction_id (FK)", "item_id (FK)", "barber_id (FK)", "quantity", "price_at_sale (snapshot)", "commission_rate (snapshot)", "created_at"],
+      "table": "transaction_items"
+    }
+  },
+  "repositories": {
+    "DjangoBarberRepository": {
+      "path": "src/infrastructure/database/repositories/barber_repository.py",
+      "methods": ["get_by_id", "get_all"],
+      "exceptions": ["BarberNotFoundError"]
+    },
+    "DjangoItemRepository": {
+      "path": "src/infrastructure/database/repositories/item_repository.py",
+      "methods": ["get_by_ids_for_update", "get_by_id", "save", "bulk_save"],
+      "exceptions": ["ItemNotFoundError"]
+    },
+    "DjangoStockRepository": {
+      "path": "src/infrastructure/database/repositories/stock_repository.py",
+      "methods": ["get_products_for_update", "bulk_deduct", "bulk_restore"],
+      "exceptions": ["StockNotFoundError", "InsufficientStockError"]
+    },
+    "DjangoTransactionRepository": {
+      "path": "src/infrastructure/database/repositories/transaction_repository.py",
+      "methods": ["get_by_local_id", "get_by_id", "save", "save_items", "update_status"],
+      "exceptions": ["TransactionNotFoundError", "CannotVoidTransactionError"]
+    }
+  },
+  "useCases": {
+    "CheckoutUseCase": {
+      "path": "src/modules/sales/use_cases/checkout.py",
+      "responsibility": "Process checkout with idempotency, stock deduction, and transaction persistence",
+      "input": ["local_id", "barber_id", "discount", "items"],
+      "output": ["transaction_id", "status", "total"],
+      "exceptions": ["DuplicateLocalIdError", "BarberNotFoundError", "ItemNotFoundError", "OutOfStockError"]
+    },
+    "CommissionReportUseCase": {
+      "path": "src/modules/sales/use_cases/commission_report.py",
+      "responsibility": "Generate commission report for a barber within date range with pagination",
+      "input": ["barber_id", "start_date", "end_date", "page", "per_page"],
+      "output": ["barber_id", "start_date", "end_date", "total_commission", "page", "per_page", "items"],
+      "exceptions": ["BarberNotFoundError"]
+    }
+  },
+  "apiEndpoints": {
+    "checkout": {
+      "method": "POST",
+      "path": "/api/v1/checkout",
+      "serializer": "CheckoutRequestSerializer",
+      "response": "CheckoutResponseSerializer"
+    },
+    "voidTransaction": {
+      "method": "PATCH",
+      "path": "/api/v1/transactions/{transaction_id}/void",
+      "serializer": "VoidRequestSerializer",
+      "response": "VoidResponseSerializer"
+    },
+    "commissionReport": {
+      "method": "GET",
+      "path": "/api/v1/reports/commissions",
+      "serializer": "CommissionQuerySerializer",
+      "response": "CommissionResponseSerializer"
+    },
+    "barbers": {
+      "method": "GET",
+      "path": "/api/v1/barbers",
+      "response": "BarberSerializer"
+    },
+    "items": {
+      "method": "GET",
+      "path": "/api/v1/items",
+      "queryParams": ["type (SERVICE/PRODUCT)"],
+      "response": "ItemSerializer"
+    }
+  },
+  "exceptions": {
+    "DomainException": {
+      "path": "src/shared/base_exception.py",
+      "description": "Base class for all domain exceptions"
+    },
+    "ItemNotFoundError": "src/modules/catalog/exceptions.py",
+    "OutOfStockError": "src/modules/catalog/exceptions.py",
+    "StockNotFoundError": "src/modules/inventory/exceptions.py",
+    "InsufficientStockError": "src/modules/inventory/exceptions.py",
+    "TransactionNotFoundError": "src/modules/sales/exceptions.py",
+    "CannotVoidTransactionError": "src/modules/sales/exceptions.py",
+    "DuplicateLocalIdError": "src/modules/sales/exceptions.py",
+    "BarberNotFoundError": "src/modules/staff/exceptions.py"
+  },
+  "utils": {
+    "pricing": {
+      "path": "src/shared/utils/pricing.py",
+      "function": "calculate_total",
+      "description": "Calculate total price with discount using Decimal with ROUND_HALF_UP"
+    },
+    "constants": {
+      "path": "src/shared/constants.py",
+      "ItemType": {"SERVICE": "SERVICE", "PRODUCT": "PRODUCT"}
+    }
+  },
+  "config": {
+    "settings": "config/settings.py",
+    "urls": "config/urls.py",
+    "database": "PostgreSQL",
+    "cors": "CORS_ALLOW_ALL_ORIGINS = True (development only)"
+  },
+  "tests": {
+    "unit": {
+      "checkout": "tests/unit/sales/test_checkout.py",
+      "pricing": "tests/unit/shared/test_pricing.py",
+      "pricing_edge_cases": "tests/unit/shared/test_pricing_edge_cases.py"
+    },
+    "integration": {
+      "commission_report": "tests/integration/test_commission_report.py",
+      "concurrency": "tests/integration/test_concurrency.py",
+      "stock_repository": "tests/integration/test_stock_repository.py",
+      "transaction_repository": "tests/integration/test_transaction_repository.py"
+    }
+  },
+  "commands": {
+    "seed_load_test_data": {
+      "path": "src/infrastructure/database/management/commands/seed_load_test_data.py",
+      "description": "Create test data for load testing (1 barber, 1 service, 1 product with large stock)"
+    }
+  },
+  "entryPoints": {
+    "wsgi": "config/wsgi.py",
+    "asgi": "config/asgi.py",
+    "manage": "manage.py"
+  }
+}

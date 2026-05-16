@@ -11,7 +11,7 @@ export async function getBarbers() {
   const BARBERS = [
     { id: 1, name: 'Barber Ani', isActive: true },
     { id: 2, name: 'Barber Budi', isActive: true },
-    { id: 3, name: 'Barber Cici', isActive: true },
+    { id: 3, name: 'Barber susi', isActive: true },
     { id: 4, name: 'Barber Dodi', isActive: false },
   ]
 

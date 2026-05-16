@@ -66,7 +66,7 @@ function CartItem({ item, onUpdate, onRemove }) {
 
       <div className="flex justify-between items-center text-xs mb-2">
         <span className="text-gray-500">@ Rp {item.price.toLocaleString('id-ID')}</span>
-        <span className="text-green-600 font-bold text-sm">
+        <span className="text-primary-light font-bold text-sm">
           Rp {itemTotal.toLocaleString('id-ID')}
         </span>
       </div>
